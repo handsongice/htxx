@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" href="/static/css/gdkp.css" />
+		<link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css" />
+		<style></style>
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+		<style>
+		.shallow-gray {
+		     background: #eee;
+		}
+		</style>
+	</head>
+
+	<body>
+		<div class="padd-10 full-bg">
+		<form id="bgdkp-table-area" class="bg-white layui-form search-form">
+			<div class="shallow-gray" style="padding: 10px;">
+                <span class="fpzl-item zyfp display-inline-block select-fpzl" th:if="${zyfp}"  data-value="zyfp"><label>专</label>专用发票</span>
+                <span class="fpzl-item ptfp display-inline-block select-fpzl" th:if="${ptfp}" data-value="ptfp"><label>普</label>普通发票</span>
+                <span class="fpzl-item dzfp display-inline-block select-fpzl" th:if="${dzfp}" data-value="dzfp"><label>电</label>普通发票（电子）</span>
+                <span class="fpzl-item jsfp display-inline-block select-fpzl" th:if="${jsfp}" data-value="jsfp"><label>卷</label>普通发票（卷）</span>
+                <span style="margin-left: 15px;visibility:hidden">开票机号：</span>
+                <span class="display-inline-block height-25" style="visibility:hidden">
+                <select name="fjh" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail fjh" lay-filter="fjh" style="visibility:hidden" >
+                    <option th:each="kpjxx:${fjhs}" th:value="${kpjxx.code}" th:text="${kpjxx.name}"></option>
+              </select>
+              </span>
+
+              <button class="layui-btn bg-light-blue float-right" style="background: #9E520A" lay-submit lay-filter="invoice">开票</button>
+            </div>
+            <table class="head-table">
+                <tr>
+                    <td rowspan="3" colspan="2" style="width: 27%;"></td>
+                    <td rowspan="3" class="title fp-title" style="width: 46%;">
+                        <h1>增值税电子普通发票<!--<img src="/images/fp1.png" id="fp1">--></h1>
+                    </td>
+                    <td class="title head-td-height"><span class="align-justify">发票代码</span></td>
+                    <td class="head-td-last"><span name="fpdm"></span></td>
+                </tr>
+                <tr>
+                    <td class="title head-td-height"><span class="align-justify">发票号码</span></td>
+                    <td class="head-td-last"><span name="fphm"></span></td>
+                </tr>
+                <tr>
+                    <td class="title head-td-height"><span class="align-justify">开票日期</span></td>
+                    <td class="head-td-last kp_date"></td>
+                </tr>
+                <tr>
+                    <td class="title" style="padding-left: 10px;width: 5%;"></td>
+                    <td>&nbsp;</td>
+                    <td></td>
+                    <td class="title head-td-height"><span class="align-justify">校验码</span></td>
+                    <td class="head-td-last"></td>
+                </tr>
+            </table>
+            <div class="border-area">
+                <table class="border-bottom">
+                    <tr class="tr-1">
+                        <td rowspan="4" class="border-right width-1 title align-center"><span>购</span><span>买</span><span>方</span></td>
+                        <td class="width-2 "><span class="align-justify height-25 title">名称</span></td>
+                        <td class="width-min">:</td>
+                        <!-- <td class="width-3"><input type="text" class="bgdkp-input"></td> -->
+                        <td class="gfmc-td width-3">
+                            <input name="gfmc" lay-verify="required" lay-verType="tips" class="bgdkp-input layui-input gfmc">
+                            <i class="fa fa-search popup-gfmc-table"></i>
+                        </td>
+                        <td rowspan="4" class="border-left-right width-1 title align-center"><span>密</span><span>码</span><span>区</span></td>
+                        <td rowspan="4" id="mmq"></td>
+                    </tr>
+                    <tr class="tr-2">
+                        <td class="width-2"><span class="align-justify height-25 title">纳税人识别号</span></td>
+                        <td class="width-min">:</td>
+                        <td><span class="font-1"><input type="text" name="gfsh" class="bgdkp-input layui-input gfsh"></span> </td>
+                    </tr>
+                    <tr class="tr-3">
+                        <td class="width-2"><span class="align-justify height-25 title">地址、电话</span></td>
+                        <td class="width-min">:</td>
+                        <td><input type="text" name="gfdzdh" class="bgdkp-input layui-input gfdzdh"></td>
+                    </tr>
+                    <tr class="tr-4">
+                        <td class="width-2"><span class="align-justify height-25 title">开户行及账号</span></td>
+                        <td class="width-min">:</td>
+                        <td><input type="text" name="gfyhzh" class="bgdkp-input layui-input gfyhzh"></td>
+                    </tr>
+                </table>
+                <table class="border-bottom">
+                    <tr class="tr-5 align-center title border-bottom">
+                        <td class="width-1 border-right-gray"><i class="fa fa-plus cursor-pointer" id="add-detail-tr"></i></td>
+                        <td style="width: 27%">货物或应税劳务、服务名称</td>
+                        <td style="width: 7.9%">规格型号</td>
+                        <td style="width: 6% ">单位</td>
+                        <td style="width: 11.5%;">数量</td>
+                        <td style="width: 12.6%;">单价（含税）</td>
+                        <td style="width: 15.8%;">金额（含税）</td>
+                        <td style="width: 7%;">税率</td>
+                        <td style="width: ;">税额</td>
+                    </tr>
+                    <tr class="fill-tr tr-5" id="fixed-detail-tr">
+                        <td class="border-right-gray align-center"><i class="fa fa-minus cursor-pointer minus-detail-tr"></i></td>
+                        <td class="hwmc-td">
+                            <input type="text" name="hwmc" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail hwmc layui-input"/>
+                            <i class="fa fa-search popup-hw-table"></i>
+                        </td>
+                        <td><input name="ggxh" type="text" class="bgdkp-input-detail ggxh"></td>
+                        <td><input name="dw" type="text" class="bgdkp-input-detail dw"></td>
+                        <input name="shflbm" type="hidden" class="bgdkp-input-detail shflbm">
+                        <td class="align-right"><input name="xmsl" type="text" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail xmsl ver-number layui-input"></td>
+                        <td class="align-right"><input name="hsdj" type="text" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail hsdj ver-number layui-input"></td>
+                        <td class="align-right"><input name="hsje" type="text" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail hsje ver-number layui-input"></td>
+                        <td class="align-left">
+                            <select name="sl" lay-verify="required" lay-verType="tips" class="bgdkp-input-detail sl" lay-filter="sl">
+                                <option value="">...</option>
+                            </select>
+                        </td>
+                        <td class="align-left"><span name="se" type="text" class="bgdkp-input-detail"></span></td>
+                    </tr>
+                    <tr id="blank-detail-tr" class="tr-5">
+                        <td id="blank-detail-td" class="border-right-gray"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="border-bottom tr-5">
+                        <td class="border-right-gray"></td>
+                        <td class="align-center title">合&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计</td>
+                        <td></td>
+                        <td></td>
+                        <td class="align-right"></td>
+                        <td class="align-right"></td>
+                        <td class="align-left hjje"><span name="hjje" class="span-left-brown"></span></td>
+                        <td class="align-right"></td>
+                        <td class="align-left hjse"><span name="hjse" class="span-left-brown"></span></td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td class="border-right-gray"></td>
+                        <td class="border-right height-1-x align-center title">价税合计（大写）</td>
+                        <td colspan="4" id="jshj-td">
+                            <span id="big" class="span-left-brown"></span></td>
+                        <td class="align-right title">（小写）</td>
+                        <td colspan="2" ><span id="small" class="span-left-brown"></span></td>
+                    </tr>
+                </table>
+                <table>
+                    <tr class="tr-1">
+                        <td rowspan="4" class="border-right width-1 title align-center"><span>销</span><span>售</span><span>方</span></td>
+                        <td class="width-2 "><span class="align-justify height-25  title">名称</span></td>
+                        <td class="width-min">:</td>
+                        <td class="width-3"><span type="text" name="xfmc" class="bgdkp-input xfmc" th:text="${notice?.xfmc}"></span> </td>
+                        <td rowspan="4" class="border-left-right width-1 title align-center "><span>备</span><span style="margin-top: 20px;">注</span></td>
+                        <td rowspan="4" class="vertical-top">
+                            <textarea name="bz" class="bgdkp-textarea bz"></textarea>
+                        </td>
+                    </tr>
+                    <tr class="tr-2">
+                        <td class="width-2"><span class="align-justify height-25  title">纳税人识别号</span></td>
+                        <td class="width-min">:</td>
+                        <td class="font-1"><span type="text" name="xfsh" class="bgdkp-input xfsh" th:text="${notice?.xfsh}"></span></td>
+                    </tr>
+                    <tr class="tr-3">
+                        <td class="width-2"><span class="align-justify height-25  title">地址、电话</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="xfdzdh" class="bgdkp-input xfdzdh" th:text="${notice?.xfdzdh}"></span></td>
+                    </tr>
+                    <tr class="tr-4">
+                        <td class="width-2"><span class="align-justify height-25  title">开户行及账号</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="xfyhzh" class="bgdkp-input xfyhzh" th:text="${notice?.xfyhzh}"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <table class="foot-table">
+                <tr>
+                    <td class="title">收款人：</td>
+                    <td><input type="text" name="skr" class="bgdkp-input skr layui-input" th:value="${notice?.skr}"></td>
+                    <td class="title">复核：</td>
+                    <td><input type="text" name="fhr" class="bgdkp-input fhr layui-input" th:value="${notice?.fhr}"></td>
+                    <td class="title">开票人：</td>
+                    <td><input type="text" name="kpr" lay-verify="required" lay-verType="tips" class="bgdkp-input kpr layui-input" th:value="${notice?.kpr}"></td>
+                    <td class="title">销售方(章)：</td>
+                    <td style="width: 15%;"></td>
+                </tr>
+            </table>
+
+			</form>
+		</div>
+		 <div class="popup-area">
+			<div id="select-fpzl-cont" class="padd-20">
+				<ul class="align-center">
+					<li class="fpzl-item zyfp display-inline-block select-fpzl" th:if="${zyfp}" data-value="zyfp"><label>专</label>专用发票</li>
+					<li class="fpzl-item ptfp display-inline-block select-fpzl" th:if="${ptfp}" data-value="ptfp"><label>普</label>普通发票</li>
+					<li class="fpzl-item dzfp display-inline-block select-fpzl" th:if="${dzfp}" data-value="dzfp"><label>电</label>普通发票（电子）</li>
+					<li class="fpzl-item jsfp display-inline-block select-fpzl" th:if="${jsfp}" data-value="jsfp"><label>卷</label>普通发票（卷）</li>
+				</ul>
+			</div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+        <script src="/static/js/common.js"></script>
+        <script src="/static/js/invoice/fpkj.js"></script>
+		<script th:inline="javascript">
+		//页面公用方法
+            var active = {
+                // 刷新合计
+                refreshTotal:function() {
+                    var hjse = 0;
+                    var hjje = 0;
+                    $(".fill-tr.tr-5").each(function() {
+                        var element_hsje = $(this).find('input[name="hsje"]');
+                        var element_se = $(this).find('span[name="se"]');
+                        console.log(element_hsje);
+                        if("" != element_hsje.val() && undefined != element_hsje.val()){
+                            hjje = hjje + parseFloat(element_hsje.val());
+                        }
+                        if("" != element_se.text() && undefined != element_se.text()){
+                            hjse = hjse + parseFloat(element_se.text());
+                        }
+                    });
+                    hjje = hjje.toFixed(2);
+                    hjse = hjse.toFixed(2);
+                    console.log("hjse:"+hjse);
+                    console.log("hjje:"+hjje);
+                    $(".hjje").find('span[name="hjje"]').text(hjje);
+                    $(".hjse").find('span[name="hjse"]').text(hjse);
+                    // 价税合计  大写 小写
+                    $("#big").text(smalltoBIG(hjje));
+                    $("#small").text(hjje);
+                },
+                //获取当前代码号码 参数为发票类型代码 2-普票 0-专票 41-卷票0
+                getCurrentfpdmhm:function(InvoiceType) {
+                    var openCard_ret = openCard(function() {
+                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                        parent.layer.close(index); //再执行关闭
+                    });
+                    if(true == openCard_ret.state ){//开卡成功
+                        if(51 == InvoiceType){ //电子发票 无需展示当前发票代码号码
+                            $('span[name="fpdm"]').text("");
+                            $('span[name="fphm"]').text("");
+                        }else{
+                            var store_ret = getStoreInfo(InvoiceType);
+                            if(true == store_ret.state){
+                                layer.msg('当前发票代码:'+ store_ret.data.infoTypeCode+'<br>当前发票号码:'+store_ret.data.infoNumber, {
+                                  icon: 1,
+                                  title:'温馨提示'
+                                });
+                                $('span[name="fpdm"]').text(store_ret.data.infoTypeCode);
+                                $('span[name="fphm"]').text(store_ret.data.infoNumber);
+                            }else{
+                                layer.alert("当前发票代码，号码查询失败！",{'icon': 2},function() {
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.layer.close(index); //再执行关闭
+                                });
+                            }
+                        }
+                    }
+                },
+                //获取发票头内容
+                getInvoiceMain:function(invoiceType,data) {
+                    var djh = [[${notice?.gzdh}]];//获取单据号
+                    var main = invoiceMain;
+                    main.InfoKind = invoiceType;//发票类型
+                    main.BMBBH = "33.0";//税收分类编码版本号
+                    main.InfoClientName = data.gfmc;//购方名称
+                    main.InfoClientTaxCode = data.gfsh;//购方税号
+                    main.InfoClientBankAccount = data.gfyhzh;//购方地址电话
+                    main.InfoClientAddressPhone = data.gfdzdh;//购方银行账号
+                    main.InfoSellerBankAccount = $('span[name="xfyhzh"]').text();//销方银行账号
+                    main.InfoSellerAddressPhone = $('span[name="xfdzdh"]').text();//销方地址电话
+                    main.InfoTaxRate = "0.1";//税率
+                    main.InfoNotes = data.bz;//备注
+                    main.InfoInvoicer = data.kpr;//开票人
+                    main.InfoChecker = data.fhr;//复核人，可为空
+                    main.InfoCashier = data.kpr;//收款人，可为空
+                    main.InfoListName = "";//如不为空 则填“详见货物清单”
+                    main.InfoBillNumber = djh;//销售单据编号，可为空
+                    main.SellerAddress = "";//见文档
+                    return main;
+                },
+                //获取发票明细列表
+                getInvoiceDelArray:function() {
+                    var del = invoiceDel;
+                    var array = [];
+                    $(".fill-tr.tr-5").each(function() {
+                        del.ListGoodsName = $(this).find('input[name=hwmc]').val();//商品或劳务名称
+                        del.ListTaxItem = "";//税目 4位数字 商品所属类别
+                        del.ListStandard = $(this).find('input[name=ggxh]').val();//规格型号
+                        del.ListUnit = $(this).find('input[name=dw]').val();//计量单位
+                        del.ListNumber = $(this).find('input[name=xmsl]').val();//数量
+                        del.ListPrice = $(this).find('input[name=hsdj]').val();//单价
+                        del.ListAmount = $(this).find('input[name=hsje]').val();//金额
+                        del.ListPriceKind = "1";//含税标志 0-不含税 1-含税
+                        del.ListTaxAmount = $(this).find('span[name=se]').text();//税额 可以不传（为0） 如传入则应符合计算关系
+                        del.GoodsTaxNo = $(this).find('input[name=shflbm]').val();//税收分类编码
+                        del.TaxPre = "0";//是否享受税收优惠政策 0-不享受 1-享受
+                        del.TaxPreCon = "";//税收优惠政策内容
+                        del.ZeroTax = "";//零税率标识 空：非零税率 0；出口退税 1；免税 2；不征收 3；普通零税率
+                        del.CropGoodsNo = "";//企业自编码
+                        del.TaxDeduction = "";//扣除额 ，可为空
+                        del.SL = "0.1";//税率
+                        array.push(JSON.parse(JSON.stringify(del)));
+                    })
+                    return array;
+                },
+                getCurrentFpzl:function() { //获取当前发票种类
+                    var fpzl = $(".search-form").find('span.active').attr('data-value') ;//选择的发票票种
+                    var invoiceType;
+                    switch(fpzl) {
+                        case 'dzfp':
+                            invoiceType = 51;
+                            break;
+                        case 'ptfp':
+                            invoiceType = 2;
+                            break;
+                        case 'zyfp':
+                            invoiceType = 0;
+                            break;
+                        case 'jsfp':
+                            invoiceType = 41;
+                            break;
+                        default:
+                            invoiceType = 2;
+                            break;
+                    }
+                    return invoiceType;
+                },
+                getCurrentFpxe:function(fpzl) { //获取当前发票限额
+                    var indexLoading;
+                    var fpxe_return;
+                    $.ajax({
+                        url: '/noc/highPower/invoiceMng/getFpxe',
+                        type: 'post',
+                        dataType: 'json',
+                        data:{fpzl:fpzl,fjh:$(".fjh").val()},
+                        async:false,//同步
+                        beforeSend:function(){
+                            // indexLoading = layer.load(2, {time: 1500,shade: [0.3,'#000']});
+                        },
+                        success: function(rlt) {
+                            console.log(rlt);
+                            if (rlt.status == 200) {
+                                // layer.close(indexLoading);
+                                // layer.alert(rlt.msg,{icon: 1, title:'温馨提示'});
+                                // layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'});
+                                fpxe_return = rlt.data;
+                            }else{
+                                // layer.close(indexLoading);
+                                // layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                            }
+                        },
+                        error: function(rlt) {
+                            // layer.close(indexLoading);
+                            // layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                        }
+                    })
+                    return fpxe_return;
+                },
+                closeParentLayer:function(index) { //关闭父元素的对话框
+                    var parentindex = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                    parent.layer.close(parentindex); //再执行关闭
+                    if(index)layer.close(index);
+                }
+            }
+            //layui 相关
+			layui.use(['layer', 'form','autocomplete'], function() {
+				var layer = layui.layer,
+				autocomplete = layui.autocomplete;
+				window.form = layui.form;
+				var djh = [[${notice?.gzdh}]];//获取单据号（工作单号）
+				var hsje_default = [[${notice?.je}]];//默认显示的合计金额
+				var se_default = [[${notice?.hjse}]];//默认显示的合计税额
+				var defaultType = [[${defaultType}]]+"";//默认发票票种
+                switch(defaultType) {
+                    case '51':
+                        $(".dzfp").addClass("active");
+                        $("h1").text("增值税电子普通发票");
+                        break;
+                    case '2':
+                        $(".ptfp").addClass("active");
+                        $("h1").text("增值税普通发票");
+                        break;
+                    case '0':
+                        $(".zyfp").addClass("active");
+                        $("h1").text("增值税专用发票");
+                        break;
+                    case '41':
+                        $(".jsfp").addClass("active");
+                        $("h1").text("增值税普通发票（卷）");
+                        break;
+                    default:
+                        break;
+                }
+                $(".fill-tr.tr-5").find('input[name=hwmc]').val("高可靠性供电收入");
+                $(".fill-tr.tr-5").find('input[name=xmsl]').val("1");
+                $(".fill-tr.tr-5").find('input[name=hsdj]').val(hsje_default);
+                $(".fill-tr.tr-5").find('input[name=hsje]').val(hsje_default);
+                $(".fill-tr.tr-5").find('input[name=shflbm]').val("30599");
+                $(".fill-tr.tr-5").find('span[name=se]').text(se_default);
+                $(".fill-tr.tr-5").find('select[name=sl]').find("option").remove();
+                $(".fill-tr.tr-5").find('select[name=sl]').append("<option value='0.1'>10%</option>");
+                //刷新合计
+                active.refreshTotal();
+                //设置 开票时间
+                $(".kp_date").text(getNow());
+                //加载 购方名称 自动填充功能
+                autocomplete.render({
+                            elem: $('input[name=gfmc]')[0],
+                            url: '/noc/highPower/invoiceMng/gfxxDropDownList',
+                            template_val: '{{d.gfmc}}',
+                            template_txt: '<span class=\'layui-badge layui-bg-gray\'>{{d.gfmc}}&nbsp&nbsp{{d.gfsh}}</span>',
+                            onselect: function (resp) {
+                                $('input[name=gfsh]').val(resp.gfsh);
+                                $('input[name=gfdzdh]').val(resp.dzdh);
+                                $('input[name=gfyhzh]').val(resp.yhzh);
+                            }
+                        });
+                //初始化选择发票种类
+                layer.open({
+                    title: '请选择您要开具的发票种类',
+                    closeBtn: 0,
+                    type: 1,
+                    content: $('#select-fpzl-cont'),
+                    area: ['400px', '150px']
+                });
+                //触发表单 渲染
+                form.render();
+				$('.select-fpzl').on('click', function() {
+					var fpzl = $(this).attr("data-value");
+					$('.select-fpzl').removeClass('active');
+					layer.closeAll();
+					switch(fpzl) {
+						case 'dzfp':
+							$(".dzfp").addClass("active");
+							$("h1").text("增值税电子普通发票");
+							active.getCurrentfpdmhm(51);
+							break;
+						case 'ptfp':
+							$(".ptfp").addClass("active");
+							$("h1").text("增值税普通发票");
+                            active.getCurrentfpdmhm(2);
+							break;
+						case 'zyfp':
+							$(".zyfp").addClass("active");
+							$("h1").text("增值税专用发票");
+							active.getCurrentfpdmhm(0);
+							break;
+                        case 'jsfp':
+                            $(".jsfp").addClass("active");
+                            $("h1").text("增值税普通发票（卷）");
+                            active.getCurrentfpdmhm(41);
+                            break;
+						default:
+							break;
+					}
+				});
+				$("#blank-detail-td").height(208 - 26);
+				var trNum = 1;
+				var trHtml = '<tr class="fill-tr tr-5">' + $('#fixed-detail-tr').html() + '</tr>';
+				$('#add-detail-tr').on('click', function() {
+					if(trNum >= 8) {
+						layer.alert('发票明细最多不超过8行！');
+						return;
+					}
+					trNum++;
+					$("#blank-detail-td").parent('tr').before(trHtml);
+                    $(".fill-tr.tr-5").last().find('span[name=se]').text("");
+                    $(".fill-tr.tr-5").last().find('select[name=sl]').find("option").remove();
+                    $(".fill-tr.tr-5").last().find('select[name=sl]').append("<option value=''>...</option>");
+					form.render('select');
+					changeBlankHeight(trNum);
+				});
+
+				$("#bgdkp-table-area").on('click', '.minus-detail-tr', function() {
+					$(this).parents('.fill-tr').remove();
+					trNum --;
+					changeBlankHeight(trNum);
+				});
+				function changeBlankHeight(trNum) {
+					$("#blank-detail-td").css('height', 208 - trNum * 26);
+				}
+                // 数字输入验证
+                $('#bgdkp-table-area').on('input', '.hsje', function() {
+                                    numberKeyPress($(this)[0],2);
+                                });
+                $('#bgdkp-table-area').on('input', '.hsdj , .xmsl', function() {
+                                    numberKeyPress($(this)[0],8);
+                                });
+                // 点选购方信息
+                $("#bgdkp-table-area").on('click','.popup-gfmc-table',function() {
+                    layer.open({
+                        title: '购方信息选择',
+                        type: 2,
+                        content: '/noc/highPower/invoiceMng/selectGfxx',
+                        area: ['60%', '90%'],
+                        shadeClose: true,
+                    });
+                })
+                // 点选商品信息
+                $("#bgdkp-table-area").on('click', '.popup-hw-table', function() {
+                    $("tr.clickActive").removeClass("clickActive");
+                    $(this).parents("tr").addClass("clickActive");
+                    var spmc = $(this).prev().val();
+                    if('' != spmc && undefined != spmc){
+                        // 获取浏览器存储的 spmc  判断是否存在
+                        var aaa = localStorage.getItem('spmc');
+                        if (aaa !== null) {
+                            //若已存在  则清空数据
+                            localStorage.removeItem('spmc');
+                        }
+                        localStorage.setItem('spmc', spmc);
+                    }
+                    layer.open({
+                        title: '商品信息选择',
+                        type: 2,
+                        content: '/noc/highPower/invoiceMng/selectSpxx',
+                        area: ['60%', '90%'],
+                        shadeClose: true,
+                    });
+                });
+                //开票
+                form.on('submit(invoice)',function(data) {
+                    console.log("开票！！");
+                    //同步判断库存中是否存在该代码号码
+                    $.ajax({
+                        url: '/noc/highPower/invoiceMng/checkFpdmhm',
+                        type: 'post',
+                        dataType: 'json',
+                        data:{fpdm:$('span[name=fpdm]').text(),fphm:$('span[name=fphm]').text()},
+                        async:false,//同步
+                        beforeSend:function(){
+                            // indexLoading = layer.load(2, {time: 1500,shade: [0.3,'#000']});
+                        },
+                        success: function(rlt) {
+                            console.log(rlt);
+                            if (rlt.status == '500') {
+                                //库存核对失败
+                                console.log("库存核对失败");
+                                layer.alert('当前发票库存未查到此发票代码('+$('span[name=fpdm]').text()+')号码('+$('span[name=fpdm]').text()+')，请核对您的库存信息！',{icon: 2, title:'温馨提示'});
+                                return false;
+                            }else{
+                                //库存核对成功
+                                console.log("库存核对成功");
+
+                                // 过程圈圈
+                                var indexLoading = layer.load(2, {shade: [0.3,'#000']});
+                                var small = parseFloat($("#small").text());
+                                if(parseFloat(hsje_default) != small){
+                                    layer.msg("即将开具发票金额（<span style='color:darkred'>￥"+small+"</span>）与原通知单金额（<span style='color:darkred'>￥"+hsje_default+"</span>）不一致!",{'icon':5});
+                                    //关闭 圈圈
+                                    layer.close(indexLoading);
+                                    return false;
+                                }
+                                //获取当前发票种类
+                                var fpzl = active.getCurrentFpzl();
+                                //获取当前发票限额
+                                var fpxe = active.getCurrentFpxe(fpzl);
+                                console.log("发票限额："+fpxe);
+                                if(small > fpxe){
+                                    layer.msg("发票金额超限！",{'icon':5});
+                                    //关闭 圈圈
+                                    layer.close(indexLoading);
+                                    return false;
+                                }
+                                //获取发票头信息
+                                var main = active.getInvoiceMain(fpzl,data.field);
+                                console.log("main:"+JSON.stringify(main));
+                                //获取发票明细信息
+                                var dels = active.getInvoiceDelArray();
+                                console.log("dels:"+JSON.stringify(dels));
+                                openJinShuiPan(JSON.stringify(main),JSON.stringify(dels),null,null,null,null,fpzl,function(successData) {
+                                    console.log("开票成功");
+                                    // console.log(successData);
+                                    var fpdm = successData.typeCode;// 发票代码
+                                    var fphm = successData.number;// 发票号码
+                                    var fjh = successData.machineNo;// 分机号
+                                    console.log("fpdm:"+fpdm);
+                                    console.log("fphm:"+fphm);
+                                    //关闭 圈圈
+                                    layer.close(indexLoading);
+                                    //调用单张发票明细接口 存储发票数据
+                                    QryInv(fpzl, fpdm, fphm,function(queryResult){
+                                        console.log("发票信息！");
+                                        console.log("queryResult:"+queryResult);
+                                        saveFpInfo2Ykfp(queryResult,djh,fpzl,1,2,fjh);
+                                    },function (msg) {
+                                        // layer.alert('查询发票失败，失败原因:<br>'+msg, {icon: 2, title: '温馨提示'});
+                                        console.log('查询发票失败，失败原因:<br>'+msg);
+                                        // return false;
+                                    });
+                                    layer.alert("开票成功！",{icon: 1, title:'温馨提示',end:function() {
+                                        active.closeParentLayer();
+                                    }})
+
+                                    //调取打印接口
+                                    // printInv(fpzl,fpdm,fphm,0,1,function(rtn) {
+                                    //     console.log("rtn.RetCode:"+rtn.RetCode);
+                                    //     console.log("rtn.RetMsg:"+rtn.RetMsg);
+                                    //     if('5011' == rtn.RetCode){
+                                    //         //打印成功
+                                    //         layer.alert("开票成功！打印成功！<br>"+rtn.RetMsg,{icon: 1, title:'温馨提示',end:function() {
+                                    //             active.closeParentLayer();
+                                    //         }})
+                                    //     }else {
+                                    //         //打印失败
+                                    //         layer.alert("开票成功！打印失败！"+rtn.RetMsg+"<br>可在【已开发票】页面再次打印！",{icon: 2, title:'温馨提示',end:function() {
+                                    //             active.closeParentLayer();
+                                    //         }})
+                                    //     }
+                                    // });
+                                },function(failureData) {
+                                    //关闭 圈圈
+                                    layer.close(indexLoading);
+                                    console.log("开票失败！");
+                                    layer.alert("开票失败！<br>"+failureData,{icon: 2, title:'温馨提示'});
+                                    console.log(failureData);
+                                });
+
+                            }
+                        },
+                        error: function(rlt) {
+                            // layer.close(indexLoading);
+                            layer.alert("确认库存信息前后端交互异常！",{icon: 2, title:'温馨提示'});
+                            return false;
+                        }
+                    });
+                    return false;
+                });
+
+				//数量变化 更新金额 和 税额
+				$("#bgdkp-table-area").on("keyup",".xmsl",function() {
+                    $("tr.keyupActive").removeClass("keyupActive");
+                    $(this).parents("tr").addClass("keyupActive");
+                    var xmsl = $("tr.keyupActive").find('input[name="xmsl"]');
+                    var hsdj = $("tr.keyupActive").find('input[name="hsdj"]');
+                    var hsje = $("tr.keyupActive").find('input[name="hsje"]');
+                    var sl = $("tr.keyupActive").find('select[name="sl"]');
+                    var se = $("tr.keyupActive").find('span[name="se"]');
+                    if("" != xmsl.val() && undefined != xmsl.val()){
+                        if("" != hsdj.val() && undefined != hsdj.val()){
+                            //单价不为空 更新金额和税额
+                            hsje.val((parseFloat(xmsl.val())*parseFloat(hsdj.val())).toFixed(2));
+                            if(null != sl.val()){
+                                se.text((parseFloat(hsje.val())-(parseFloat(hsje.val())/(1+parseFloat(sl.val())))).toFixed(2));
+                            }
+                        }else{
+                            //单价为空 判断金额
+                            if("" != hsje.val() && undefined != hsje.val()){
+                               //单价为空 金额 不为空  更新单价
+                               hsdj.val((parseFloat(hsje.val())/parseFloat(xmsl.val())).toFixed(8));
+                            }
+                        }
+                        console.log("数量变化！");
+                        console.log("数量："+xmsl.val());
+                        console.log("含税单价："+hsdj.val());
+                        console.log("含税金额："+hsje.val());
+                    }
+                    //刷新总计
+                    active.refreshTotal();
+				})
+				//含税单价变化 更新金额 和 税额
+				$("#bgdkp-table-area").on("keyup",".hsdj",function() {
+                    $("tr.keyupActive").removeClass("keyupActive");
+                    $(this).parents("tr").addClass("keyupActive");
+                    var xmsl = $("tr.keyupActive").find('input[name="xmsl"]');
+                    var hsdj = $("tr.keyupActive").find('input[name="hsdj"]');
+                    var hsje = $("tr.keyupActive").find('input[name="hsje"]');
+                    var sl = $("tr.keyupActive").find('select[name="sl"]');
+                    var se = $("tr.keyupActive").find('span[name="se"]');
+                    if("" != hsdj.val() && undefined != hsdj.val()){
+                        if("" != xmsl.val() && undefined != xmsl.val()){
+                            //数量不为空 更新金额和税额
+                            hsje.val((parseFloat(xmsl.val())*parseFloat(hsdj.val())).toFixed(2));
+                            if(null != sl.val() && undefined != sl.val() && "" != sl.val()){
+                                se.text((parseFloat(hsje.val())-(parseFloat(hsje.val())/(1+parseFloat(sl.val())))).toFixed(2));
+                            }
+                        }else{
+                            //数量为空 判断金额
+                            if("" != hsje.val() && undefined != hsje.val()){
+                               //数量为空 金额 不为空  更新数量
+                               xmsl.val((parseFloat(hsje.val())/parseFloat(hsdj.val())).toFixed(8));
+                            }
+                        }
+                        console.log("单价变化！");
+                        console.log("数量："+xmsl.val());
+                        console.log("含税单价："+hsdj.val());
+                        console.log("含税金额："+hsje.val());
+                    }
+                    //刷新总计
+                    active.refreshTotal();
+				});
+				//含税金额变化 更新数量 和 单价
+                $("#bgdkp-table-area").on("keyup",".hsje",function() {
+                    $("tr.keyupActive").removeClass("keyupActive");
+                    $(this).parents("tr").addClass("keyupActive");
+                    var xmsl = $("tr.keyupActive").find('input[name="xmsl"]');
+                    var hsdj = $("tr.keyupActive").find('input[name="hsdj"]');
+                    var hsje = $("tr.keyupActive").find('input[name="hsje"]');
+                    var sl = $("tr.keyupActive").find('select[name="sl"]');
+                    var se = $("tr.keyupActive").find('span[name="se"]');
+
+                    if("" != hsje.val() && undefined != hsje.val() ){
+                         if("" != xmsl.val() && undefined != xmsl.val()){
+                             //数量不为空，更新 单价
+                             hsdj.val((parseFloat(hsje.val())/parseFloat(xmsl.val())).toFixed(8));
+                         }
+                         if("" != hsdj.val() && undefined != hsdj.val()){
+                             //单价不为空，更新 数量
+                             xmsl.val((parseFloat(hsje.val())/parseFloat(hsdj.val())).toFixed(8));
+                         }
+                         //更新税额
+                         if(null != sl.val() && "" != sl.val() && undefined != sl.val()){
+                             se.text((parseFloat(hsje.val())-(parseFloat(hsje.val())/(1+parseFloat(sl.val())))).toFixed(2));
+                         }
+                         console.log("金额变化！");
+                         console.log("数量："+xmsl.val());
+                         console.log("含税单价："+hsdj.val());
+                         console.log("含税金额："+hsje.val());
+                    }else {
+                        se.text("0");
+                    }
+                    //刷新总计
+                    active.refreshTotal();
+                })
+                //税率变化 更新税额
+                form.on('select(sl)',function(data) {
+                    $("tr.keyupActive").removeClass("keyupActive");
+                    $(this).parents("tr").addClass("keyupActive");
+                    var hsje = $("tr.keyupActive").find('input[name="hsje"]');
+                    var se = $("tr.keyupActive").find('span[name="se"]');
+                    console.log(data.value);
+                    if("" != data.value){
+                        if("" != hsje.val() && undefined != hsje.val()){
+                            //金额 不为空  更新税额
+                            se.text((parseFloat(hsje.val())*parseFloat(data.value)).toFixed(2));
+                        }else{
+                            //金额 为空  更新税额 为 0
+                            se.text("0");
+                        }
+                    }
+                    //刷新总计
+                    active.refreshTotal();
+                })
+			});
+			//选择商品数据后的回调
+			function getSpxxData(ret) {
+			  $("tr.clickActive").find('input[name="hwmc"]').val(ret.spmc);
+			  $("tr.clickActive").find('input[name="shflbm"]').val(ret.shflbm);
+			  //去除所有税率选项
+			  $("tr.clickActive").find('select[name="sl"]').find("option").remove();
+			  //重新添加所有税率选项
+			  var sls = ret.sl.split(",");
+			  console.log(sls);
+			  for(var i=0;i<sls.length;i++){
+			      var percent = decimal2percent(sls[i]);
+			      console.log(percent);
+			      $("tr.clickActive").find('select[name="sl"]').append("<option value='"+sls[i]+"'>"+percent+"</option>");
+			     form.render("select");
+			  }
+			  $("tr.clickActive").find(".ver-number").val("");
+			  $("tr.clickActive").find('span[name="se"]').text("0");
+              //刷新总计
+              active.refreshTotal();
+			}
+			function getGfxxData(ret) {
+			    $('input[name=gfmc]').val(ret.gfmc);
+                $('input[name=gfsh]').val(ret.gfsh);
+                $('input[name=gfdzdh]').val(ret.dzdh);
+                $('input[name=gfyhzh]').val(ret.yhzh);
+			}
+		</script>
+	</body>
+
+</html>

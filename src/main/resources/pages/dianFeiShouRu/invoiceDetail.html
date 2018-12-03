@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" href="/static/css/gdkp.css" />
+		<link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css" />
+		<style></style>
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+		<style>
+		.shallow-gray {
+		     background: #eee;
+		}
+		</style>
+	</head>
+
+	<body>
+		<div class="padd-10 full-bg">
+		<form id="bgdkp-table-area" class="bg-white layui-form search-form" lay-filter="formTest">
+            <table class="head-table">
+                <tr>
+                    <td rowspan="3" colspan="2" style="width: 27%;"></td>
+                    <td rowspan="3" class="title fp-title" style="width: 46%;">
+                        <h1>增值税电子普通发票<!--<img src="/images/fp1.png" id="fp1">--></h1>
+                    </td>
+                    <td class="title head-td-height"><span class="align-justify">发票代码</span></td>
+                    <td class="head-td-last"><span name="fpdm" th:text="${ykfp.fpdm}"></span></td>
+                </tr>
+                <tr>
+                    <td class="title head-td-height"><span class="align-justify">发票号码</span></td>
+                    <td class="head-td-last"><span name="fphm" th:text="${ykfp.fphm}"></span></td>
+                </tr>
+                <tr>
+                    <td class="title head-td-height"><span class="align-justify">开票日期</span></td>
+                    <td class="head-td-last kp_date"><span name="kpsj" th:text="${ykfp.kpsj}"></span></td>
+                </tr>
+                <tr>
+                    <td class="title" style="padding-left: 10px;width: 5%;"></td>
+                    <td>&nbsp;</td>
+                    <td></td>
+                    <td class="title head-td-height"><span class="align-justify">校验码</span></td>
+                    <td class="head-td-last"></td>
+                </tr>
+            </table>
+            <div class="border-area">
+                <table class="border-bottom">
+                    <tr class="tr-1">
+                        <td rowspan="4" class="border-right width-1 title align-center"><span>购</span><span>买</span><span>方</span></td>
+                        <td class="width-2 "><span class="align-justify height-25 title">名称</span></td>
+                        <td class="width-min">:</td>
+                        <td class="width-3"><span type="text" name="gfmc" class="bgdkp-input gfmc" th:text="${ykfp.gfmc}"></span></td>
+                        <!-- <td class="gfmc-td width-3">
+                            <input name="gfmc" lay-verify="required" lay-verType="tips" class="bgdkp-input layui-input gfmc">
+                            <i class="fa fa-search popup-gfmc-table"></i>
+                        </td> -->
+                        <td rowspan="4" class="border-left-right width-1 title align-center"><span>密</span><span>码</span><span>区</span></td>
+                        <td rowspan="4" id="mmq"></td>
+                    </tr>
+                    <tr class="tr-2">
+                        <td class="width-2"><span class="align-justify height-25 title">纳税人识别号</span></td>
+                        <td class="width-min">:</td>
+                        <td><span class="font-1"><span type="text" name="gfsh" class="bgdkp-input gfsh" th:text="${ykfp.gfsh}"></span></span> </td>
+                    </tr>
+                    <tr class="tr-3">
+                        <td class="width-2"><span class="align-justify height-25 title">地址、电话</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="gfdzdh" class="bgdkp-input gfdzdh" th:text="${ykfp.gfdzdh}"></span></td>
+                    </tr>
+                    <tr class="tr-4">
+                        <td class="width-2"><span class="align-justify height-25 title">开户行及账号</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="gfyhzh" class="bgdkp-input gfyhzh" th:text="${ykfp.gfyhzh}"></span></td>
+                    </tr>
+                </table>
+                <table class="border-bottom">
+                    <tr class="tr-5 align-center title border-bottom">
+                        <td class="width-1 border-right-gray"></td>
+                        <td style="width: 27%">货物或应税劳务、服务名称</td>
+                        <td style="width: 7.9%">规格型号</td>
+                        <td style="width: 6% ">单位</td>
+                        <td style="width: 11.5%;">数量</td>
+                        <td style="width: 12.6%;">单价（含税）</td>
+                        <td style="width: 15.8%;">金额（含税）</td>
+                        <td style="width: 7%;">税率</td>
+                        <td style="width: ;">税额</td>
+                    </tr>
+                    <tr class="fill-tr tr-5" id="fixed-detail-tr">
+                        <td class="border-right-gray align-center"></td>
+                        <td class="hwmc-td">
+                            <span name="xmmc" type="text" class="bgdkp-input-detail xmmc"></span>
+                        </td>
+                        <td><span name="ggxh" type="text" class="bgdkp-input-detail ggxh"></span></td>
+                        <td><span name="dw" type="text" class="bgdkp-input-detail dw"></span></td>
+                        <td class="align-left"><span name="xmsl" type="text" class="bgdkp-input-detail xmsl"></span></td>
+                        <td class="align-left"><span name="hsdj" type="text" class="bgdkp-input-detail hsdj"></span></td>
+                        <td class="align-left"><span name="hsje" type="text" class="bgdkp-input-detail hsje"></span></td>
+                        <td class="align-left"><span name="sl" type="text" class="bgdkp-input-detail sl"></span></td>
+                        <td class="align-left"><span name="se" type="text" class="bgdkp-input-detail se"></span></td>
+                    </tr>
+                    <tr id="blank-detail-tr" class="tr-5">
+                        <td id="blank-detail-td" class="border-right-gray"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr class="border-bottom tr-5">
+                        <td class="border-right-gray"></td>
+                        <td class="align-center title">合&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;计</td>
+                        <td></td>
+                        <td></td>
+                        <td class="align-right"></td>
+                        <td class="align-right"></td>
+                        <td class="align-left hjje"><span name="hjje" class="span-left-brown" th:text="${ykfp.jshj}"></span></td>
+                        <td class="align-right"></td>
+                        <td class="align-left hjse"><span name="hjse" class="span-left-brown" th:text="${ykfp.hjse}"></span></td>
+                    </tr>
+                    <tr class="border-bottom">
+                        <td class="border-right-gray"></td>
+                        <td class="border-right height-1-x align-center title">价税合计（大写）</td>
+                        <td colspan="4" id="jshj-td">
+                            <span id="big" name="big" class="span-left-brown"></span></td>
+                        <td class="align-right title">（小写）</td>
+                        <td colspan="2" ><span id="small" name="small" class="span-left-brown" th:text="${ykfp.jshj}"></span></td>
+                    </tr>
+                </table>
+                <table>
+                    <tr class="tr-1">
+                        <td rowspan="4" class="border-right width-1 title align-center"><span>销</span><span>售</span><span>方</span></td>
+                        <td class="width-2 "><span class="align-justify height-25  title">名称</span></td>
+                        <td class="width-min">:</td>
+                        <td class="width-3"><span type="text" name="xfmc" class="bgdkp-input xfmc" th:text="${ykfp.xfmc}"></span> </td>
+                        <td rowspan="4" class="border-left-right width-1 title align-center "><span>备</span><span style="margin-top: 20px;">注</span></td>
+                        <td rowspan="4" class="vertical-top">
+                            <span name="bz" class="bgdkp-textarea bz" th:text="${ykfp.bz}"></span>
+                        </td>
+                    </tr>
+                    <tr class="tr-2">
+                        <td class="width-2"><span class="align-justify height-25  title">纳税人识别号</span></td>
+                        <td class="width-min">:</td>
+                        <td class="font-1"><span type="text" name="xfsh" class="bgdkp-input xfsh" th:text="${ykfp.xfsh}"></span></td>
+                    </tr>
+                    <tr class="tr-3">
+                        <td class="width-2"><span class="align-justify height-25  title">地址、电话</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="xfdzdh" class="bgdkp-input xfdzdh" th:text="${ykfp.xfdzdh}"></span></td>
+                    </tr>
+                    <tr class="tr-4">
+                        <td class="width-2"><span class="align-justify height-25  title">开户行及账号</span></td>
+                        <td class="width-min">:</td>
+                        <td><span type="text" name="xfyhzh" class="bgdkp-input xfyhzh" th:text="${ykfp.xfyhzh}"></span></td>
+                    </tr>
+                </table>
+            </div>
+            <table class="foot-table">
+                <tr>
+                    <td class="title">收款人：</td>
+                    <td><span type="text" name="skr" class="bgdkp-input skr" th:text="${ykfp.skr}"></span></td>
+                    <td class="title">复核：</td>
+                    <td><span type="text" name="fhr" class="bgdkp-input fhr" th:text="${ykfp.fhr}"></span></td>
+                    <td class="title">开票人：</td>
+                    <td><span type="text" name="kpr" class="bgdkp-input kpr" th:text="${ykfp.kpr}"></span></td>
+                    <td class="title">销售方(章)：</td>
+                    <td style="width: 15%;"></td>
+                </tr>
+            </table>
+
+			</form>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/common.js"></script>
+		<script src="/static/js/invoice/fpkj.js"></script>
+		<script th:inline="javascript">
+		layui.use(['layer', 'form'],function() {
+		    var ykfp = [[${ykfp}]];
+		    console.log(ykfp);
+		    var ykfpDelList = [[${ykfp?.ykfpDelList}]];
+		    //大写金额
+		    // console.log(ykfp.jshj);
+		    // console.log(parseFloat(ykfp.jshj));
+            $('span[name=big]').text(smalltoBIG(parseFloat(ykfp.jshj)));
+		    $("#blank-detail-td").height(208 - 26);
+            var trNum = 1
+            var trHtml = '<tr class="fill-tr tr-5">' + $('#fixed-detail-tr').html() + '</tr>';
+            for(var i=0;i<ykfpDelList.length;i++){
+               trNum++;
+                $(".fill-tr.tr-5").last().find('span[name=xmmc]').text(ykfpDelList[i].xmmc);
+                $(".fill-tr.tr-5").last().find('span[name=ggxh]').text(ykfpDelList[i].ggxh);
+                $(".fill-tr.tr-5").last().find('span[name=dw]').text(ykfpDelList[i].dw);
+                $(".fill-tr.tr-5").last().find('span[name=xmsl]').text(ykfpDelList[i].xmsl);
+                $(".fill-tr.tr-5").last().find('span[name=hsdj]').text(ykfpDelList[i].hsdj);
+                $(".fill-tr.tr-5").last().find('span[name=hsje]').text(ykfpDelList[i].hsje);
+                $(".fill-tr.tr-5").last().find('span[name=sl]').text(ykfpDelList[i].sl);
+                $(".fill-tr.tr-5").last().find('span[name=se]').text(ykfpDelList[i].se);
+                if (i != ykfpDelList.length-1) {
+                    $("#blank-detail-td").parent('tr').before(trHtml);
+                }
+               changeBlankHeight(trNum);
+            }
+            function changeBlankHeight(trNum) {
+                $("#blank-detail-td").css('height', 208 - trNum * 26);
+            }
+		})
+		</script>
+	</body>
+
+</html>

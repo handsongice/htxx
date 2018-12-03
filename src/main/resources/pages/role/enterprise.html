@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<style>
+			.layui-form-label {
+				width: 80px;
+				padding: 0 8px;
+			}
+			
+			.layui-input-block {
+				margin-left: 110px;
+				margin-right: 110px;
+			}
+		</style>
+		<script src="/static/js/respond.min.js"></script>
+
+	</head>
+
+	<body>
+		<div class="layui-card">
+			<div class="layui-card-header">基本信息</div>
+			<div class="layui-card-body">
+				<form id="noticeForm" class="layui-form" action="" lay-filter="noticeForm" >
+					<input type="hidden" class="id" name="id" th:value="${enterprise.id}">
+					<div class="layui-form-item">
+						<label class="layui-form-label">公司名称<span style='color:red'>*</span></label>
+						<div class="layui-input-block">
+							<input type="text" name="name" th:value="${enterprise.name}" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">税号<span style='color:red'>*</span></label>
+						<div class="layui-input-block">
+							<input type="text" name="tax_num" th:value="${enterprise.taxNum}" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入税号" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">类型<span style='color:red'>*</span></label>
+						<div class="layui-input-block">
+							<select name="type" th:if="${enterprise.etype eq 1}" lay-verify="required" lay-verType="tips">
+								<option value="1" selected>服务器</option>
+								<option value="2">金税盘</option>
+							</select>
+							<select name="type" th:if="${enterprise.etype eq 2}" lay-verify="required" lay-verType="tips">
+								<option value="1" >服务器</option>
+								<option value="2" selected>金税盘</option>
+							</select>
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">公司地址</label>
+						<div class="layui-input-block">
+							<input type="text" name="addr" th:value="${enterprise.addr}" placeholder="请输入公司地址" autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button type="button" class="layui-btn" lay-submit  lay-filter="addOrEdit">立即提交</button>
+							<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<div class="layui-card">
+			<div class="layui-card-header">开票机信息</div>
+			<div class="layui-card-body">
+
+				<table class="layui-table" id="test" lay-filter="test"></table>
+
+				<script type="text/html" id="tableOperation">
+					<span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>
+				</script>
+
+			</div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/layui/layui-xtree.js"></script>
+		<script src="/static/js/index.js"></script>
+		<script type="text/html" id="toolbarDemo">
+			<button class="mock-icon-btn"  lay-event="add" title="添加菜单">
+				<i class="fa fa-plus"></i><span>添加</span>
+			</button>
+		</script>
+		<script th:inline="javascript">
+            $(document).ready(function () {
+                layui.use(['table','form', 'layer'], function() {
+                    var form = layui.form;
+                    var layer = layui.layer;
+                    var table = layui.table;
+                    sgshObj = {
+                        loadPage: function () {
+                            var _this = this;
+                            _this.tableRender();
+                        },
+                        tableRender: function () {
+                            var _this = this;
+                            var colsData = [
+                                [
+                                    {field: 'name', title: '名称', sort: true},
+                                    {field: 'nickName', edit: 'text', title: '昵称', sort: true},
+                                    {field: 'code', title: '编号', sort: true},
+                                    {field: 'createTime', title: '创建时间'},
+								]
+                            ];
+                            table.render({
+                                id: "dataList",
+                                elem: '#test',
+                                url: '/noc/kpjxxList',
+                                toolbar: '#toolbarDemo' ,
+                                where: _this.getRequestParams(),
+                                title: '数据列表',
+                                cols: colsData,
+                                even: true, //开启隔行背景
+                                size: 'sm', //小尺寸的表格
+                                page: true,
+                                done: function (res, curr, count) {
+                                    //alert(res);
+                                }
+                            });
+                            table.on('edit(test)', function(obj){
+                                var value = obj.value //得到修改后的值
+                                    ,data = obj.data //得到所在行所有键值
+                                    ,field = obj.field; //得到字段
+                                var loadindex;
+                                $.ajax({
+                                    url: "/noc/updateKpjxx",
+                                    type: 'post',
+                                    async : true,
+                                    dataType: 'json',
+                                    data: {
+                                        id:data.id,
+										nickName:value
+                                    },
+                                    beforeSend:function(rs){
+                                        loadindex = layer.load(2, {
+                                            time: 1500,
+                                            shade: [0.3,'#000'],
+                                        });
+                                    },
+                                    complete:function(rs){
+                                        layer.close(loadindex);
+                                    },
+                                    success: function(rlt) {
+                                        if(rlt && rlt.status == 200) {
+                                            layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                _search();
+                                            });
+                                        } else {
+                                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                            return false;
+                                        }
+                                    },error: function(rlt) {
+                                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                        return false;
+                                    }
+                                });
+                            });
+                            table.on('toolbar(test)', function(obj){
+                                var checkStatus = table.checkStatus(obj.config.id);
+                                switch(obj.event){
+                                    case 'add':
+                                        var enterprise_id = $('.id').val();
+                                        if(!enterprise_id) {
+                                            layer.alert('数据异常请重新打开页面！',{icon: 2, title:'温馨提示'});
+                                            return false;
+										}
+                                        layer.confirm('是否确认添加?',{icon: 3, title:'温馨提示'}, function(index) {
+                                            var loadindex;
+                                            $.ajax({
+                                                url: "/noc/insertKpjxx",
+                                                type: 'post',
+                                                async : true,
+                                                dataType: 'json',
+                                                data: {
+                                                    enterpriseId:enterprise_id,
+                                                },
+                                                beforeSend:function(rs){
+                                                    loadindex = layer.load(2, {
+                                                        time: 1500,
+                                                        shade: [0.3,'#000'],
+                                                    });
+                                                },
+                                                complete:function(rs){
+                                                    layer.close(loadindex);
+                                                },
+                                                success: function(rlt) {
+                                                    if(rlt && rlt.status == 200) {
+                                                        layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                            _search();
+                                                        });
+                                                    } else {
+                                                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                                        return false;
+                                                    }
+                                                },error: function(rlt) {
+                                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                                    return false;
+                                                }
+                                            });
+                                        });
+                                };
+                            });
+                            // 列表按钮
+                            table.on('tool(test)', function (obj) {
+                                var tableEvent = obj.event;
+                                var data = obj.data;
+                                var dataId = data.id;
+
+                                if (tableEvent === 'edit') {
+                                    var index = layer.open({
+                                        title: "编辑",
+                                        type: 2,
+                                        content: "/main/editAction?id="+dataId,
+                                        success: function(layero, index) {
+                                            setTimeout(function() {
+                                                layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                                    tips: 3
+                                                });
+                                            }, 500)
+                                        }
+                                    })
+                                    layer.full(index);
+                                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                                    $(window).on("resize", function() {
+                                        layer.full(index);
+                                    });
+                                } else if (tableEvent === 'del') {
+                                    layer.confirm('是否确认删除?',{icon: 3, title:'温馨提示'}, function(index) {
+                                        var loadindex;
+                                        $.ajax({
+                                            url: "/noc/delAction",
+                                            type: 'post',
+                                            async : true,
+                                            dataType: 'json',
+                                            data: {
+                                                id:dataId,
+                                            },
+                                            beforeSend:function(rs){
+                                                loadindex = layer.load(2, {
+                                                    time: 1500,
+                                                    shade: [0.3,'#000'],
+                                                });
+                                            },
+                                            complete:function(rs){
+                                                layer.close(loadindex);
+                                            },
+                                            success: function(rlt) {
+                                                if(rlt && rlt.status == 200) {
+                                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                        _search();
+                                                    });
+                                                } else {
+                                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                                    return false;
+                                                }
+                                            },error: function(rlt) {
+                                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                                return false;
+                                            }
+                                        });
+                                    });
+                                }
+                            });
+                        },
+                        getRequestParams: function () { //获取查询参数
+                            var params = {};
+                            params.enterprise_id = $('.id').val();
+                            return params;
+                        }
+                    }
+                    sgshObj.loadPage();
+                    //表单提交验证
+                    form.on('submit(addOrEdit)', function(data){
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/updateEnterprise",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                id:data.field.id,
+                                name:data.field.name,
+                                taxNum:data.field.tax_num,
+                                etype:data.field.type,
+                                addr:data.field.addr,
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    });
+                    //表单自定义验证规则
+                    form.verify({
+                        hm: function(value, item){
+                            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                                return '不能含有有特殊字符';
+                            }
+                        },
+                        je: function(value,item) {
+                            if(!/^\d+(?:.\d{1,2})?$/.test(value)){
+                                return '输入不合法,只能为整数或小数点2位以内的数字';
+                            }
+                        }
+                    });
+                });
+			})
+            function _search() {
+                sgshObj.loadPage();
+            }
+		</script>
+	</body>
+
+</html>

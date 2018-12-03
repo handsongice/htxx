@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.YkfpFpjxMapper">
+
+    <resultMap id="YkfpFpjxResult" type="Ykfp">
+        <id column="id" property="id"/>
+        <result column="djh" property="djh"/>
+        <result column="fjh" property="fjh"/>
+        <result column="kpzdh" property="kpzdh"/>
+        <result column="fpzl" property="fpzl"/>
+        <result column="kplx" property="kplx"/>
+        <result column="xfsh" property="xfsh"/>
+        <result column="xfmc" property="xfmc"/>
+        <result column="xfdzdh" property="xfdzdh"/>
+        <result column="xfyhzh" property="xfyhzh"/>
+        <result column="gfsh" property="gfsh"/>
+        <result column="gfmc" property="gfmc"/>
+        <result column="gfdzdh" property="gfdzdh"/>
+        <result column="gfyhzh" property="gfyhzh"/>
+        <result column="kpr" property="kpr"/>
+        <result column="skr" property="skr"/>
+        <result column="fhr" property="fhr"/>
+        <result column="fpdm" property="fpdm"/>
+        <result column="fphm" property="fphm"/>
+        <result column="yfpdm" property="yfpdm"/>
+        <result column="yfphm" property="yfphm"/>
+        <result column="qdbz" property="qdbz"/>
+        <result column="jshj" property="jshj"/>
+        <result column="hjje" property="hjje"/>
+        <result column="hjse" property="hjse"/>
+        <result column="bmbbh" property="bmbbh"/>
+        <result column="bz" property="bz"/>
+        <result column="sj" property="sj"/>
+        <result column="email" property="email"/>
+        <result column="kpsj" property="kpsj"/>
+        <result column="chbz" property="chbz"/>
+        <result column="zfbz" property="zfbz"/>
+        <result column="ywlx" property="ywlx"/>
+        <result column="enterprise_id" property="enterpriseId"/>
+        <result column="employee_id" property="employeeId"/>
+        <result column="chyy" property="chyy"/>
+        <association property="ykfpFpjx" javaType="YkfpFpjx">
+            <id column="yf_id" property="id"/>
+            <result column="ykfpIdRef" property="ykfpIdRef"/>
+            <result column="sjbz" property="sjbz"/>
+            <result column="jxbz" property="jxbz"/>
+            <result column="yf_create_id" property="createId"/>
+            <result column="yf_create_name" property="createName"/>
+            <result column="yf_create_time" property="createTime"/>
+        </association>
+    </resultMap>
+
+    <resultMap id="BaseResultMap" type="com.htxx.entity.YkfpFpjx">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="ykfp_id_ref" property="ykfpIdRef" jdbcType="BIGINT"/>
+        <result column="sjbz" property="sjbz" jdbcType="CHAR"/>
+        <result column="jxbz" property="jxbz" jdbcType="CHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      id, ykfp_id_ref, sjbz,
+      jxbz, create_id, create_name, create_time
+    </sql>
+
+    <sql id="ykfp_fpjx">
+        m.id id,
+        m.djh djh,
+        m.fjh fjh,
+        m.kpzdh kpzdh,
+        m.fpzl fpzl,
+        m.kplx kplx,
+        m.xfsh xfsh,
+        m.xfmc xfmc,
+        m.xfdzdh xfdzdh,
+        m.xfyhzh xfyhzh,
+        m.gfsh gfsh,
+        m.gfmc gfmc,
+        m.gfdzdh gfdzdh,
+        m.gfyhzh gfyhzh,
+        m.kpr kpr,
+        m.skr skr,
+        m.fhr fhr,
+        m.fpdm fpdm,
+        m.fphm fphm,
+        m.yfpdm yfpdm,
+        m.yfphm yfphm,
+        m.qdbz qdbz,
+        m.jshj jshj,
+        m.hjje hjje,
+        m.hjse hjse,
+        m.bmbbh bmbbh,
+        m.bz bz,
+        m.email email,
+        m.sj sj,
+        DATE_FORMAT( m.kpsj, '%Y-%m-%d %H:%i:%s' ) kpsj,
+        m.chbz chbz,
+        m.zfbz zfbz,
+        m.ywlx ywlx,
+        m.enterprise_id enterprise_id,
+        m.employee_id employee_id,
+        m.chyy chyy,
+        yf.ykfp_id_ref ykfpIdRef,
+        yf.sjbz sjbz,
+        yf.jxbz jxbz,
+        yf.create_id yf_create_id,
+        yf.create_name yf_create_name,
+        yf.create_time yf_create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_ykfp_fpjx
+        where ykfp_id_ref = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectCountByFpId" resultType="int" parameterType="long">
+      select count(1)
+      from dl_ykfp_fpjx
+      where ykfp_id_ref = #{fpId}
+    </select>
+
+    <select id="selectListByParams" resultMap="YkfpFpjxResult" parameterType="map">
+        select
+        <include refid="ykfp_fpjx"/>
+        FROM dl_ykfp_main m
+        LEFT JOIN dl_ykfp_fpjx yf ON ( m.id = yf.ykfp_id_ref )
+        <where>
+            m.enterprise_id = #{enterpriseId}
+            <if test="fpIds != null">
+                and m.id in (${fpIds})
+            </if>
+            <if test="kpsjMin != null">
+                and DATE_FORMAT(m.kpsj, '%Y-%m-%d') &gt;= #{kpsjMin}
+            </if>
+            <if test="kpsjMax != null">
+                and DATE_FORMAT(m.kpsj, '%Y-%m-%d') &lt;= #{kpsjMax}
+            </if>
+            <if test="fphmMin != null">
+                and m.fphm &gt;= #{fphmMin}
+            </if>
+            <if test="fphmMax != null">
+                and m.fphm &lt;= #{fphmMax}
+            </if>
+            <if test="fjhList != null">
+                and m.fjh in
+                <foreach collection="fjhList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="fpzl != null">
+                and m.fpzl= #{fpzl}
+            </if>
+            <if test="chbz != null">
+                and m.chbz = #{chbz}
+            </if>
+            <if test="zfbz != null">
+                and m.zfbz = #{zfbz}
+            </if>
+            <if test='status == "1"'>
+                and m.id in (select ykfp_id_ref from dl_ykfp_fpjx)
+            </if>
+            <if test='status == "2"'>
+                and m.id not in (select ykfp_id_ref from dl_ykfp_fpjx)
+            </if>
+            <if test='status == "3"'>
+                and m.id in (select ykfp_id_ref from dl_ykfp_fpjx where jxbz = '1')
+            </if>
+            <if test='status == "4"'>
+                and m.id not in (select ykfp_id_ref from dl_ykfp_fpjx)
+                and m.id not in (select ykfp_id_ref from dl_ykfp_fpjx where jxbz = '0')
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from dl_ykfp_fpjx
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.YkfpFpjx">
+        insert into dl_ykfp_fpjx (
+            id, ykfp_id_ref, sjbz,
+            jxbz, create_id, create_name, create_time
+        ) values (
+            #{id,jdbcType=BIGINT}, #{ykfpIdRef,jdbcType=BIGINT}, #{sjbz,jdbcType=CHAR},
+            #{jxbz,jdbcType=CHAR}, #{createId,jdbcType=BIGINT}, #{createName,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.YkfpFpjx">
+        insert into dl_ykfp_fpjx
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="ykfpIdRef != null">
+                ykfp_id_ref,
+            </if>
+            <if test="sjbz != null">
+                sjbz,
+            </if>
+            <if test="jxbz != null">
+                jxbz,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="ykfpIdRef != null">
+                #{ykfpIdRef,jdbcType=BIGINT},
+            </if>
+            <if test="sjbz != null">
+                #{sjbz,jdbcType=CHAR},
+            </if>
+            <if test="jxbz != null">
+                #{jxbz,jdbcType=CHAR},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.YkfpFpjx">
+        update dl_ykfp_fpjx
+        <set>
+            <if test="ykfpIdRef != null">
+                ykfp_id_ref = #{ykfpIdRef,jdbcType=BIGINT},
+            </if>
+            <if test="sjbz != null">
+                sjbz = #{sjbz,jdbcType=CHAR},
+            </if>
+            <if test="jxbz != null">
+                jxbz = #{jxbz,jdbcType=CHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.YkfpFpjx">
+        update dl_ykfp_fpjx
+        set sjbz = #{sjbz,jdbcType=CHAR},
+          jxbz = #{jxbz,jdbcType=CHAR}
+        where id = #{id,jdbcType=BIGINT}
+        and ykfp_id_ref = #{ykfpIdRef,jdbcType=BIGINT}
+    </update>
+
+</mapper>

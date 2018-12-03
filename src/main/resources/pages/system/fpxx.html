@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>发票信息设置</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #4178be;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-row layui-col-space10">
+    <div class="layui-col-lg12 layui-col-md12">
+        <div class="layui-card">
+            <div class="layui-card-header">发票类型设置</div>
+            <div class="layui-card-body">
+
+                <table class="layui-table" id="test" lay-filter="test"></table>
+
+                <script type="text/html" id="tableOperation">
+                    <span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>
+                    <span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>
+                </script>
+
+            </div>
+        </div>
+        <div class="layui-card">
+            <div class="layui-card-header">发票限额设置</div>
+            <div class="layui-card-body">
+                <form class="layui-form search-form">
+                    <ul>
+                        <li>
+                            <label>开票机：</label>
+                            <input type="text" placeholder="请输入开票机" autocomplete="off"
+                                   class="layui-input kpj">
+                        </li>
+                        <li>
+                            <label>发票类型：</label>
+                            <input type="text" placeholder="请输入发票类型" autocomplete="off"
+                                   class="layui-input fplx">
+                        </li>
+                        <li>
+                            <button id="searchBut" type="button" class="layui-btn">查询</button>
+                        </li>
+                        <div class="clear-fixed"></div>
+                    </ul>
+                </form>
+                <table class="layui-table" id="test2" lay-filter="test2"></table>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script type="text/html" id="toolbarDemo">
+    <button class="mock-icon-btn"  lay-event="add" title="添加">
+        <i class="fa fa-plus"></i><span>添加</span>
+    </button>
+</script>
+<script type="text/html" id="toolbarDemo2">
+    <button class="mock-icon-btn"  lay-event="add" title="初始化">
+        <i class="fa fa-plus"></i><span>初始化</span>
+    </button>
+</script>
+<script>
+    var sgshObj = {};
+    var fpxeObj = {};
+    $(document).ready(function () {
+        layui.use(['table', 'laypage', 'layer', 'laydate'], function () {
+            var table = layui.table,laypage = layui.laypage,laydate = layui.laydate,layer = layui.layer;
+            sgshObj = {
+                loadPage: function () {
+                    var _this = this;
+                    _this.tableRender();
+                },
+                tableRender: function () {
+                    var _this = this;
+                    var colsData = [
+                        [
+                            {field: 'name', title: '名称', sort: true},
+                            {field: 'code', title: '编码', sort: true},
+                            {field: 'createTime', title: '创建时间',sort: true},
+                            {field: 'updateTime', title: '更新时间',sort: true},
+                            {fixed: 'right', title: '操作', width: '15%', toolbar: '#tableOperation'}]
+                    ];
+                    table.render({
+                        id: "dataList",
+                        elem: '#test',
+                        url: '/noc/pageFplxList',
+                        toolbar: '#toolbarDemo' ,
+                        where: _this.getRequestParams(),
+                        title: '数据列表',
+                        cols: colsData,
+                        even: true, //开启隔行背景
+                        size: 'sm', //小尺寸的表格
+                        page: true,
+                        done: function (res, curr, count) {
+                            //alert(res);
+                        }
+                    });
+                    table.on('toolbar(test)', function(obj){
+                        var checkStatus = table.checkStatus(obj.config.id);
+                        switch(obj.event){
+                            case 'add':
+                                //添加通知单
+                                var index = layer.open({
+                                    title: "新建",
+                                    type: 2,
+                                    content: "/main/addFplx",
+                                    success: function(layero, index) {
+                                        setTimeout(function() {
+                                            layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                                tips: 3
+                                            });
+                                        }, 500)
+                                    }
+                                })
+                                layer.full(index);
+                                //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                                $(window).on("resize", function() {
+                                    layer.full(index);
+                                });
+                                break;
+                        };
+                    });
+                    // 列表按钮
+                    table.on('tool(test)', function (obj) {
+                        var tableEvent = obj.event;
+                        var data = obj.data;
+                        var dataId = data.id;
+
+                        if (tableEvent === 'edit') {
+                            var index = layer.open({
+                                title: "编辑",
+                                type: 2,
+                                content: "/main/editFplx?id="+dataId,
+                                success: function(layero, index) {
+                                    setTimeout(function() {
+                                        layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                            tips: 3
+                                        });
+                                    }, 500)
+                                }
+                            })
+                            layer.full(index);
+                            //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                            $(window).on("resize", function() {
+                                layer.full(index);
+                            });
+                        } else if (tableEvent === 'del') {
+                            layer.confirm('是否确认删除?',{icon: 3, title:'温馨提示'}, function(index) {
+                                var loadindex;
+                                $.ajax({
+                                    url: "/noc/delFplx",
+                                    type: 'post',
+                                    async : true,
+                                    dataType: 'json',
+                                    data: {
+                                        id:dataId,
+                                    },
+                                    beforeSend:function(rs){
+                                        loadindex = layer.load(2, {
+                                            time: 1500,
+                                            shade: [0.3,'#000'],
+                                        });
+                                    },
+                                    complete:function(rs){
+                                        layer.close(loadindex);
+                                    },
+                                    success: function(rlt) {
+                                        if(rlt && rlt.status == 200) {
+                                            layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                fplx_search();
+                                            });
+                                        } else {
+                                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                            return false;
+                                        }
+                                    },error: function(rlt) {
+                                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                        return false;
+                                    }
+                                });
+                            });
+                        }
+                    });
+                },
+                getRequestParams: function () { //获取查询参数
+                    var params = {};
+                    return params;
+                }
+            }
+            sgshObj.loadPage();
+            fpxeObj = {
+                loadPage: function () {
+                    var _this = this;
+                    _this.tableRender();
+                },
+                tableRender: function () {
+                    var _this = this;
+                    var colsData = [
+                        [
+                            {field: 'kpj', title: '开票机', sort: true},
+                            {field: 'fplx', title: '发票类型', sort: true},
+                            {field: 'amount', edit: 'text', title: '限额', sort: true},
+                            {field: 'createTime', title: '创建时间',sort: true},
+                            {field: 'updateTime', title: '更新时间',sort: true}]
+                    ];
+                    table.render({
+                        id: "dataList2",
+                        elem: '#test2',
+                        url: '/noc/pageFpxeList',
+                        toolbar: '#toolbarDemo2',
+                        where: _this.getRequestParams(),
+                        title: '数据列表',
+                        cols: colsData,
+                        even: true, //开启隔行背景
+                        size: 'sm', //小尺寸的表格
+                        page: true,
+                        done: function (res, curr, count) {
+                            //alert(res);
+                        }
+                    });
+                    table.on('toolbar(test2)', function(obj){
+                        var checkStatus = table.checkStatus(obj.config.id);
+                        switch(obj.event){
+                            case 'add':
+                                layer.confirm('是否确认初始化?',{icon: 3, title:'温馨提示'}, function(index) {
+                                    var loadindex;
+                                    $.ajax({
+                                        url: "/noc/initFpxe",
+                                        type: 'post',
+                                        async : true,
+                                        dataType: 'json',
+                                        data: {
+                                        },
+                                        beforeSend:function(rs){
+                                            loadindex = layer.load(2, {
+                                                time: 1500,
+                                                shade: [0.3,'#000'],
+                                            });
+                                        },
+                                        complete:function(rs){
+                                            layer.close(loadindex);
+                                        },
+                                        success: function(rlt) {
+                                            if(rlt && rlt.status == 200) {
+                                                layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                    fpxe_search();
+                                                });
+                                            } else {
+                                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                                return false;
+                                            }
+                                        },error: function(rlt) {
+                                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                            return false;
+                                        }
+                                    });
+                                });
+                                break;
+                        };
+                    });
+                    table.on('edit(test2)', function(obj){
+                        var value = obj.value //得到修改后的值
+                            ,data = obj.data //得到所在行所有键值
+                            ,field = obj.field; //得到字段
+                        var reg = /^[0-9]+.?[0-9]*$/;
+                        if(!reg.test(value)) {
+                            layer.alert('请输入正确的限额！',{icon: 2, title:'温馨提示'});
+                            return false;
+                        }
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/updateFpxe",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                id:data.id,
+                                amount:value
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                    });
+                },
+                getRequestParams: function () { //获取查询参数
+                    var params = {};
+                    if($('.kpj').val()) {
+                        params.kpj = $('.kpj').val();
+                    }
+                    if($('.fplx').val()) {
+                        params.fplx = $('.fplx').val();
+                    }
+                    return params;
+                }
+            }
+            fpxeObj.loadPage();
+            $('#searchBut').on('click', function () {
+                fpxeObj.loadPage();
+            });
+        });
+    });
+    function fplx_search() {
+        sgshObj.loadPage();
+    }
+    function fpxe_search() {
+        fpxeObj.loadPage();
+    }
+</script>
+</body>
+
+</html>

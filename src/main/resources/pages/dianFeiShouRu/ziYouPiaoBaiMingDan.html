@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+
+<body>
+<div class="layui-card">
+
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>购方名称:</label>
+                    <input type="text" id="gfmc" autocomplete="off" class="layui-input">
+                </li>
+                <li>
+                    <label>购方税号:</label>
+                    <input type="text" id="gfsh" autocomplete="off" class="layui-input">
+                </li>
+                <li>
+                    <label>购方地址电话:</label>
+                    <input type="text" id="dzdh" autocomplete="off" class="layui-input">
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <label>购方银行账号:</label>
+                    <input type="text" id="yhzh" autocomplete="off" class="layui-input">
+                </li>
+                <li>
+                    <label>是否在白名单:</label>
+                    <select id="zyp_white_list" name="zyp_white_list" lay-search>
+                        <option value="">全部</option>
+                        <option value="1">否</option>
+                        <option value="2">是</option>
+                    </select>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <button type="button" id="search" class="layui-btn layui-btn-normal layui-btn-sm">查询</button>
+                    <button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+                    <button type="button" id="add" class="layui-btn layui-btn-normal layui-btn-sm">新增购方信息</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+        <table id="tableName" lay-filter="test"></table>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script>
+    var table = null;
+    var layer = null;
+    var laydate = null;
+    var struct = null;
+    layui.use(['table', 'form', 'layer', 'laydate'], function () {
+        table = layui.table;
+        layer = layui.layer;
+        laydate = layui.laydate;
+        laydate.render({
+            elem: '#date',
+            trigger: 'click'
+        })
+        struct = [
+            [{
+                checkbox: true,
+            }, {
+                field: 'id',
+                title: 'ID'
+
+            }, {
+                field: 'gfmc',
+                title: '购方名称',
+                width: 200,
+            }, {
+                field: 'gfsh',
+                title: '购方税号',
+                width: 200,
+            }, {
+                field: 'dzdh',
+                title: '地址电话',
+                width: 170,
+            }, {
+                field: 'yhzh',
+                title: '银行账号',
+                width: 300,
+            }, {
+                field: 'create_time',
+                title: '创建时间',
+                width: 150,
+                templet: function (d) {
+                    return createTime(d.createTime);
+                }
+            }, {
+                field: 'zypWhiteList',
+                title: '是否在白名单',
+                width: 150,
+                templet: function (d) {
+                    if (1 == d.zypWhiteList) {
+                        return '<span class="layui-badge bg-light-red cursor-pointer">否</span>';
+                    } else if (2 == d.zypWhiteList) {
+                        return '<span class="layui-badge bg-light-blue cursor-pointer">是</span>';
+                    } else  {
+                        return '<span class="layui-badge bg-light-red cursor-pointer">未知</span>';
+                    }
+                }
+            }, {
+                field: '',
+                title: '操作',
+                toolbar: '#operation',
+                width: 170,
+                fixed:'right'
+            }]
+        ];
+        //监听事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'batchDelete':
+                    //批量删除
+                    var ids = active.getCheckData();
+                    console.log(ids);
+                    if(false != ids){
+                        layer.confirm('确认删除以下点选的购方信息?',{icon: 3, title:'温馨提示'}, function(index) {
+                            layer.close(index);
+                             active.ajaxPost('/noc/zypbmd/batchDelete?ids='+ids);
+                            layui.msg('批量打印');
+                        });
+                    }
+                    break;
+            };
+        });
+
+        table.on('tool(test)', function (obj) {
+            var tableEvent = obj.event;
+            console.log(tableEvent);
+            var data = obj.data;
+            console.log(data);
+            if (tableEvent === 'detail') {
+                layer.open({
+                    title: '购方信息详情',
+                    type: 2,
+                    content: '/noc/zypbmd/showCustomerInfo?id=' + data.id,
+                    area: ['50%', '80%'],//  宽    高
+                    shadeClose: true
+                });
+            }
+        });
+    });
+    var active = {
+
+        getCheckData: function () { //获取选中数据
+            var checkStatus = table.checkStatus('test-table')
+                , checkData = checkStatus.data;
+            var dataFormat = "";
+            //格式化获取数据,id,变成以逗号分隔的字符串
+            for (var i = 0; i < checkData.length; i++) {
+                if (i != checkData.length - 1) {
+                    dataFormat += checkData[i].id + ',';
+                } else {
+                    dataFormat += checkData[i].id;
+                }
+            }
+            if ('' == dataFormat) {
+                layer.alert("您未点选任何数据,不能进行该操作!", {icon: 2, title: '温馨提示'});
+                return false;
+            } else {
+                return dataFormat;
+            }
+        },
+        search: function (todo) {//查询按钮 + 刷新页面数据
+            //获取当前查询条件值
+            table.reload('test-table', {
+                page: {curr: 1},//从第 1 页 开始刷新
+                where: {
+                    'userName': $("#userName").val(), 'minMoneyIncludeTax': $("#minMoneyIncludeTax").val(),
+                    'maxMoneyIncludeTax': $("#maxMoneyIncludeTax").val(), 'taxNum': $("#taxNum").val(),
+                    'remark': $("#remark").val(), 'date': $("#date").val(), 'dateType': '1'
+                },
+                done: function (res, curr, count) {
+                    //如果是异步请求数据方式,res即为你接口返回的信息.
+                    //如果是直接赋值的方式,res即为:{data: [], count: 99} data为当前页数据,count为数据总长度
+                    if (todo) {
+                        if (count > 0) todo();
+                        else layer.alert("无相关查询条件的可操作数据!", {icon: 2, title: '温馨提示'});
+                    }
+                }
+            });
+        },
+        ajaxPost: function (url) {// ajax post 请求
+            var indexLoading;
+            $.ajax({
+                url: url,
+                type: 'post',
+                dataType: 'json',
+                async: false,//开启同步
+                beforeSend: function () {
+                    indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                },
+                success: function (rlt) {
+                    console.log(rlt);
+                    if (rlt.status == '200') {
+                        layer.close(indexLoading);
+                        layer.alert(rlt.msg, {icon: 1, title: '温馨提示'});
+                        layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'});
+                        active.search();
+                    } else {
+                        layer.close(indexLoading);
+                        layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                    }
+                },
+                error: function (rlt) {
+                    layer.close(indexLoading);
+                    layer.alert('前后台数据交互异常', {icon: 2, title: '温馨提示'});
+                }
+            })
+        }
+    }
+
+    $('#add').on('click', function () {
+        layer.open({
+            title: '购方信息详情',
+            type: 2,
+            content: '/noc/zypbmd/showCustomerInfo?id=' + '0',
+            area: ['50%', '80%'],//  宽    高
+            shadeClose: true
+        });
+    });
+    $('#export').on('click', function () {
+        layer.confirm('确认导出以下数据至Excel?', {icon: 3, title: '温馨提示'}, function (index) {
+            var url = '/wtdj/export?userName=' + $("#userName").val() +
+                '&minMoneyIncludeTax=' + $("#minMoneyIncludeTax").val() +
+                '&maxMoneyIncludeTax=' + $("#maxMoneyIncludeTax").val() +
+                '&taxNum=' + $("#taxNum").val() +
+                '&remark=' + $("#remark").val() + '&date=' + $("#date").val() + '&dateType=' + '1';
+            window.location.href = url;
+            layer.close(index);
+        });
+    });
+    $('#search').on('click', function () {
+        initTable();
+    });
+
+    //具体参数配置可见 https://www.layui.com/doc/modules/table.html#async
+    function initTable() {
+        var data = {};
+        data.gfmc = $('#gfmc').val();
+        data.gfsh = $('#gfsh').val();
+        data.dzdh = $('#dzdh').val();
+        data.yhzh = $('#yhzh').val();
+        data.zyp_white_list = $('#zyp_white_list').val();
+        console.log(data);
+        var ins1 = table.render({
+            elem: '#tableName', //指定原始表格元素选择器（推荐id选择器）
+            url: '/noc/zypbmd/listAllOrder',
+            method: 'POST',
+            width:'1095',
+            where: data,
+            id: 'test-table',
+            size: 'sm',
+            // data: tableData,
+            page: true,
+            toolbar: '#toolbarDemo',
+            cols: struct
+            ,
+            done: function () {
+                $("[data-field='id']").css('display', 'none');
+            }
+        });
+    }
+    function createTime(v){
+        var date = new Date(v);
+        var y = date.getFullYear();
+        var m = date.getMonth()+1;
+        m = m<10?'0'+m:m;
+        var d = date.getDate();
+        d = d<10?("0"+d):d;
+        var h = date.getHours();
+        h = h<10?("0"+h):h;
+        var M = date.getMinutes();
+        M = M<10?("0"+M):M;
+        var str = y+"-"+m+"-"+d+" "+h+":"+M;
+        return str;
+    }
+</script>
+<script type="text/html" id="operation">
+    <span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">修改/查看详情</span>
+</script>
+<script type="text/html" id="toolbarDemo">
+    <button class="mock-icon-btn" lay-event="batchDelete" title="批量导出Excel">
+        <i class="fa fa-share-square-o"></i><span>批量删除</span>
+    </button>
+</script>
+</body>
+
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+	</head>
+
+	<body>
+
+
+		<div class="layui-card">
+			<!--<div class="layui-card-header">-->
+				<!--单据导入-->
+			<!--</div>-->
+			<div class="layui-card-body">
+
+
+				<form class="layui-form search-form">
+					<ul>
+						<li>
+							<!--<button type="reset" class="layui-btn layui-btn-normal layui-btn-sm">重置</button>-->
+							<button type="button" class="layui-btn layui-btn-normal layui-btn-sm" id="test8">选择要导入的文件</button>
+							<button type="button" class="layui-btn layui-btn-primary layui-btn-sm" id="test9">确认导入文件</button>
+
+						</li>
+						<div class="clear-fixed"></div>
+					</ul>
+					<!--<ul>-->
+						<!--<li>-->
+							<!--<label>按评分查询</label>-->
+							<!--<ul class="search-condition-box">-->
+								<!--<li>80分以上</li>-->
+								<!--<li>60至80</li>-->
+								<!--<li>60分以下</li>-->
+							<!--</ul>-->
+						<!--</li>-->
+						<!--<div class="clear-fixed"></div>-->
+					<!--</ul>-->
+				</form>
+				<table id="tableName" lay-filter="test"></table>
+			</div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/common.js"></script>
+		<script>
+            var table = null;
+            var layer = null;
+            var laydate = null;
+            var upload = null;
+            var struct =null;
+
+			layui.use(['table', 'form', 'layer','laydate','upload'], function() {
+				table = layui.table;
+				layer = layui.layer;
+                laydate = layui.laydate;
+                upload = layui.upload;
+                laydate.render({
+                    elem: '#searchDate',
+                    trigger: 'click'
+                })
+                //选完文件后不自动上传
+                upload.render({
+                    elem: '#test8'
+                    ,url: '/noc/djdr/uploadFile'
+                    ,auto: false
+					,accept:'file'
+                    //,multiple: true
+                    ,bindAction: '#test9'
+					,before: function(){
+						console.log('接口地址：'+ this.url, this.item, {tips: 1});
+					}
+                    ,done: function(res){
+                        console.log(res);
+                        initTable(res.data);
+//                        layer.open({
+//                            title: '消息'
+//                            ,content: res.msg
+//                        });
+                    }
+                    ,error: function (r) {
+                        console.log(r);
+                        layer.open({
+                            title: '消息'
+                            ,content: r+'异常，请联系管理员！'
+                        });
+                    }
+                });
+				struct = [
+					[
+//					    {
+//						checkbox: true,
+//					},
+					{
+						field: 'yearMonth',
+						title: '年月',
+						//sort: true,
+					}, {
+						field: 'totalNum',
+						title: '导入数量',
+					}, {
+						field: 'normalNum',
+						title: '正常数量',
+						//sort: true
+					}, {
+						field: 'errorNum',
+						title: '问题票数量',
+
+					}, {
+						field: 'importDate',
+						title: '导入时间',
+					}, {
+						field: 'operator',
+						title: '操作人',
+					}
+//					, {
+//						field: 'state',
+//						title: '状态',
+//						width: 80,
+//						sort: true,
+//						templet:function(d){
+//						    console.log(d);
+//                            return  d.state == '确认0' ? "<font color=\"#660000\">"+d.state+"</font> ":"<font color=\"#339900\">"+d.state+"</font> ";
+//                        }
+//					}
+//					, {
+//						field: 'classify',
+//						title: '职业',
+//						width: 80
+//					}, {
+//						field: 'wealth',
+//						title: '财富',
+//						sort: true
+//					}
+//					, {
+//						field: '',
+//						title: '操作',
+//						toolbar: '#operation',
+//						width: 120
+//					}
+					]
+				];
+
+				//				$('.export-table-data').on('click', function() {
+				//					table.exportFile(ins1.config.id);
+				//				});
+
+				table.on('tool(test)', function(obj) {
+					var tableEvent = obj.event;
+					var data = obj.data;
+					if(tableEvent === 'detail') {
+						console.info(data);
+						nemo.showDetail();
+					} else if(tableEvent === 'delete') {
+						layer.confirm('确认删除该数据？', function(index) {
+							obj.del();
+							layer.close(index);
+						});
+					} else if(tableEvent === 'edit') {
+						layer.open({
+							title: '编辑用户信息',
+							type: 2,
+							content: './popup-form.html?data=' + data,
+							area: ['100%', '100%'],
+							shadeClose: true,
+
+						});
+					}else if(tableEvent === 'confirm') {
+                        layer.open({
+                            title: '编辑用户信息',
+                            type: 2,
+                            content: './popup-form.html?data=' + data,
+                            area: ['100%', '100%'],
+                            shadeClose: true,
+
+                        });
+                    }
+
+				});
+
+			});
+            //点击问题单据数量跳出问题单据详情页
+//			function listAllTroubleOrder(id){
+//			    console.log(id);
+//                layer.open({
+//                    title: '问题票列表',
+//                    type: 2,
+//                    content: 'fotoWenTiDjDetail/id/'+id,
+//                    area: ['100%', '100%'],
+//                    shadeClose: true,
+//
+//                });
+//			}
+            $('#search').on('click', function(){
+                initTable();
+            })
+			//具体参数配置可见 https://www.layui.com/doc/modules/table.html#async
+			function initTable(tableData){
+                var ins1 = table.render({
+                    elem: '#tableName', //指定原始表格元素选择器（推荐id选择器）
+                    id: 'test-table',
+                    size: 'sm',
+                    data: tableData,
+                    //page: true,
+                    cols: struct
+                });
+			}
+            //点击导入按钮，弹出对话框
+            $('#importExcel').on('click', function() {
+                layer.open({
+                    title: '请选择需要导入的文件',
+                    type: 2,
+                    content: 'hahahah',
+                    area: ['100%', '100%'],
+                    shadeClose: true,
+
+                });
+            });
+		</script>
+		<script type="text/html" id="operation">
+			<!--<span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">查看详情</span>-->
+			<span class="layui-badge bg-light-red cursor-pointer" lay-event="confirm">确认</span>
+			<span class="layui-badge bg-light-green cursor-pointer" lay-event="delete">删除</span>
+		</script>
+	</body>
+
+</html>

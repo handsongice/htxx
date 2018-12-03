@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>审核进度</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+
+        .itemField {
+            border-bottom: 1px dashed #e7eaec;
+            min-height: 35px;
+            line-height: 35px;
+            padding: 15px 0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .tableFiled {
+            padding-right: 15px;
+        }
+
+        .tableFiled .redStar {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div style="padding:40px 40px 40px 100px; background: #ffffff;">
+    <ul class="layui-timeline" th:if="${not #lists.isEmpty(logEntityList)}">
+        <li class="layui-timeline-item" th:each="logItem:${logEntityList}">
+            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+            <div class="layui-timeline-content layui-text">
+                <h3 class="layui-timeline-title">
+                    <span th:text="${logItem.deptName}"></span>
+                    -
+                    <span th:text="${logItem.roleName}"></span>
+                    -
+                    <span th:text="${logItem.employeeName}"></span>
+                    <span th:if="${logItem.status eq 1}" class="layui-badge layui-bg-green" style="margin-left:10px;">审核通过</span>
+                    <span th:if="${logItem.status eq 0}" class="layui-badge" style="margin-left:10px;">审核拒绝</span>
+                </h3>
+                <br>
+                <p>
+                    <span th:text="${logItem.content}"></span>
+                    <br><br>
+                    <span th:text="${#dates.format(logItem.createTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                </p>
+                <br>
+            </div>
+        </li>
+    </ul>
+
+    <div th:if="${#lists.isEmpty(logEntityList)}" style="text-align:center;color:#1E9FFF;">
+        <h2>暂无审核记录</h2>
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['laydate', 'form', 'layer'], function () {
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+
+        $('#submitPopBut').on('click', function () {
+            popSgtzObj.submitBut();
+        });
+        $('#closePopBut').on('click', function () {
+            popSgtzObj.closeBut();
+        });
+    });
+</script>
+</body>
+
+</html>

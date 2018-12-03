@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+
+<body>
+<div class="layui-card">
+
+    <div class="layui-card-body">
+        <form class="layui-form " >
+            <div class="layui-form-item " hidden="hidden">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="id" name="id" th:value=${dlGfxx.id} autocomplete="off"
+                               class="layui-input" readonly="readonly" >
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="gfmc" name="gfmc" th:value=${dlGfxx.gfmc} autocomplete="off"
+                               class="layui-input" style="width: 380px">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方税号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="gfsh" name="gfsh" th:value=${dlGfxx.gfsh} required lay-verify="required"
+                               autocomplete="off" style="width: 380px" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方地址电话</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="dzdh" name="dzdh" th:value=${dlGfxx.dzdh} autocomplete="off"
+                               class="layui-input" style="width: 380px">
+                    </div>
+                </div>
+
+            </div>
+            <div class="layui-form-item">
+
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方银行账号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="yhzh" name="yhzh" th:value=${dlGfxx.yhzh} autocomplete="off"
+                               class="layui-input" style="width: 380px">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item"  style="width: 380px">
+
+                <label class="layui-form-label">是否在白名单</label>
+                <div class="layui-input-block" th:if=" ${dlGfxx.zypWhiteList} eq '1'">
+                    <select id="zyp_white_list" name="zyp_white_list" lay-search>
+                        <option value="1" selected="selected">否</option>
+                        <option value="2">是</option>
+                    </select>
+                </div>
+                <div class="layui-input-block"  th:if=" ${dlGfxx.zypWhiteList} eq '2'">
+                    <select id="zyp_white_list" name="zyp_white_list" lay-search>
+                        <option value="1">否</option>
+                        <option value="2" selected="selected">是</option>
+                    </select>
+                </div>
+                <div class="layui-input-block"  th:if=" ${dlGfxx.zypWhiteList} eq null">
+                    <select id="zyp_white_list" name="zyp_white_list" lay-search>
+                        <option value="1">否</option>
+                        <option value="2" selected="selected">是</option>
+                    </select>
+                </div>
+            </div>
+
+
+        </form>
+        <!--<button type="button" id="chongHongOrZuoFei" class="layui-btn layui-btn-danger layui-btn-sm">修改后提交</button>-->
+        <button type="button" class="layui-btn layui-btn-danger" lay-submit lay-filter="addOrEdit">修改后提交</button>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script th:inline="javascript">
+    var form = null;
+    var layer = null;
+    var table = null; //表格
+    layui.use(['form', 'layer', 'table', 'element'], function () {
+        form = layui.form;
+        layer = layui.layer;
+        table = layui.table; //表格
+        var active = {
+            submit: function () {
+                var id = $('#id').val();
+                var gfmc = $('#gfmc').val();
+                var gfsh = $('#gfsh').val();
+                var dzdh = $('#dzdh').val();
+                var yhzh = $('#yhzh').val();
+                var zyp_white_list = $('#zyp_white_list').val();
+                var url = '/noc/zypbmd/saveOrEditGfInfo?id=' +
+                    id + '&gfmc=' + gfmc + '&gfsh=' + gfsh +
+                    '&dzdh=' + dzdh + '&yhzh=' + yhzh + '&zyp_white_list=' + zyp_white_list;
+                active.ajaxPost(url);
+            },
+            ajaxPost: function (url) {// ajax post 请求
+                var indexLoading;
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function () {
+                        indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                    },
+                    success: function (rlt) {
+                        console.log(rlt);
+                        if (rlt.status == '200') {
+                            layer.close(indexLoading);
+                            layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'}, function () {
+                                //此方法一般用于在iframe页关闭自身时用到
+                                var indexFrame = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(indexFrame); //再执行关闭
+                            });
+                        } else {
+                            layer.close(indexLoading);
+                            layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                        }
+                    },
+                    error: function () {
+                        layer.close(indexLoading);
+                        layer.alert('前后台数据交互异常', {icon: 2, title: '温馨提示'});
+                    }
+                })
+            }
+        }
+        //表单提交验证
+        form.on('submit(addOrEdit)', function (data) {
+            active.submit();
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+    });
+
+</script>
+
+</body>
+
+</html>

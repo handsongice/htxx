@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlYkfpMainMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlYkfpMain" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="djh" property="djh" jdbcType="VARCHAR" />
+    <result column="fjh" property="fjh" jdbcType="TINYINT" />
+    <result column="kpzdh" property="kpzdh" jdbcType="VARCHAR" />
+    <result column="fpzl" property="fpzl" jdbcType="TINYINT" />
+    <result column="kplx" property="kplx" jdbcType="TINYINT" />
+    <result column="xfsh" property="xfsh" jdbcType="VARCHAR" />
+    <result column="xfmc" property="xfmc" jdbcType="VARCHAR" />
+    <result column="xfdzdh" property="xfdzdh" jdbcType="VARCHAR" />
+    <result column="xfyhzh" property="xfyhzh" jdbcType="VARCHAR" />
+    <result column="gfsh" property="gfsh" jdbcType="VARCHAR" />
+    <result column="gfmc" property="gfmc" jdbcType="VARCHAR" />
+    <result column="gfdzdh" property="gfdzdh" jdbcType="VARCHAR" />
+    <result column="gfyhzh" property="gfyhzh" jdbcType="VARCHAR" />
+    <result column="kpr" property="kpr" jdbcType="VARCHAR" />
+    <result column="skr" property="skr" jdbcType="VARCHAR" />
+    <result column="fhr" property="fhr" jdbcType="VARCHAR" />
+    <result column="yfpdm" property="yfpdm" jdbcType="VARCHAR" />
+    <result column="yfphm" property="yfphm" jdbcType="VARCHAR" />
+    <result column="qdbz" property="qdbz" jdbcType="TINYINT" />
+    <result column="jshj" property="jshj" jdbcType="DECIMAL" />
+    <result column="hjje" property="hjje" jdbcType="DECIMAL" />
+    <result column="hjse" property="hjse" jdbcType="DECIMAL" />
+    <result column="bmbbh" property="bmbbh" jdbcType="VARCHAR" />
+    <result column="bz" property="bz" jdbcType="VARCHAR" />
+    <result column="sj" property="sj" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="kpsj" property="kpsj" jdbcType="TIMESTAMP" />
+    <result column="fpdm" property="fpdm" jdbcType="VARCHAR" />
+    <result column="fphm" property="fphm" jdbcType="VARCHAR" />
+    <result column="chbz" property="chbz" jdbcType="TINYINT" />
+    <result column="zfbz" property="zfbz" jdbcType="TINYINT" />
+    <result column="ywlx" property="ywlx" jdbcType="TINYINT" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, djh, fjh, kpzdh, fpzl, kplx, xfsh, xfmc, xfdzdh, xfyhzh, gfsh, gfmc, gfdzdh, 
+    gfyhzh, kpr, skr, fhr, yfpdm, yfphm, qdbz, jshj, hjje, hjse, bmbbh, bz, sj, email, 
+    kpsj, fpdm, fphm, chbz, zfbz, ywlx, enterprise_id, employee_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlYkfpMainExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_ykfp_main
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_ykfp_main
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_ykfp_main
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlYkfpMainExample" >
+    delete from dl_ykfp_main
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlYkfpMain" >
+    insert into dl_ykfp_main (id, djh, fjh, 
+      kpzdh, fpzl, kplx, 
+      xfsh, xfmc, xfdzdh, 
+      xfyhzh, gfsh, gfmc, 
+      gfdzdh, gfyhzh, kpr, 
+      skr, fhr, yfpdm, yfphm, 
+      qdbz, jshj, hjje, hjse, 
+      bmbbh, bz, sj, email, 
+      kpsj, fpdm, fphm, 
+      chbz, zfbz, ywlx, enterprise_id, 
+      employee_id)
+    values (#{id,jdbcType=BIGINT}, #{djh,jdbcType=VARCHAR}, #{fjh,jdbcType=TINYINT}, 
+      #{kpzdh,jdbcType=VARCHAR}, #{fpzl,jdbcType=TINYINT}, #{kplx,jdbcType=TINYINT}, 
+      #{xfsh,jdbcType=VARCHAR}, #{xfmc,jdbcType=VARCHAR}, #{xfdzdh,jdbcType=VARCHAR}, 
+      #{xfyhzh,jdbcType=VARCHAR}, #{gfsh,jdbcType=VARCHAR}, #{gfmc,jdbcType=VARCHAR}, 
+      #{gfdzdh,jdbcType=VARCHAR}, #{gfyhzh,jdbcType=VARCHAR}, #{kpr,jdbcType=VARCHAR}, 
+      #{skr,jdbcType=VARCHAR}, #{fhr,jdbcType=VARCHAR}, #{yfpdm,jdbcType=VARCHAR}, #{yfphm,jdbcType=VARCHAR}, 
+      #{qdbz,jdbcType=TINYINT}, #{jshj,jdbcType=DECIMAL}, #{hjje,jdbcType=DECIMAL}, #{hjse,jdbcType=DECIMAL}, 
+      #{bmbbh,jdbcType=VARCHAR}, #{bz,jdbcType=VARCHAR}, #{sj,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{kpsj,jdbcType=TIMESTAMP}, #{fpdm,jdbcType=VARCHAR}, #{fphm,jdbcType=VARCHAR}, 
+      #{chbz,jdbcType=TINYINT}, #{zfbz,jdbcType=TINYINT}, #{ywlx,jdbcType=TINYINT}, #{enterpriseId,jdbcType=BIGINT}, 
+      #{employeeId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlYkfpMain" >
+    insert into dl_ykfp_main
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="djh != null" >
+        djh,
+      </if>
+      <if test="fjh != null" >
+        fjh,
+      </if>
+      <if test="kpzdh != null" >
+        kpzdh,
+      </if>
+      <if test="fpzl != null" >
+        fpzl,
+      </if>
+      <if test="kplx != null" >
+        kplx,
+      </if>
+      <if test="xfsh != null" >
+        xfsh,
+      </if>
+      <if test="xfmc != null" >
+        xfmc,
+      </if>
+      <if test="xfdzdh != null" >
+        xfdzdh,
+      </if>
+      <if test="xfyhzh != null" >
+        xfyhzh,
+      </if>
+      <if test="gfsh != null" >
+        gfsh,
+      </if>
+      <if test="gfmc != null" >
+        gfmc,
+      </if>
+      <if test="gfdzdh != null" >
+        gfdzdh,
+      </if>
+      <if test="gfyhzh != null" >
+        gfyhzh,
+      </if>
+      <if test="kpr != null" >
+        kpr,
+      </if>
+      <if test="skr != null" >
+        skr,
+      </if>
+      <if test="fhr != null" >
+        fhr,
+      </if>
+      <if test="yfpdm != null" >
+        yfpdm,
+      </if>
+      <if test="yfphm != null" >
+        yfphm,
+      </if>
+      <if test="qdbz != null" >
+        qdbz,
+      </if>
+      <if test="jshj != null" >
+        jshj,
+      </if>
+      <if test="hjje != null" >
+        hjje,
+      </if>
+      <if test="hjse != null" >
+        hjse,
+      </if>
+      <if test="bmbbh != null" >
+        bmbbh,
+      </if>
+      <if test="bz != null" >
+        bz,
+      </if>
+      <if test="sj != null" >
+        sj,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="kpsj != null" >
+        kpsj,
+      </if>
+      <if test="fpdm != null" >
+        fpdm,
+      </if>
+      <if test="fphm != null" >
+        fphm,
+      </if>
+      <if test="chbz != null" >
+        chbz,
+      </if>
+      <if test="zfbz != null" >
+        zfbz,
+      </if>
+      <if test="ywlx != null" >
+        ywlx,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="djh != null" >
+        #{djh,jdbcType=VARCHAR},
+      </if>
+      <if test="fjh != null" >
+        #{fjh,jdbcType=TINYINT},
+      </if>
+      <if test="kpzdh != null" >
+        #{kpzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="fpzl != null" >
+        #{fpzl,jdbcType=TINYINT},
+      </if>
+      <if test="kplx != null" >
+        #{kplx,jdbcType=TINYINT},
+      </if>
+      <if test="xfsh != null" >
+        #{xfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="xfmc != null" >
+        #{xfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="xfdzdh != null" >
+        #{xfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="xfyhzh != null" >
+        #{xfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfsh != null" >
+        #{gfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfmc != null" >
+        #{gfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="gfdzdh != null" >
+        #{gfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfyhzh != null" >
+        #{gfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="kpr != null" >
+        #{kpr,jdbcType=VARCHAR},
+      </if>
+      <if test="skr != null" >
+        #{skr,jdbcType=VARCHAR},
+      </if>
+      <if test="fhr != null" >
+        #{fhr,jdbcType=VARCHAR},
+      </if>
+      <if test="yfpdm != null" >
+        #{yfpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="yfphm != null" >
+        #{yfphm,jdbcType=VARCHAR},
+      </if>
+      <if test="qdbz != null" >
+        #{qdbz,jdbcType=TINYINT},
+      </if>
+      <if test="jshj != null" >
+        #{jshj,jdbcType=DECIMAL},
+      </if>
+      <if test="hjje != null" >
+        #{hjje,jdbcType=DECIMAL},
+      </if>
+      <if test="hjse != null" >
+        #{hjse,jdbcType=DECIMAL},
+      </if>
+      <if test="bmbbh != null" >
+        #{bmbbh,jdbcType=VARCHAR},
+      </if>
+      <if test="bz != null" >
+        #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="sj != null" >
+        #{sj,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="kpsj != null" >
+        #{kpsj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fpdm != null" >
+        #{fpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="fphm != null" >
+        #{fphm,jdbcType=VARCHAR},
+      </if>
+      <if test="chbz != null" >
+        #{chbz,jdbcType=TINYINT},
+      </if>
+      <if test="zfbz != null" >
+        #{zfbz,jdbcType=TINYINT},
+      </if>
+      <if test="ywlx != null" >
+        #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlYkfpMainExample" resultType="java.lang.Integer" >
+    select count(*) from dl_ykfp_main
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_ykfp_main
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.djh != null" >
+        djh = #{record.djh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fjh != null" >
+        fjh = #{record.fjh,jdbcType=TINYINT},
+      </if>
+      <if test="record.kpzdh != null" >
+        kpzdh = #{record.kpzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fpzl != null" >
+        fpzl = #{record.fpzl,jdbcType=TINYINT},
+      </if>
+      <if test="record.kplx != null" >
+        kplx = #{record.kplx,jdbcType=TINYINT},
+      </if>
+      <if test="record.xfsh != null" >
+        xfsh = #{record.xfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xfmc != null" >
+        xfmc = #{record.xfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xfdzdh != null" >
+        xfdzdh = #{record.xfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xfyhzh != null" >
+        xfyhzh = #{record.xfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gfsh != null" >
+        gfsh = #{record.gfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gfmc != null" >
+        gfmc = #{record.gfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gfdzdh != null" >
+        gfdzdh = #{record.gfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.gfyhzh != null" >
+        gfyhzh = #{record.gfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kpr != null" >
+        kpr = #{record.kpr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.skr != null" >
+        skr = #{record.skr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fhr != null" >
+        fhr = #{record.fhr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.yfpdm != null" >
+        yfpdm = #{record.yfpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.yfphm != null" >
+        yfphm = #{record.yfphm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qdbz != null" >
+        qdbz = #{record.qdbz,jdbcType=TINYINT},
+      </if>
+      <if test="record.jshj != null" >
+        jshj = #{record.jshj,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hjje != null" >
+        hjje = #{record.hjje,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hjse != null" >
+        hjse = #{record.hjse,jdbcType=DECIMAL},
+      </if>
+      <if test="record.bmbbh != null" >
+        bmbbh = #{record.bmbbh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bz != null" >
+        bz = #{record.bz,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sj != null" >
+        sj = #{record.sj,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kpsj != null" >
+        kpsj = #{record.kpsj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.fpdm != null" >
+        fpdm = #{record.fpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fphm != null" >
+        fphm = #{record.fphm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.chbz != null" >
+        chbz = #{record.chbz,jdbcType=TINYINT},
+      </if>
+      <if test="record.zfbz != null" >
+        zfbz = #{record.zfbz,jdbcType=TINYINT},
+      </if>
+      <if test="record.ywlx != null" >
+        ywlx = #{record.ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="record.enterpriseId != null" >
+        enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="record.employeeId != null" >
+        employee_id = #{record.employeeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_ykfp_main
+    set id = #{record.id,jdbcType=BIGINT},
+      djh = #{record.djh,jdbcType=VARCHAR},
+      fjh = #{record.fjh,jdbcType=TINYINT},
+      kpzdh = #{record.kpzdh,jdbcType=VARCHAR},
+      fpzl = #{record.fpzl,jdbcType=TINYINT},
+      kplx = #{record.kplx,jdbcType=TINYINT},
+      xfsh = #{record.xfsh,jdbcType=VARCHAR},
+      xfmc = #{record.xfmc,jdbcType=VARCHAR},
+      xfdzdh = #{record.xfdzdh,jdbcType=VARCHAR},
+      xfyhzh = #{record.xfyhzh,jdbcType=VARCHAR},
+      gfsh = #{record.gfsh,jdbcType=VARCHAR},
+      gfmc = #{record.gfmc,jdbcType=VARCHAR},
+      gfdzdh = #{record.gfdzdh,jdbcType=VARCHAR},
+      gfyhzh = #{record.gfyhzh,jdbcType=VARCHAR},
+      kpr = #{record.kpr,jdbcType=VARCHAR},
+      skr = #{record.skr,jdbcType=VARCHAR},
+      fhr = #{record.fhr,jdbcType=VARCHAR},
+      yfpdm = #{record.yfpdm,jdbcType=VARCHAR},
+      yfphm = #{record.yfphm,jdbcType=VARCHAR},
+      qdbz = #{record.qdbz,jdbcType=TINYINT},
+      jshj = #{record.jshj,jdbcType=DECIMAL},
+      hjje = #{record.hjje,jdbcType=DECIMAL},
+      hjse = #{record.hjse,jdbcType=DECIMAL},
+      bmbbh = #{record.bmbbh,jdbcType=VARCHAR},
+      bz = #{record.bz,jdbcType=VARCHAR},
+      sj = #{record.sj,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      kpsj = #{record.kpsj,jdbcType=TIMESTAMP},
+      fpdm = #{record.fpdm,jdbcType=VARCHAR},
+      fphm = #{record.fphm,jdbcType=VARCHAR},
+      chbz = #{record.chbz,jdbcType=TINYINT},
+      zfbz = #{record.zfbz,jdbcType=TINYINT},
+      ywlx = #{record.ywlx,jdbcType=TINYINT},
+      enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      employee_id = #{record.employeeId,jdbcType=BIGINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlYkfpMain" >
+    update dl_ykfp_main
+    <set >
+      <if test="djh != null" >
+        djh = #{djh,jdbcType=VARCHAR},
+      </if>
+      <if test="fjh != null" >
+        fjh = #{fjh,jdbcType=TINYINT},
+      </if>
+      <if test="kpzdh != null" >
+        kpzdh = #{kpzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="fpzl != null" >
+        fpzl = #{fpzl,jdbcType=TINYINT},
+      </if>
+      <if test="kplx != null" >
+        kplx = #{kplx,jdbcType=TINYINT},
+      </if>
+      <if test="xfsh != null" >
+        xfsh = #{xfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="xfmc != null" >
+        xfmc = #{xfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="xfdzdh != null" >
+        xfdzdh = #{xfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="xfyhzh != null" >
+        xfyhzh = #{xfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfsh != null" >
+        gfsh = #{gfsh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfmc != null" >
+        gfmc = #{gfmc,jdbcType=VARCHAR},
+      </if>
+      <if test="gfdzdh != null" >
+        gfdzdh = #{gfdzdh,jdbcType=VARCHAR},
+      </if>
+      <if test="gfyhzh != null" >
+        gfyhzh = #{gfyhzh,jdbcType=VARCHAR},
+      </if>
+      <if test="kpr != null" >
+        kpr = #{kpr,jdbcType=VARCHAR},
+      </if>
+      <if test="skr != null" >
+        skr = #{skr,jdbcType=VARCHAR},
+      </if>
+      <if test="fhr != null" >
+        fhr = #{fhr,jdbcType=VARCHAR},
+      </if>
+      <if test="yfpdm != null" >
+        yfpdm = #{yfpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="yfphm != null" >
+        yfphm = #{yfphm,jdbcType=VARCHAR},
+      </if>
+      <if test="qdbz != null" >
+        qdbz = #{qdbz,jdbcType=TINYINT},
+      </if>
+      <if test="jshj != null" >
+        jshj = #{jshj,jdbcType=DECIMAL},
+      </if>
+      <if test="hjje != null" >
+        hjje = #{hjje,jdbcType=DECIMAL},
+      </if>
+      <if test="hjse != null" >
+        hjse = #{hjse,jdbcType=DECIMAL},
+      </if>
+      <if test="bmbbh != null" >
+        bmbbh = #{bmbbh,jdbcType=VARCHAR},
+      </if>
+      <if test="bz != null" >
+        bz = #{bz,jdbcType=VARCHAR},
+      </if>
+      <if test="sj != null" >
+        sj = #{sj,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="kpsj != null" >
+        kpsj = #{kpsj,jdbcType=TIMESTAMP},
+      </if>
+      <if test="fpdm != null" >
+        fpdm = #{fpdm,jdbcType=VARCHAR},
+      </if>
+      <if test="fphm != null" >
+        fphm = #{fphm,jdbcType=VARCHAR},
+      </if>
+      <if test="chbz != null" >
+        chbz = #{chbz,jdbcType=TINYINT},
+      </if>
+      <if test="zfbz != null" >
+        zfbz = #{zfbz,jdbcType=TINYINT},
+      </if>
+      <if test="ywlx != null" >
+        ywlx = #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlYkfpMain" >
+    update dl_ykfp_main
+    set djh = #{djh,jdbcType=VARCHAR},
+      fjh = #{fjh,jdbcType=TINYINT},
+      kpzdh = #{kpzdh,jdbcType=VARCHAR},
+      fpzl = #{fpzl,jdbcType=TINYINT},
+      kplx = #{kplx,jdbcType=TINYINT},
+      xfsh = #{xfsh,jdbcType=VARCHAR},
+      xfmc = #{xfmc,jdbcType=VARCHAR},
+      xfdzdh = #{xfdzdh,jdbcType=VARCHAR},
+      xfyhzh = #{xfyhzh,jdbcType=VARCHAR},
+      gfsh = #{gfsh,jdbcType=VARCHAR},
+      gfmc = #{gfmc,jdbcType=VARCHAR},
+      gfdzdh = #{gfdzdh,jdbcType=VARCHAR},
+      gfyhzh = #{gfyhzh,jdbcType=VARCHAR},
+      kpr = #{kpr,jdbcType=VARCHAR},
+      skr = #{skr,jdbcType=VARCHAR},
+      fhr = #{fhr,jdbcType=VARCHAR},
+      yfpdm = #{yfpdm,jdbcType=VARCHAR},
+      yfphm = #{yfphm,jdbcType=VARCHAR},
+      qdbz = #{qdbz,jdbcType=TINYINT},
+      jshj = #{jshj,jdbcType=DECIMAL},
+      hjje = #{hjje,jdbcType=DECIMAL},
+      hjse = #{hjse,jdbcType=DECIMAL},
+      bmbbh = #{bmbbh,jdbcType=VARCHAR},
+      bz = #{bz,jdbcType=VARCHAR},
+      sj = #{sj,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      kpsj = #{kpsj,jdbcType=TIMESTAMP},
+      fpdm = #{fpdm,jdbcType=VARCHAR},
+      fphm = #{fphm,jdbcType=VARCHAR},
+      chbz = #{chbz,jdbcType=TINYINT},
+      zfbz = #{zfbz,jdbcType=TINYINT},
+      ywlx = #{ywlx,jdbcType=TINYINT},
+      enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      employee_id = #{employeeId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getDlYkfpMainPage" resultType="com.htxx.entity.DlYkfpMainPage" parameterType="string" >
+    select
+    id, djh, fjh, kpzdh,
+    CASE WHEN fpzl='0' THEN  '专票'
+    WHEN fpzl='2' THEN '普票'
+    WHEN fpzl='41' THEN '卷票'
+    WHEN fpzl='51' THEN '电子票'ELSE '未知发票类型' END AS fpzl,
+    CASE WHEN kplx='1' THEN  '蓝字发票'
+    WHEN kplx='2' THEN '红字发票'
+    WHEN kplx='3' THEN '废票'
+    ELSE '未知发票类型' END AS kplx,
+      xfsh, xfmc, xfdzdh, xfyhzh, gfsh, gfmc, gfdzdh,
+    gfyhzh, kpr, skr, fhr, yfpdm, yfphm, qdbz, jshj, hjje, hjse, bmbbh, bz, sj, email,
+    kpsj, fpdm, fphm, chbz, zfbz,
+    CASE WHEN ywlx='1' THEN  '普通电费'
+    WHEN ywlx='2' THEN '高可靠电费'
+    WHEN ywlx='3' THEN '自由票'
+    ELSE '未知电费类型' END AS ywlx,
+     enterprise_id, employee_id
+    from dl_ykfp_main  where 1=1
+    <if test="djh != null  and djh !=''" >
+      and djh=#{djh}
+    </if>
+  </select>
+</mapper>

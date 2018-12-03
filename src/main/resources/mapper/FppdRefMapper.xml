@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.FppdRefMapper">
+    <resultMap id="BaseResultMap" type="com.htxx.entity.FppdRef">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+        <result column="fplx" property="fplx" jdbcType="VARCHAR"/>
+        <result column="kpj_code" property="kpjCode" jdbcType="VARCHAR"/>
+        <result column="pd_month" property="pdMonth" jdbcType="VARCHAR"/>
+        <result column="create_id" property="createId" jdbcType="BIGINT"/>
+        <result column="create_name" property="createName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+      id, enterprise_id, fplx, kpj_code, pd_month, create_id, create_name, create_time
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fppd_ref
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectCountByParams" resultType="int" parameterType="map">
+        select count(1)
+        from dl_fppd_ref
+        where enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+        and fplx = #{fplx}
+        and kpj_code = #{kpjCode}
+        and pd_month = #{pdMonth}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from dl_fppd_ref
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.FppdRef">
+        insert into dl_fppd_ref (id, enterprise_id, fplx,
+          kpj_code, pd_month, create_id,
+          create_name, create_time)
+        values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{fplx,jdbcType=VARCHAR},
+          #{kpjCode,jdbcType=VARCHAR}, #{pdMonth,jdbcType=VARCHAR}, #{createId,jdbcType=BIGINT},
+          #{createName,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.FppdRef">
+        insert into dl_fppd_ref
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id,
+            </if>
+            <if test="fplx != null">
+                fplx,
+            </if>
+            <if test="kpjCode != null">
+                kpj_code,
+            </if>
+            <if test="pdMonth != null">
+                pd_month,
+            </if>
+            <if test="createId != null">
+                create_id,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="enterpriseId != null">
+                #{enterpriseId,jdbcType=BIGINT},
+            </if>
+            <if test="fplx != null">
+                #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="kpjCode != null">
+                #{kpjCode,jdbcType=VARCHAR},
+            </if>
+            <if test="pdMonth != null">
+                #{pdMonth,jdbcType=VARCHAR},
+            </if>
+            <if test="createId != null">
+                #{createId,jdbcType=BIGINT},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.FppdRef">
+        update dl_fppd_ref
+        <set>
+            <if test="enterpriseId != null">
+                enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+            </if>
+            <if test="fplx != null">
+                fplx = #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="kpjCode != null">
+                kpj_code = #{kpjCode,jdbcType=VARCHAR},
+            </if>
+            <if test="pdMonth != null">
+                pd_month = #{pdMonth,jdbcType=VARCHAR},
+            </if>
+            <if test="createId != null">
+                create_id = #{createId,jdbcType=BIGINT},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.FppdRef">
+        update dl_fppd_ref
+        set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+          fplx = #{fplx,jdbcType=VARCHAR},
+          kpj_code = #{kpjCode,jdbcType=VARCHAR},
+          pd_month = #{pdMonth,jdbcType=VARCHAR},
+          create_id = #{createId,jdbcType=BIGINT},
+          create_name = #{createName,jdbcType=VARCHAR},
+          create_time = #{createTime,jdbcType=TIMESTAMP}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>申购台账</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">选项</div>
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>申请时间（起）：</label>
+                    <input type="text" id="beginDate" lay-verify="date" placeholder="请选择起始申请时间" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>申请时间（止）：</label>
+                    <input type="text" id="endDate" lay-verify="date" placeholder="请选择截止申请时间" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>发票类型：</label>
+                    <select id="invoiceType">
+                        <option value="">请选择发票类型</option>
+                        <option th:each="i:${fplxList}" th:value="${i.code}" th:text="${i.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <button id="searchBut" type="button" class="layui-btn layui-btn-normal">查询</button>
+                    <button id="exportBut" type="button" class="layui-btn">按条件导出</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+    </div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="test" lay-filter="test"></table>
+
+        <script type="text/html" id="tableToolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="addData">
+                    <i class="layui-icon">&#xe608;</i>新建
+                </button>
+                <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="batchExport">
+                    <i class="layui-icon">&#xe601;</i>批量导出
+                </button>
+            </div>
+        </script>
+
+        <script type="text/html" id="tableOperation">
+            {{# if(d.status == 0) { }}
+            <span class="cursor-pointer table_btn" lay-event="edit">编辑</span>
+            <span class="cursor-pointer table_btn" lay-event="delete">删除</span>
+            <span class="cursor-pointer table_btn" lay-event="review">提交审核</span>
+            {{# } else if(d.status == 1 || d.status == 2 || d.status == 3) { }}
+            <span class="cursor-pointer table_btn" lay-event="reviewLog">审核记录</span>
+            <span class="cursor-pointer table_btn" lay-event="exportExcel">导出</span>
+            {{# } else { }}
+            <span class="table_btn" style="color: #8D8D8D;">--</span>
+            {{# } }}
+        </script>
+
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'form', 'laydate'], function () {
+        var table = layui.table;
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#beginDate'
+        });
+        laydate.render({
+            elem: '#endDate'
+        });
+
+        sgtzObj.loadPage();
+
+        $('#searchBut').on('click', function () {
+            sgtzObj.loadPage();
+        });
+        $('#exportBut').on('click', function () {
+            sgtzObj.exportExcel();
+        });
+    });
+
+    var sgtzObj = {
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+            var colsData = [
+                [{type: 'checkbox', fixed: 'left'},
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return "增值税专用发票";
+                            } else if (res.fplx == '2') {
+                                return "增值税普通发票";
+                            } else if (res.fplx == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {field: 'fpdm', title: '发票类型代码', sort: true},
+                    {field: 'slsl', title: '申领数量(张)', sort: true},
+                    {field: 'jby', title: '经办员'},
+                    {
+                        field: 'lpfs', title: '领票方式', sort: true, templet: function (res) {
+                            if (res.lpfs == 0) {
+                                return '自行领取';
+                            } else if (res.lpfs == 1) {
+                                return '快递配送';
+                            }
+                        }
+                    },
+                    {field: 'operator', title: '操作人', sort: true},
+                    {
+                        field: 'status', title: '状态', templet: function (res) {
+                            if (res.status == 0) {
+                                return '<span style="color:gray">待提交</span>';
+                            } else if (res.status == 1) {
+                                return '<span style="color:orange">待审核</span>';
+                            } else if (res.status == 2) {
+                                return '<span style="color:green">审核完成</span>';
+                            } else if (res.status == 3) {
+                                return '<span style="color:red">审核拒绝</span>';
+                            }
+                        }
+                    },
+                    {fixed: 'right', title: '操作', width: '15%', toolbar: '#tableOperation'}]
+            ];
+
+            var table = layui.table;
+            var form = layui.form;
+            table.render({
+                id: "dataList",
+                elem: '#test',
+                url: '/noc/purchaseAccount/getList',
+                where: _this.getRequestParams(),
+                toolbar: '#tableToolbar',
+                defaultToolbar: ['filter'],
+                title: '数据列表',
+                cols: colsData,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    // console.log(111);
+                }
+            });
+            // 左上角按钮
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var tableEvent = obj.event;
+                var data = checkStatus.data;
+
+                if (tableEvent === 'addData') {
+                    layer.open({
+                        title: '新建申购台账',
+                        type: 2,
+                        content: '/noc/purchaseAccount/getDetail?id=',
+                        area: ['100%', '100%'],
+                        shadeClose: true
+                    });
+                } else if (tableEvent === 'batchExport') {
+                    if (data.length == 0) {
+                        layer.alert('请选择要操作的数据!', {title: '操作提示', icon: 2});
+                        return;
+                    }
+                    var idsArray = [];
+                    for (var item in data) {
+                        idsArray.push(data[item]['id']);
+                    }
+                    _this.createForm({"ids": idsArray});
+                }
+            });
+            // 列表按钮
+            table.on('tool(test)', function (obj) {
+                var tableEvent = obj.event;
+                var data = obj.data;
+
+                if (tableEvent === 'edit') {
+                    layer.open({
+                        title: '修改申购台账',
+                        type: 2,
+                        content: '/noc/purchaseAccount/getDetail?id=' + data.id,
+                        area: ['100%', '100%'],
+                        shadeClose: true
+                    });
+                } else if (tableEvent === 'delete') {
+                    layer.confirm('确认删除该数据？', {icon: 3, title: '温馨提示'}, function (index) {
+                        layer.close(index);
+                        $.ajax({
+                            url: '/noc/purchaseAccount/deletById/' + data.id,
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (result) {
+                                if (result.status === '200') {
+                                    obj.del();
+                                    layer.alert('删除成功！', {icon: 1});
+                                    _this.loadPage();
+                                } else {
+                                    layer.alert(result.msg, {icon: 2});
+                                }
+                            },
+                            error: function (error) {
+                                layer.alert('系统异常！', {icon: 2});
+                            }
+                        });
+                    });
+                } else if (tableEvent === 'review') {
+                    layer.confirm('是否确定提交审核？', {icon: 3, title: '温馨提示'}, function (index) {
+                        $.ajax({
+                            url: '/noc/purchaseAccount/submitReview/' + data.id,
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (result) {
+                                if (result.status === '200') {
+                                    layer.alert('提交审核成功！', {icon: 1});
+                                    _this.loadPage();
+                                } else {
+                                    layer.alert(result.msg, {icon: 2});
+                                }
+                            },
+                            error: function (error) {
+                                layer.alert('系统异常！', {icon: 2});
+                            }
+                        });
+                        layer.close(index);
+                    });
+                } else if (tableEvent === 'reviewLog') {
+                    layer.open({
+                        title: '审核记录',
+                        type: 2,
+                        content: '/noc/purchaseAccount/getReviewLogById/' + data.id,
+                        area: ['100%', '100%'],
+                        shadeClose: true
+                    });
+                } else if (tableEvent === 'exportExcel') {
+                    _this.createForm({"id": data.id});
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+
+            var beginDate = $('#beginDate').val();
+            if (beginDate != null && beginDate != '') {
+                params.beginDate = beginDate;
+            } else {
+                delete params['beginDate'];
+            }
+
+            var endDate = $('#endDate').val();
+            if (endDate != null && endDate != '') {
+                params.endDate = endDate;
+            } else {
+                delete params['endDate'];
+            }
+
+            var invoiceType = $('#invoiceType').val();
+            if (invoiceType != null && invoiceType != '') {
+                params.fplx = invoiceType;
+            } else {
+                delete params['fplx'];
+            }
+
+            return params;
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/purchaseAccount/exportExcel');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+</script>
+</body>
+
+</html>

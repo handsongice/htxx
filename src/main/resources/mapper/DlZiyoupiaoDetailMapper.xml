@@ -1,0 +1,323 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlZiyoupiaoDetailMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlZiyoupiaoDetail" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="main_id" property="mainId" jdbcType="BIGINT" />
+    <result column="goods_name" property="goodsName" jdbcType="VARCHAR" />
+    <result column="goods_ssflbm" property="goodsSsflbm" jdbcType="VARCHAR" />
+    <result column="goods_unit" property="goodsUnit" jdbcType="VARCHAR" />
+    <result column="goods_mode" property="goodsMode" jdbcType="VARCHAR" />
+    <result column="goods_amount" property="goodsAmount" jdbcType="DECIMAL" />
+    <result column="money_include_tax" property="moneyIncludeTax" jdbcType="DECIMAL" />
+    <result column="tax_rate" property="taxRate" jdbcType="DECIMAL" />
+    <result column="yhzelx" property="yhzelx" jdbcType="INTEGER" />
+    <result column="yhzenr" property="yhzenr" jdbcType="CHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, main_id, goods_name, goods_ssflbm, goods_unit, goods_mode, goods_amount, 
+    money_include_tax, tax_rate, yhzelx, yhzenr
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlZiyoupiaoDetailExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_ziyoupiao_detail
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_ziyoupiao_detail
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_ziyoupiao_detail
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlZiyoupiaoDetailExample" >
+    delete from dl_ziyoupiao_detail
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlZiyoupiaoDetail" >
+    insert into dl_ziyoupiao_detail (id, enterprise_id, main_id, 
+      goods_name, goods_ssflbm, goods_unit, 
+      goods_mode, goods_amount, money_include_tax, 
+      tax_rate, yhzelx, yhzenr
+      )
+    values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{mainId,jdbcType=BIGINT}, 
+      #{goodsName,jdbcType=VARCHAR}, #{goodsSsflbm,jdbcType=VARCHAR}, #{goodsUnit,jdbcType=VARCHAR}, 
+      #{goodsMode,jdbcType=VARCHAR}, #{goodsAmount,jdbcType=DECIMAL}, #{moneyIncludeTax,jdbcType=DECIMAL}, 
+      #{taxRate,jdbcType=DECIMAL}, #{yhzelx,jdbcType=INTEGER}, #{yhzenr,jdbcType=CHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlZiyoupiaoDetail" >
+    insert into dl_ziyoupiao_detail
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="mainId != null" >
+        main_id,
+      </if>
+      <if test="goodsName != null" >
+        goods_name,
+      </if>
+      <if test="goodsSsflbm != null" >
+        goods_ssflbm,
+      </if>
+      <if test="goodsUnit != null" >
+        goods_unit,
+      </if>
+      <if test="goodsMode != null" >
+        goods_mode,
+      </if>
+      <if test="goodsAmount != null" >
+        goods_amount,
+      </if>
+      <if test="moneyIncludeTax != null" >
+        money_include_tax,
+      </if>
+      <if test="taxRate != null" >
+        tax_rate,
+      </if>
+      <if test="yhzelx != null" >
+        yhzelx,
+      </if>
+      <if test="yhzenr != null" >
+        yhzenr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="mainId != null" >
+        #{mainId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsName != null" >
+        #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSsflbm != null" >
+        #{goodsSsflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsUnit != null" >
+        #{goodsUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsMode != null" >
+        #{goodsMode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsAmount != null" >
+        #{goodsAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyIncludeTax != null" >
+        #{moneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="taxRate != null" >
+        #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="yhzelx != null" >
+        #{yhzelx,jdbcType=INTEGER},
+      </if>
+      <if test="yhzenr != null" >
+        #{yhzenr,jdbcType=CHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlZiyoupiaoDetailExample" resultType="java.lang.Integer" >
+    select count(*) from dl_ziyoupiao_detail
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_ziyoupiao_detail
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.enterpriseId != null" >
+        enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="record.mainId != null" >
+        main_id = #{record.mainId,jdbcType=BIGINT},
+      </if>
+      <if test="record.goodsName != null" >
+        goods_name = #{record.goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsSsflbm != null" >
+        goods_ssflbm = #{record.goodsSsflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsUnit != null" >
+        goods_unit = #{record.goodsUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsMode != null" >
+        goods_mode = #{record.goodsMode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodsAmount != null" >
+        goods_amount = #{record.goodsAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="record.moneyIncludeTax != null" >
+        money_include_tax = #{record.moneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="record.taxRate != null" >
+        tax_rate = #{record.taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="record.yhzelx != null" >
+        yhzelx = #{record.yhzelx,jdbcType=INTEGER},
+      </if>
+      <if test="record.yhzenr != null" >
+        yhzenr = #{record.yhzenr,jdbcType=CHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_ziyoupiao_detail
+    set id = #{record.id,jdbcType=BIGINT},
+      enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      main_id = #{record.mainId,jdbcType=BIGINT},
+      goods_name = #{record.goodsName,jdbcType=VARCHAR},
+      goods_ssflbm = #{record.goodsSsflbm,jdbcType=VARCHAR},
+      goods_unit = #{record.goodsUnit,jdbcType=VARCHAR},
+      goods_mode = #{record.goodsMode,jdbcType=VARCHAR},
+      goods_amount = #{record.goodsAmount,jdbcType=DECIMAL},
+      money_include_tax = #{record.moneyIncludeTax,jdbcType=DECIMAL},
+      tax_rate = #{record.taxRate,jdbcType=DECIMAL},
+      yhzelx = #{record.yhzelx,jdbcType=INTEGER},
+      yhzenr = #{record.yhzenr,jdbcType=CHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlZiyoupiaoDetail" >
+    update dl_ziyoupiao_detail
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="mainId != null" >
+        main_id = #{mainId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsName != null" >
+        goods_name = #{goodsName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsSsflbm != null" >
+        goods_ssflbm = #{goodsSsflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsUnit != null" >
+        goods_unit = #{goodsUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsMode != null" >
+        goods_mode = #{goodsMode,jdbcType=VARCHAR},
+      </if>
+      <if test="goodsAmount != null" >
+        goods_amount = #{goodsAmount,jdbcType=DECIMAL},
+      </if>
+      <if test="moneyIncludeTax != null" >
+        money_include_tax = #{moneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="taxRate != null" >
+        tax_rate = #{taxRate,jdbcType=DECIMAL},
+      </if>
+      <if test="yhzelx != null" >
+        yhzelx = #{yhzelx,jdbcType=INTEGER},
+      </if>
+      <if test="yhzenr != null" >
+        yhzenr = #{yhzenr,jdbcType=CHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlZiyoupiaoDetail" >
+    update dl_ziyoupiao_detail
+    set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      main_id = #{mainId,jdbcType=BIGINT},
+      goods_name = #{goodsName,jdbcType=VARCHAR},
+      goods_ssflbm = #{goodsSsflbm,jdbcType=VARCHAR},
+      goods_unit = #{goodsUnit,jdbcType=VARCHAR},
+      goods_mode = #{goodsMode,jdbcType=VARCHAR},
+      goods_amount = #{goodsAmount,jdbcType=DECIMAL},
+      money_include_tax = #{moneyIncludeTax,jdbcType=DECIMAL},
+      tax_rate = #{taxRate,jdbcType=DECIMAL},
+      yhzelx = #{yhzelx,jdbcType=INTEGER},
+      yhzenr = #{yhzenr,jdbcType=CHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

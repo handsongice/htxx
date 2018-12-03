@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.FpsgMapper">
+
+    <resultMap id="BaseResultMap" type="Fpsg">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+        <result column="dept_id" property="deptId" jdbcType="BIGINT"/>
+        <result column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="employee_id" property="employeeId" jdbcType="BIGINT"/>
+        <result column="employee_name" property="employeeName" jdbcType="VARCHAR"/>
+        <result column="sh_id_ref" property="shIdRef" jdbcType="BIGINT"/>
+        <result column="shl_id_next" property="shlIdNext" jdbcType="BIGINT"/>
+        <result column="sh_name_next" property="shNameNext" jdbcType="VARCHAR"/>
+        <result column="sh_status_now" property="shStatusNow" jdbcType="TINYINT"/>
+        <result column="fplx" property="fplx" jdbcType="VARCHAR"/>
+        <result column="fplxStr" property="fplxStr" jdbcType="VARCHAR"/>
+        <result column="fpdm" property="fpdm" jdbcType="VARCHAR"/>
+        <result column="slsl" property="slsl" jdbcType="INTEGER"/>
+        <result column="lpfs" property="lpfs" jdbcType="INTEGER"/>
+        <result column="jby" property="jby" jdbcType="VARCHAR"/>
+        <result column="operator" property="operator" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="mark" property="mark" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_del" property="isDel" jdbcType="TINYINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        enterprise_id,
+        dept_id,
+        role_id,
+        employee_id,
+        employee_name,
+        sh_id_ref,
+        shl_id_next,
+        sh_name_next,
+        sh_status_now,
+        fplx,
+        fpdm,
+        slsl,
+        lpfs,
+        jby,
+        operator,
+        status,
+        mark,
+        create_time,
+        update_time,
+        is_del
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="com.htxx.entity.Fpsg">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fpsg
+        where id = #{id,jdbcType=BIGINT}
+        and enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+        and is_del = 0
+    </select>
+
+    <select id="selectByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fpsg
+        <where>
+            enterprise_id = #{enterpriseId}
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="ids != null">
+                and id in (${ids})
+            </if>
+            <if test="fplx != null">
+                and fplx = #{fplx}
+            </if>
+            <if test="deptId != null">
+                and dept_id = #{deptId}
+            </if>
+            <if test="roleId != null">
+                and role_id = #{roleId}
+            </if>
+            <if test="employeeId != null">
+                and employee_id = #{employeeId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginDate != null">
+                and DATE_FORMAT(create_time, '%Y-%m-%d') &gt;= DATE_FORMAT(#{beginDate}, '%Y-%m-%d')
+            </if>
+            <if test="endDate != null">
+                and DATE_FORMAT(#{endDate}, '%Y-%m-%d') &gt;= DATE_FORMAT(create_time, '%Y-%m-%d')
+            </if>
+            <if test="isDel != null">
+                and is_del = #{isDel}
+            </if>
+            <if test="deptIds != null">
+                and dept_id in
+                <foreach collection="deptIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="roleIds != null">
+                and role_id in
+                <foreach collection="roleIds" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="com.htxx.entity.Fpsg">
+        delete from dl_fpsg
+        where id = #{id,jdbcType=BIGINT}
+        and enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.Fpsg" useGeneratedKeys="true" keyProperty="id">
+        insert into dl_fpsg (id, enterprise_id, dept_id,
+        role_id, employee_id, employee_name,
+        sh_id_ref, shl_id_next, sh_name_next, sh_status_now,
+        fplx, fpdm, slsl, lpfs,
+        jby, operator, status,
+        mark, create_time, update_time,
+        is_del)
+        values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT},
+        #{roleId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR},
+        #{shIdRef,jdbcType=BIGINT}, #{shlIdNext,jdbcType=BIGINT}, #{shNameNext,jdbcType=VARCHAR}, #{shStatusNow,jdbcType=TINYINT},
+        #{fplx,jdbcType=VARCHAR}, #{fpdm,jdbcType=VARCHAR}, #{slsl,jdbcType=INTEGER}, #{lpfs,jdbcType=INTEGER},
+        #{jby,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR},
+        #{mark,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+        #{isDel,jdbcType=TINYINT})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.Fpsg" useGeneratedKeys="true" keyProperty="id">
+        insert into dl_fpsg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="roleId != null">
+                role_id,
+            </if>
+            <if test="employeeId != null">
+                employee_id,
+            </if>
+            <if test="employeeName != null">
+                employee_name,
+            </if>
+            <if test="shIdRef != null">
+                sh_id_ref,
+            </if>
+            <if test="shlIdNext != null">
+                shl_id_next,
+            </if>
+            <if test="shNameNext != null">
+                sh_name_next,
+            </if>
+            <if test="shStatusNow != null">
+                sh_status_now,
+            </if>
+            <if test="fplx != null">
+                fplx,
+            </if>
+            <if test="fpdm != null">
+                fpdm,
+            </if>
+            <if test="slsl != null">
+                slsl,
+            </if>
+            <if test="lpfs != null">
+                lpfs,
+            </if>
+            <if test="jby != null">
+                jby,
+            </if>
+            <if test="operator != null">
+                operator,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="mark != null">
+                mark,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="enterpriseId != null">
+                #{enterpriseId,jdbcType=BIGINT},
+            </if>
+            <if test="deptId != null">
+                #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="roleId != null">
+                #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                #{employeeId,jdbcType=INTEGER},
+            </if>
+            <if test="employeeName != null">
+                #{employeeName,jdbcType=VARCHAR},
+            </if>
+            <if test="shIdRef != null">
+                #{shIdRef,jdbcType=BIGINT},
+            </if>
+            <if test="shlIdNext != null">
+                #{shl_id_next,jdbcType=BIGINT},
+            </if>
+            <if test="shNameNext != null">
+                #{shNameNext,jdbcType=VARCHAR},
+            </if>
+            <if test="shStatusNow != null">
+                #{shStatusNow,jdbcType=TINYINT},
+            </if>
+            <if test="fplx != null">
+                #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="fpdm != null">
+                #{fpdm,jdbcType=VARCHAR},
+            </if>
+            <if test="slsl != null">
+                #{slsl,jdbcType=INTEGER},
+            </if>
+            <if test="lpfs != null">
+                #{lpfs,jdbcType=INTEGER},
+            </if>
+            <if test="jby != null">
+                #{jby,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null">
+                #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.Fpsg">
+        update dl_fpsg
+        <set>
+            <if test="deptId != null">
+                dept_id = #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                employee_id = #{employeeId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeName != null">
+                employee_name = #{employeeName,jdbcType=VARCHAR},
+            </if>
+            <if test="shIdRef != null">
+                sh_id_ref = #{shIdRef,jdbcType=BIGINT},
+            </if>
+            <if test="shlIdNext != null">
+                shl_id_next = #{shlIdNext,jdbcType=BIGINT},
+            </if>
+            <if test="shNameNext != null">
+                sh_name_next = #{shNameNext,jdbcType=VARCHAR},
+            </if>
+            <if test="shStatusNow != null">
+                sh_status_now = #{shStatusNow,jdbcType=TINYINT},
+            </if>
+            <if test="fplx != null">
+                fplx = #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="fpdm != null">
+                fpdm = #{fpdm,jdbcType=VARCHAR},
+            </if>
+            <if test="slsl != null">
+                slsl = #{slsl,jdbcType=INTEGER},
+            </if>
+            <if test="lpfs != null">
+                lpfs = #{lpfs,jdbcType=INTEGER},
+            </if>
+            <if test="jby != null">
+                jby = #{jby,jdbcType=VARCHAR},
+            </if>
+            <if test="operator != null">
+                operator = #{operator,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="mark != null">
+                mark = #{mark,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=TINYINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+        and enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.Fpsg">
+        update dl_fpsg
+        set dept_id = #{deptId,jdbcType=BIGINT},
+          role_id = #{roleId,jdbcType=BIGINT},
+          employee_id = #{employeeId,jdbcType=BIGINT},
+          employee_name = #{employeeName,jdbcType=VARCHAR},
+          sh_id_ref = #{shIdRef,jdbcType=BIGINT},
+          shl_id_next = #{shlIdNext,jdbcType=BIGINT},
+          sh_name_next = #{shNameNext,jdbcType=VARCHAR},
+          sh_status_now = #{shStatusNow,jdbcType=TINYINT},
+          fplx = #{fplx,jdbcType=VARCHAR},
+          fpdm = #{fpdm,jdbcType=VARCHAR},
+          slsl = #{slsl,jdbcType=INTEGER},
+          lpfs = #{lpfs,jdbcType=INTEGER},
+          jby = #{jby,jdbcType=VARCHAR},
+          operator = #{operator,jdbcType=VARCHAR},
+          status = #{status,jdbcType=VARCHAR},
+          mark = #{mark,jdbcType=VARCHAR},
+          create_time = #{createTime,jdbcType=TIMESTAMP},
+          update_time = #{updateTime,jdbcType=TIMESTAMP},
+          is_del = #{isDel,jdbcType=TINYINT}
+          where id = #{id,jdbcType=BIGINT}
+          and enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+    </update>
+
+    <update id="updateCheck" parameterType="com.htxx.entity.Fpsg">
+        update dl_fpsg
+        set dept_id = #{deptId,jdbcType=BIGINT},
+          role_id = #{roleId,jdbcType=BIGINT},
+          employee_id = #{employeeId,jdbcType=BIGINT},
+          employee_name = #{employeeName,jdbcType=VARCHAR},
+          sh_id_ref = #{shIdRef,jdbcType=BIGINT},
+          shl_id_next = #{shlIdNext,jdbcType=BIGINT},
+          sh_name_next = #{shNameNext,jdbcType=VARCHAR},
+          sh_status_now = #{shStatusNow,jdbcType=TINYINT},
+          operator = #{operator,jdbcType=VARCHAR},
+          status = #{status,jdbcType=VARCHAR},
+          update_time = #{updateTime,jdbcType=TIMESTAMP}
+          where id = #{id,jdbcType=BIGINT}
+          and enterprise_id = #{enterpriseId,jdbcType=INTEGER}
+    </update>
+
+</mapper>

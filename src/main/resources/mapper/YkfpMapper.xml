@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.YkfpMapper">
+    <sql id="ykfpMain">
+        m.id id, m.djh djh, m.fjh fjh,k.nick_name, m.kpzdh kpzdh, m.fpzl fpzl, m.kplx kplx, m.xfsh xfsh, m.xfmc xfmc,
+        m.xfdzdh xfdzdh, m.xfyhzh xfyhzh, m.gfsh gfsh, m.gfmc gfmc, m.gfdzdh gfdzdh, m.gfyhzh gfyhzh,
+        m.kpr kpr, m.skr skr, m.fhr fhr, m.fpdm fpdm, m.fphm fphm, m.yfpdm yfpdm,m.yfphm yfphm, m.qdbz qdbz,
+        m.jshj jshj, m.hjje hjje, m.hjse hjse, m.bmbbh bmbbh, m.bz bz, m.sj sj, m.email email,
+        DATE_FORMAT(m.kpsj,'%Y-%m-%d %H:%i:%s') kpsj, m.chbz chbz, m.zfbz zfbz,
+        m.ywlx ywlx, m.enterprise_id enterprise_id, m.employee_id employee_id,m.chyy chyy
+    </sql>
+    <sql id="ykfpMainAndDel">
+        m.id m_id, m.djh m_djh, m.fjh fjh,k.nick_name, m.kpzdh kpzdh, m.fpzl fpzl, m.kplx kplx, m.xfsh xfsh, m.xfmc xfmc,
+        m.xfdzdh xfdzdh, m.xfyhzh xfyhzh, m.gfsh gfsh, m.gfmc gfmc, m.gfdzdh gfdzdh, m.gfyhzh gfyhzh,
+        m.kpr kpr, m.skr skr, m.fhr fhr, m.fpdm fpdm, m.fphm fphm, m.yfpdm yfpdm,m.yfphm yfphm, m.qdbz qdbz,
+        m.jshj jshj, m.hjje hjje, m.hjse hjse, m.bmbbh bmbbh, m.bz bz, m.sj sj, m.email email,
+        DATE_FORMAT(m.kpsj,'%Y-%m-%d %H:%i:%s') kpsj, m.chbz chbz, m.zfbz zfbz, m.ywlx ywlx,
+        m.enterprise_id enterprise_id, m.employee_id employee_id,m.chyy chyy,
+        d.id d_id, d.djh d_djh, d.xh xh, d.xmmc xmmc, d.shflbm shflbm, d.qyzbm qyzbm, d.ggxh ggxh, d.jldw jldw,
+        d.xmsl xmsl, d.xmdj xmdj, d.xmje xmje, d.sl sl, d.se se, d.hsdj hsdj, d.hsje hsje, d.yhzcbs yhzcbs,
+        d.yhzcnr yhzcnr, d.lslbs lslbs, d.fphxz fphxz, d.ywlx ywlx, d.hsbz hsbz
+    </sql>
+
+    <resultMap id="YkfpMainAndDelResult" type="Ykfp">
+        <id column="m_id" property="id"/>
+        <result column="m_djh" property="djh"/>
+        <result column="fjh" property="fjh"/>
+        <result column="nick_name" property="nickName"/>
+        <result column="kpzdh" property="kpzdh"/>
+        <result column="fpzl" property="fpzl"/>
+        <result column="kplx" property="kplx"/>
+        <result column="xfsh" property="xfsh"/>
+        <result column="xfmc" property="xfmc"/>
+        <result column="xfdzdh" property="xfdzdh"/>
+        <result column="xfyhzh" property="xfyhzh"/>
+        <result column="gfsh" property="gfsh"/>
+        <result column="gfmc" property="gfmc"/>
+        <result column="gfdzdh" property="gfdzdh"/>
+        <result column="gfyhzh" property="gfyhzh"/>
+        <result column="kpr" property="kpr"/>
+        <result column="skr" property="skr"/>
+        <result column="fhr" property="fhr"/>
+        <result column="fpdm" property="fpdm"/>
+        <result column="fphm" property="fphm"/>
+        <result column="yfpdm" property="yfpdm"/>
+        <result column="yfphm" property="yfphm"/>
+        <result column="qdbz" property="qdbz"/>
+        <result column="jshj" property="jshj"/>
+        <result column="hjje" property="hjje"/>
+        <result column="hjse" property="hjse"/>
+        <result column="bmbbh" property="bmbbh"/>
+        <result column="bz" property="bz"/>
+        <result column="sj" property="sj"/>
+        <result column="email" property="email"/>
+        <result column="kpsj" property="kpsj"/>
+        <result column="chbz" property="chbz"/>
+        <result column="zfbz" property="zfbz"/>
+        <result column="ywlx" property="ywlx"/>
+        <result column="enterprise_id" property="enterpriseId"/>
+        <result column="employee_id" property="employeeId"/>
+        <result column="chyy" property="chyy"/>
+        <collection property="ykfpDelList" ofType="YkfpDel">
+            <id column="d_id" property="id"/>
+            <result column="d_djh" property="djh"/>
+            <result column="xh" property="xh"/>
+            <result column="xmmc" property="xmmc"/>
+            <result column="shflbm" property="shflbm"/>
+            <result column="qyzbm" property="qyzbm"/>
+            <result column="ggxh" property="ggxh"/>
+            <result column="jldw" property="jldw"/>
+            <result column="xmsl" property="xmsl"/>
+            <result column="xmdj" property="xmdj"/>
+            <result column="xmje" property="xmje"/>
+            <result column="sl" property="sl"/>
+            <result column="se" property="se"/>
+            <result column="hsdj" property="hsdj"/>
+            <result column="hsje" property="hsje"/>
+            <result column="yhzcbs" property="yhzcbs"/>
+            <result column="yhzcnr" property="yhzcnr"/>
+            <result column="lslbs" property="lslbs"/>
+            <result column="fphxz" property="fphxz"/>
+            <result column="ywlx" property="ywlx"/>
+            <result column="hsbz" property="hsbz"/>
+        </collection>
+    </resultMap>
+
+    <select id="getYkfpMainList" resultType="Ykfp" parameterType="PageMsg">
+        select
+        <include refid="ykfpMain"></include>
+        from dl_ykfp_main m inner join dl_kpjxx k on m.fjh = k.code and  m.enterprise_id = k.enterprise_id
+        <!--<where>-->
+            <if test="entity.ywlx != null and entity.ywlx !='' and entity.ywlx != 0">
+                AND m.ywlx = #{entity.ywlx}
+            </if>
+            <if test="entity.fjh != null and entity.fjh != '' and entity.fjh != 0">
+                <if test="entity.fjh != 101">
+                    AND m.fjh = #{entity.fjh}
+                </if>
+                <if test="entity.fjh == 101">
+                    AND m.fjh = 0
+                </if>
+            </if>
+            <if test="entity.kplx != null and entity.kplx !=''and entity.kplx != 0">
+                <if test="entity.kplx != 4">
+                    AND m.kplx = #{entity.kplx}
+                </if>
+                <if test="entity.kplx == 4">
+                    AND m.kplx in (4,5)
+                </if>
+            </if>
+            <if test="entity.fpzl != null and entity.fpzl !='' and entity.fpzl != 0">
+                <if test="entity.fpzl != 100">
+                    AND m.fpzl = #{entity.fpzl}
+                </if>
+                <if test="entity.fpzl == 100">
+                    AND m.fpzl = 0
+                </if>
+            </if>
+            <if test="entity.bz !=null and entity.bz!=''">
+                AND m.bz LIKE CONCAT(CONCAT('%', #{entity.bz}),'%')
+            </if>
+            <if test="entity.kpsjMin !=null and entity.kpsjMin!=''">
+                and m.kpsj &gt;= #{entity.kpsjMin}
+            </if>
+            <if test="entity.kpsjMax!=null and entity.kpsjMax!=''">
+                and m.kpsj &lt;= #{entity.kpsjMax}
+            </if>
+            <if test="entity.jshjMin !=null and entity.jshjMin!=''">
+                and m.jshj &gt;= #{entity.jshjMin}
+            </if>
+            <if test="entity.jshjMax!=null and entity.jshjMax!=''">
+                and m.jshj &lt;= #{entity.jshjMax}
+            </if>
+            <if test="entity.kpsjYearMonth!=null and entity.kpsjYearMonth!=''">
+                and DATE_FORMAT(m.kpsj, '%Y-%m') = #{entity.kpsjYearMonth}
+            </if>
+            <if test="entity.djh !=null and entity.djh!=''">
+                AND m.djh LIKE CONCAT(CONCAT('%', #{entity.djh}),'%')
+            </if>
+            <if test="entity.gfmc !=null and entity.gfmc!=''">
+                AND m.gfmc LIKE CONCAT(CONCAT('%', #{entity.gfmc}),'%')
+            </if>
+            <if test="entity.gfsh !=null and entity.gfsh!=''">
+                AND m.gfsh LIKE CONCAT(CONCAT('%', #{entity.gfsh}),'%')
+            </if>
+            <if test="entity.fpdm !=null and entity.fpdm!=''">
+                AND m.fpdm LIKE CONCAT(CONCAT('%', #{entity.fpdm}),'%')
+            </if>
+            <if test="entity.fphm !=null and entity.fphm!=''">
+                AND m.fphm LIKE CONCAT(CONCAT('%', #{entity.fphm}),'%')
+            </if>
+            <if test="entity.enterpriseId !=null and entity.enterpriseId!=''">
+                AND m.enterprise_id = #{entity.enterpriseId}
+            </if>
+            <if test="entity.employeeId !=null and entity.employeeId!=''">
+                AND m.employee_id = #{entity.employeeId}
+            </if>
+        <!--</where>-->
+        order by m.kpsj desc
+    </select>
+
+    <select id="getYkfpMainAndDelListByCondition" parameterType="PageMsg" resultMap="YkfpMainAndDelResult">
+        select
+        <include refid="ykfpMainAndDel"></include>
+        from dl_ykfp_main m left join dl_ykfp_del d on m.djh = d.djh inner join dl_kpjxx k on m.fjh = k.code and  m.enterprise_id = k.enterprise_id
+        <!--<where>-->
+            <if test="entity.ywlx != null and entity.ywlx !=''">
+                AND m.ywlx = #{entity.ywlx}
+            </if>
+            <if test="entity.fjh != null and entity.fjh != '' and entity.fjh != 0">
+                <if test="entity.fjh != 101">
+                    AND m.fjh = #{entity.fjh}
+                </if>
+                <if test="entity.fjh == 101">
+                    AND m.fjh = 0
+                </if>
+            </if>
+            <if test="entity.kplx != null and entity.kplx !=''and entity.kplx != 0">
+                <if test="entity.kplx != 4">
+                    AND m.kplx = #{entity.kplx}
+                </if>
+                <if test="entity.kplx == 4">
+                    AND m.kplx in (4,5)
+                </if>
+            </if>
+            <if test="entity.fpzl != null and entity.fpzl !='' and entity.fpzl != 0">
+                <if test="entity.fpzl != 100">
+                    AND m.fpzl = #{entity.fpzl}
+                </if>
+                <if test="entity.fpzl == 100">
+                    AND m.fpzl = 0
+                </if>
+            </if>
+            <if test="entity.bz !=null and entity.bz!=''">
+                AND m.bz LIKE CONCAT(CONCAT('%', #{entity.bz}),'%')
+            </if>
+            <if test="entity.kpsjMin !=null and entity.kpsjMin!=''">
+                and m.kpsj &gt;= #{entity.kpsjMin}
+            </if>
+            <if test="entity.kpsjMax!=null and entity.kpsjMax!=''">
+                and m.kpsj &lt;= #{entity.kpsjMax}
+            </if>
+            <if test="entity.jshjMin !=null and entity.jshjMin!=''">
+                and m.jshj &gt;= #{entity.jshjMin}
+            </if>
+            <if test="entity.jshjMax!=null and entity.jshjMax!=''">
+                and m.jshj &lt;= #{entity.jshjMax}
+            </if>
+            <if test="entity.djh !=null and entity.djh!=''">
+                AND m.djh LIKE CONCAT(CONCAT('%', #{entity.djh}),'%')
+            </if>
+            <if test="entity.gfmc !=null and entity.gfmc!=''">
+                AND m.gfmc LIKE CONCAT(CONCAT('%', #{entity.gfmc}),'%')
+            </if>
+            <if test="entity.gfsh !=null and entity.gfsh!=''">
+                AND m.gfsh LIKE CONCAT(CONCAT('%', #{entity.gfsh}),'%')
+            </if>
+            <if test="entity.fpdm !=null and entity.fpdm!=''">
+                AND m.fpdm LIKE CONCAT(CONCAT('%', #{entity.fpdm}),'%')
+            </if>
+            <if test="entity.fphm !=null and entity.fphm!=''">
+                AND m.fphm LIKE CONCAT(CONCAT('%', #{entity.fphm}),'%')
+            </if>
+            <if test="entity.enterpriseId !=null and entity.enterpriseId!=''">
+                AND m.enterprise_id = #{entity.enterpriseId}
+            </if>
+            <if test="entity.employeeId !=null and entity.employeeId!=''">
+                AND m.employee_id = #{entity.employeeId}
+            </if>
+        <!--</where>-->
+        order by m.kpsj desc
+    </select>
+
+    <select id="getYkfpMainAndDelListByDjh" resultMap="YkfpMainAndDelResult">
+        select
+        <include refid="ykfpMainAndDel"></include>
+        from dl_ykfp_main m left join dl_ykfp_del d on m.djh = d.djh inner join dl_kpjxx k on m.fjh = k.code and  m.enterprise_id = k.enterprise_id
+        and m.djh in
+        <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <insert id="insertYkfpMain" parameterType="Ykfp">
+        insert into dl_ykfp_main(djh,fjh,fpzl,kplx,ywlx,enterprise_id,employee_id,fpdm,fphm,kpsj,hjje,hjse,jshj,xfmc,xfsh,xfdzdh,xfyhzh,gfmc,gfsh,gfdzdh,gfyhzh,bz,kpr,skr,fhr,chbz,zfbz,qdbz,bmbbh,yfpdm,yfphm,chyy)
+        values (#{djh},#{fjh},#{fpzl},#{kplx},#{ywlx},#{enterpriseId},#{employeeId},#{fpdm},#{fphm},#{kpsj},#{hjje},#{hjse},#{jshj},#{xfmc},#{xfsh},#{xfdzdh},#{xfyhzh},#{gfmc},#{gfsh},#{gfdzdh},#{gfyhzh},#{bz},#{kpr},#{skr},#{fhr},#{chbz},#{zfbz},#{qdbz},#{bmbbh},#{yfpdm},#{yfphm},#{chyy});
+    </insert>
+
+    <insert id="insertYkfpDel" parameterType="java.util.List">
+        insert into dl_ykfp_del(djh,xh,xmmc,shflbm,ggxh,jldw,xmsl,xmje,hsdj,hsje,sl,se,hsbz,fphxz,lslbs,yhzcbs,yhzcnr)
+        values
+        <foreach collection="list" item="del" separator=",">
+            (#{del.djh},#{del.xh},#{del.xmmc},#{del.shflbm},#{del.ggxh},#{del.jldw},#{del.xmsl},#{del.xmje},#{del.hsdj},#{del.hsje},#{del.sl},#{del.se},#{del.hsbz},#{del.fphxz},#{del.lslbs},#{del.yhzcbs},#{del.yhzcnr})
+        </foreach>
+    </insert>
+
+    <update id="updateKplxByFpdmhm">
+        update dl_ykfp_main set kplx = #{kplx} where fpdm = #{fpdm} and fphm = #{fphm}
+    </update>
+
+    <resultMap id="YkfpInfoMain" type="YkfpDel">
+        <id column="id" property="id"></id>
+        <result column="xmmc" property="xmmc"/>
+        <result column="sl" property="sl"/>
+        <result column="se" property="se"/>
+        <result column="hsje" property="hsje"/>
+        <association property="ykfp" javaType="Ykfp">
+            <result column="fpzl" property="fpzl"/>
+            <result column="fpdm" property="fpdm"/>
+            <result column="fphm" property="fphm"/>
+            <result column="fjh" property="fjh"/>
+            <result column="gfsh" property="gfsh"/>
+            <result column="gfmc" property="gfmc"/>
+            <result column="kpsj" property="kpsj"/>
+            <result column="kpr" property="kpr"/>
+            <result column="bz" property="bz"/>
+        </association>
+    </resultMap>
+
+    <select id="getYkfpInfoMain" parameterType="com.htxx.pojo.FpcxParams" resultMap="YkfpInfoMain">
+        SELECT
+        m.fpzl,
+        m.fpdm,
+        m.fphm,
+        m.fjh,
+        m.gfsh,
+        m.gfmc,
+        DATE_FORMAT( m.kpsj, '%Y-%m-%d %H:%i:%s' ) kpsj,
+        m.kpr,
+        m.bz,
+        i.id,
+        i.xmmc,
+        i.sl,
+        i.se,
+        i.hsje
+        FROM
+        dl_ykfp_del i
+        LEFT JOIN dl_ykfp_main m ON ( i.djh = m.djh )
+        <where>
+            m.enterprise_id = #{enterpriseId}
+            <if test="fpzl != null">
+                and m.fpzl = #{fpzl}
+            </if>
+            <if test="fpdm != null">
+                and m.fpdm = #{fpdm}
+            </if>
+            <if test="kplx != null and kplx !=''and kplx != 0">
+                <if test="kplx != 4">
+                    AND m.kplx = #{kplx}
+                </if>
+                <if test="kplx == 4">
+                    AND m.kplx in (4,5)
+                </if>
+            </if>
+            <if test="kpjCode != null">
+                and m.fjh = #{kpjCode}
+            </if>
+            <if test="kpjCodeList != null">
+                and m.fjh in
+                <foreach collection="kpjCodeList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="gfmc != null">
+                AND m.gfmc LIKE CONCAT(CONCAT('%', #{gfmc}),'%')
+            </if>
+            <if test="fpxz != null and fpxz == '1'">
+                AND m.jshj > 0
+            </if>
+            <if test="fpxz != null and fpxz == '2'">
+                AND 0 > m.jshj
+            </if>
+            <if test="kpsjMin != null and kpsjMin != ''">
+                and m.kpsj &gt;= #{kpsjMin}
+            </if>
+            <if test="kpsjMax != null and kpsjMax != ''">
+                and m.kpsj &lt;= #{kpsjMax}
+            </if>
+            <if test="fphmq != null">
+                and m.fphm > #{fphmq}
+            </if>
+            <if test="fphmz != null">
+                and #{fphmz} > m.fphm
+            </if>
+            <if test="slvStr != null and slvStr != ''">
+                AND i.sl in (${slvStr})
+            </if>
+            <if test="notNormalSlv != null">
+                AND i.sl not in (0, 0.3,0.5,0.6,0.1,0.11,0.13,0.16,0.17)
+            </if>
+        </where>
+    </select>
+
+</mapper>

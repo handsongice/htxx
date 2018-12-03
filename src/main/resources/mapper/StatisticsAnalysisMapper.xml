@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.StatisticsAnalysisMapper">
+    <select id="getTerminalAnalysisList" statementType="CALLABLE" resultType="TerminalAnalysis">
+    call terminalInvoiceAnalysis (
+			#{v_time, jdbcType = VARCHAR, mode = IN },
+            #{v_fjh, jdbcType = VARCHAR, mode = IN },
+            #{v_fpzl, jdbcType = VARCHAR, mode = IN },
+            #{v_enterpriseId, jdbcType = VARCHAR, mode = IN }
+		)
+	</select>
+    <select id="monthStatisticsResult" statementType="CALLABLE" resultType="MonthStatisticsData">
+    call monthStatistics (
+			#{v_time, jdbcType = VARCHAR, mode = IN },
+            #{v_fpzl, jdbcType = VARCHAR, mode = IN },
+            #{v_enterpriseId, jdbcType = VARCHAR, mode = IN }
+		)
+	</select>
+    <select id="totalMonthStatisticsResult" statementType="CALLABLE" resultType="TotalMonthStatisticsData">
+        call totalMonthStatistics (
+        #{v_time, jdbcType = VARCHAR, mode = IN },
+        #{v_fpzl, jdbcType = VARCHAR, mode = IN },
+        #{v_enterpriseId, jdbcType = VARCHAR, mode = IN }
+        )
+    </select>
+</mapper>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>发票盘点</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">选项</div>
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>盘点月份：</label>
+                    <input type="text" id="pdmonth" lay-verify="date" placeholder="请选择盘点月份" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>开票机：</label>
+                    <select id="kpjId">
+                        <option th:each="i:${kpjList}" th:value="${i.code}" th:text="${i.nickName}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票类型：</label>
+                    <select id="invoiceType">
+                        <option value="">请选择发票类型</option>
+                        <option th:each="i:${fplxList}" th:value="${i.code}" th:text="${i.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <button id="searchBut" type="button" class="layui-btn layui-btn-normal">查询</button>
+                    <button id="batchExportBut" type="button" class="layui-btn">按条件导出</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="test" lay-filter="test"></table>
+
+        <script type="text/html" id="tableBut">
+            <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="batchCheck">
+                <i class="layui-icon">&#x1005;</i>批量盘点
+            </button>
+        </script>
+
+        <script type="text/html" id="tableOperation">
+            {{# if(d.pdbz == '1') { }}
+            <span class="cursor-pointer table_btn" lay-event="check">盘点</span>
+            {{# } else { }}
+            <span class="table_btn" style="color: #8D8D8D;">--</span>
+            {{# } }}
+        </script>
+
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/invoice/fpkj.js"></script>
+<script>
+    layui.use(['table', 'laydate'], function () {
+        var laydate = layui.laydate;
+
+        laydate.render({
+            elem: '#pdmonth',
+            type: 'month',
+            value: new Date()
+        });
+
+        fppdObj.loadPage();
+
+        $('#searchBut').on('click', function () {
+            fppdObj.loadPage();
+        });
+
+        $('#batchExportBut').on('click', function () {
+            fppdObj.exportExcel();
+        });
+    });
+
+    var fppdObj = {
+        loadPage: function () {
+            var _this = this;
+            _this.tableRender(_this.getRequestParams());
+        },
+        tableRender: function (params) {
+            var _this = this;
+            var colsData = [
+                [
+                    {type: 'checkbox', fixed: 'left'},
+                    {field: 'kpjName', title: '开票机'},
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return "增值税专用发票";
+                            } else if (res.fplx == '2') {
+                                return "增值税普通发票";
+                            } else if (res.fplx == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {field: 'pdMonth', title: '月份', sort: true},
+                    {
+                        field: 'kpAmount', title: '开票数量', sort: true, templet: function (res) {
+                            if (res.kpAmount > 0) {
+                                return '<a onclick="fppdObj.toDataList(\'kp\', \'' + res.kpjCode + '\', \'' + res.pdMonth + '\', \'' + res.fplx + '\')" style="color: #1E9FFF;" href="javascript:void(0)">' + res.kpAmount + '</a>';
+                            } else {
+                                return res.kpAmount;
+                            }
+                        }
+                    },
+                    {
+                        field: 'zfAmount', title: '作废数量', sort: true, templet: function (res) {
+                            if (res.zfAmount > 0) {
+                                return '<a onclick="fppdObj.toDataList(\'zf\', \'' + res.kpjCode + '\', \'' + res.pdMonth + '\', \'' + res.fplx + '\')" style="color: #1E9FFF;" href="javascript:void(0)">' + res.zfAmount + '</a>';
+                            } else {
+                                return res.zfAmount;
+                            }
+                        }
+                    },
+                    {
+                        field: 'chAmount', title: '冲红数量', sort: true, templet: function (res) {
+                            if (res.chAmount > 0) {
+                                return '<a onclick="fppdObj.toDataList(\'ch\', \'' + res.kpjCode + '\', \'' + res.pdMonth + '\', \'' + res.fplx + '\')" style="color: #1E9FFF;" href="javascript:void(0)">' + res.chAmount + '</a>';
+                            } else {
+                                return res.chAmount;
+                            }
+                        }
+                    },
+                    {
+                        field: 'sykc', title: '剩余库存', sort: true, templet: function (res) {
+                            if (res.sykc > 0) {
+                                return '<a onclick="fppdObj.toDataList(\'kc\', \'' + res.kpjCode + '\', \'' + res.pdMonth + '\', \'' + res.fplx + '\')" style="color: #1E9FFF;" href="javascript:void(0)">' + res.sykc + '</a>';
+                            } else {
+                                return res.sykc;
+                            }
+                        }
+                    },
+                    {
+                        field: 'pdbz', title: '状态', templet: function (res) {
+                            if (res.pdbz == '1') {
+                                return '<span style="color:red;">待盘点</span>';
+                            } else if (res.pdbz == '2') {
+                                return '<span style="color:green;">已盘点</span>';
+                            }
+                        }
+                    },
+                    {fixed: 'right', title: '操作', toolbar: '#tableOperation'}
+                ]
+            ];
+            var table = layui.table;
+            table.render({
+                id: "dataList",
+                elem: '#test',
+                method: 'POST',
+                url: '/noc/invoiceMana/getFppdList',
+                where: params,
+                toolbar: '#tableBut',
+                defaultToolbar: ['filter'],
+                title: '发票盘点',
+                cols: colsData,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                done: function (res, curr, count) {
+                    //alert(res);
+                    $('#tips').remove();
+                }
+            });
+            // 左上角按钮
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var tableEvent = obj.event;
+                var data = checkStatus.data;
+
+                if (tableEvent === 'batchCheck') {
+                    if (data.length == 0) {
+                        layer.alert('请选择要盘点的数据！', {title: '操作提示', icon: 2});
+                        return;
+                    }
+                    var count = 0;
+                    var dataArray = [];
+                    for (var i in data) {
+                        if (data[i]['pdbz'] == '1') {
+                            count++;
+                            dataArray.push(data[i]);
+                        }
+                    }
+                    if (count == 0) {
+                        layer.alert('暂无需要盘点的数据！', {title: '操作提示', icon: 2});
+                        return;
+                    }
+
+                    layer.confirm('确认批量盘点数据？', {icon: 3}, function (index) {
+                        $.ajax({
+                            url: '/noc/invoiceMana/fppdOperate',
+                            type: 'POST',
+                            data: JSON.stringify(dataArray),
+                            contentType: 'application/json;charset=UTF-8',
+                            success: function (result) {
+                                if (result.status == '200') {
+                                    layer.alert('操作成功！', {title: '操作提示', icon: 1});
+                                    _this.loadPage();
+                                } else {
+                                    layer.alert('操作失败！' + result.msg, {title: '操作提示', icon: 2});
+                                }
+                            },
+                            error: function (error) {
+                                layer.alert('操作异常！', {title: '操作提示', icon: 2});
+                            }
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+            // 列表按钮
+            table.on('tool(test)', function (obj) {
+                var tableEvent = obj.event;
+                var data = obj.data;
+                var dataArray = [data];
+                if (tableEvent === 'check') {
+                    layer.confirm('是否确定盘点正确？', {icon: 3}, function (index) {
+                        $.ajax({
+                            url: '/noc/invoiceMana/fppdOperate',
+                            type: 'POST',
+                            data: JSON.stringify(dataArray),
+                            contentType: 'application/json;charset=UTF-8',
+                            success: function (result) {
+                                if (result.status == '200') {
+                                    layer.alert('操作成功！', {title: '操作提示', icon: 1});
+                                    _this.loadPage();
+                                } else {
+                                    layer.alert('操作失败！' + result.msg, {title: '操作提示', icon: 2});
+                                }
+                            },
+                            error: function (error) {
+                                layer.alert('操作异常！', {title: '操作提示', icon: 2});
+                            }
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+            var pdmonth = $('#pdmonth').val();
+            if (pdmonth != null && pdmonth != '') {
+                params.v_time = pdmonth;
+            } else {
+                var now = new Date();
+                params.v_time = now.getFullYear() + '-' + (now.getMonth() + 1);
+            }
+
+            var kpjId = $('#kpjId').val();
+            if (kpjId != null && kpjId != '') {
+                params.v_fjh = kpjId;
+            }
+
+            var invoiceType = $('#invoiceType').val();
+            if (invoiceType != null && invoiceType != '') {
+                params.v_fpzl = invoiceType;
+            } else {
+                params.v_fpzl = '';
+            }
+            return params;
+        },
+        toDataList: function (type, kpjCode, pdMonth, fplx) {
+            var title = '';
+            if (type == 'kp') {
+                title = '已开票';
+            } else if (type == 'zf') {
+                title = '已作废';
+            } else if (type == 'ch') {
+                title = '已冲红';
+            } else if (type == 'kc') {
+                title = '未开票';
+            }
+            layer.open({
+                title: title,
+                type: 2,
+                content: '/noc/invoiceMana/toInvList/' + type + '/' + kpjCode + '/' + pdMonth + '/' + fplx,
+                area: ['100%', '100%'],
+                shadeClose: true
+            });
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/invoiceMana/exportFppdExcel');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+</script>
+</body>
+
+</html>

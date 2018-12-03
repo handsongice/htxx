@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css" />
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+		<style>
+		.mock-icon-btn {
+		    position: relative;
+            height: 26px;
+            padding: 5px;
+            line-height: 16px;
+            margin-right: 10px;
+            text-align: center;
+            color: #333;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            -webkit-transition: .5s all;
+            transition: .5s all;
+            background: #fff;
+		}
+		.mock-icon-btn i {
+                float: left;
+                line-height: 16px;
+                font-size: 14px;
+        }
+        .mock-icon-btn span {
+        margin-left: 3px;
+        }
+        .layui-table-tool-temp {
+            padding-right: 28px;
+           margin-top: 4px;
+        }
+</style>
+	</head>
+
+	<body>
+		<div class="layui-card">
+			<div class="layui-card-header">
+				表格
+				<div class="float-right">
+					<span class="layui-badge bg-light-blue cursor-pointer" id="add-user-btn">添加用户</span>
+				</div>
+			</div>
+			<div class="layui-card-body">
+				<form class="layui-form search-form">
+					<ul>
+						<li>
+							<label>用户名</label>
+							<input type="text" name="title" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+						</li>
+						<li>
+							<label>性别</label>
+							<input type="radio" name="sex" value="男" title="男">
+							<input type="radio" name="sex" value="女" title="女">
+						</li>
+						<li>
+							<label>城市</label>
+							<select lay-search>
+								<option></option>
+								<option value="1">北京</option>
+								<option value="2">纽约</option>
+								<option value="3">巴黎</option>
+							</select>
+						</li>
+						<li>
+							<button type="button" class="layui-btn layui-btn-normal layui-btn-sm">搜索</button>
+							<button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+						</li>
+						<div class="clear-fixed"></div>
+					</ul>
+					<ul>
+						<li>
+							<label>按评分查询</label>
+							<ul class="search-condition-box">
+								<li>80分以上</li>
+								<li>60至80</li>
+								<li>60分以下</li>
+							</ul>
+						</li>
+						<div class="clear-fixed"></div>
+					</ul>
+				</form>
+				<table id="demo" lay-filter="test"></table>
+			</div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/common.js"></script>
+		<script>
+			layui.use(['table', 'form', 'layer'], function() {
+				var table = layui.table;
+				var layer = layui.layer;
+				var struct = [
+					[{
+						checkbox: true,
+					}, {
+						field: 'id',
+						title: 'ID',
+						sort: true,
+					}, {
+						field: 'username',
+						title: '用户名',
+					}, {
+						field: 'sex',
+						title: '性别',
+						sort: true
+					}, {
+						field: 'city',
+						title: '城市',
+					}, {
+						field: 'sign',
+						title: '签名',
+					}, {
+						field: 'experience',
+						title: '积分',
+						sort: true
+					}, {
+						field: 'score',
+						title: '评分',
+						width: 80,
+						sort: true
+					}, {
+						field: 'classify',
+						title: '职业',
+						width: 80
+					}, {
+						field: 'wealth',
+						title: '财富',
+						sort: true
+					}, {
+						field: '',
+						title: '操作',
+						toolbar: '#operation',
+						width: 120
+					}]
+				];
+				var initRender = function(){
+                    nemo.initTable('table/getdata',function (tableData) {
+                        table.render({
+                               elem: '#demo',
+                               id: 'test-table',
+                               size: 'sm',
+                               data: tableData,
+                               toolbar: '#toolbarDemo' ,
+                               defaultToolbar: ['filter'],
+                               page: true,
+                               cols: struct,
+                               text: {
+                                   none: '暂无相关数据...'
+                               }
+                           });
+                    });
+				}
+				//初始化渲染table
+				initRender();
+
+                //监听事件
+                table.on('toolbar(test)', function(obj){
+                  var checkStatus = table.checkStatus(obj.config.id);
+                  switch(obj.event){
+                    case 'add':
+                      layer.msg('添加');
+                    break;
+                    case 'del':
+                      layer.msg('删除');
+                    break;
+                    case 'refresh':
+                        layer.msg('刷新');
+                        initRender();
+                    break;
+                    case 'export':
+                        window.location.href = 'table/export';
+                    break;
+                  };
+                });
+
+				table.on('tool(test)', function(obj) {
+					var tableEvent = obj.event;
+					var data = obj.data;
+					console.log('tool(test)');
+					console.log(tableEvent);
+					  switch(obj.event){
+                        case 'detail':
+                            console.info(data);
+                            nemo.showDetail();
+                        break;
+                        case 'delete':
+                            layer.confirm('确认删除该数据?', function(index) {
+                                obj.del();
+                                layer.close(index);
+                            });
+                        break;
+                        case 'edit':
+                            layer.open({
+                                title: '编辑用户信息',
+                                type: 2,
+                                content: './popup-form.html?data=' + data,
+                                area: ['90%', '90%'],
+                                shadeClose: true
+                            });
+                        break;
+                      };
+
+				});
+
+				//点击添加用户弹出表单
+				$('#add-user-btn').on('click', function() {
+					layer.open({
+						title: '添加用户',
+						type: 2,
+						content: './popup-form.html',
+						area: ['100%', '100%'],
+						shadeClose: true,
+
+					});
+				});
+			});
+		</script>
+		<script type="text/html" id="operation">
+			<!--<span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">查看详情</span>-->
+			<span class="layui-badge bg-light-red cursor-pointer" lay-event="delete">删除</span>
+			<span class="layui-badge bg-light-green cursor-pointer" lay-event="edit">编辑</span>
+		</script>
+		<script type="text/html" id="toolbarDemo">
+          <button class="mock-icon-btn"  lay-event="add" title="添加通知单">
+            <i class="fa fa-plus"></i><span>添加</span>
+          </button>
+          <button class="mock-icon-btn" lay-event="del" title="批量删除">
+            <i class="fa fa-minus"></i><span>删除</span>
+          </button>
+        <button class="mock-icon-btn reload-btn" lay-event="refresh" title="刷新" style="float:right">
+            <i class="fa fa-refresh"></i><span>刷新</span>
+         </button>
+         <button class="mock-icon-btn" lay-event="export" title="导出Excel" style="float:right">
+             <i class="fa fa-share-square-o"></i><span>导出</span>
+         </button>
+
+
+        </script>
+	</body>
+
+</html>

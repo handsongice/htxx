@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>分发</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">入库发票信息</div>
+    <div class="layui-card-body">
+        <table class="layui-table" id="table1" lay-filter="table1"></table>
+
+        <input id="stockId" th:value="${stockId}" type="hidden">
+        <input id="fplx" th:value="${fplx}" type="hidden">
+
+        <script type="text/html" id="table1Operation">
+            <span class="cursor-pointer table_btn" lay-event="distribute">分发</span>
+        </script>
+    </div>
+</div>
+
+<div class="layui-card">
+    <div class="layui-card-header">历史分发</div>
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="table2" lay-filter="table2"></table>
+
+        <script type="text/html" id="table2But">
+            <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="batchExport">
+                <i class="layui-icon">&#xe601;</i>批量导出
+            </button>
+        </script>
+
+        <script type="text/html" id="table2Operation">
+            {{# if(d.status == 1) { }}
+            <span class="cursor-pointer table_btn" lay-event="back">退回</span>
+            {{# } else {}}
+            <span class="table_btn" style="color:gray;">--</span>
+            {{# }}}
+        </script>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['table'], function () {
+        var table = layui.table;
+        storeObj.loadPage();
+    });
+
+    var storeObj = {
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+            var colsData1 = [
+                [
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return "增值税专用发票";
+                            } else if (res.fplx == '2') {
+                                return "增值税普通发票";
+                            } else if (res.fplx == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphmq', title: '发票号码(起)', sort: true},
+                    {field: 'fphmz', title: '发票号码(止)', sort: true},
+                    {field: 'fpsl', title: '发票份数', sort: true},
+                    {
+                        field: 'ffsl', title: '分发份数', sort: true, templet: function (res) {
+                            if (res.ffsl == null) {
+                                return "0";
+                            }
+                            return res.ffsl;
+                        }
+                    },
+                    {field: 'sysl', title: '剩余份数', sort: true},
+                    {fixed: 'right', title: '操作', toolbar: '#table1Operation'}
+                ]
+            ];
+            var colsData2 = [
+                [
+                    {field: 'kpjName', title: '开票机', unresize: true, sort: true},
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return '增值税专用发票';
+                            } else if (res.fplx == '2') {
+                                return '增值税普通发票';
+                            } else if (res.fplx == '51') {
+                                return '增值税电子普通发票';
+                            }
+                        }
+                    },
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphmq', title: '发票号码(起)', sort: true},
+                    {field: 'fphmz', title: '发票号码(止)', sort: true},
+                    {field: 'ffsl', title: '分发份数', sort: true},
+                    {field: 'sysl', title: '剩余份数', sort: true},
+                    {field: 'createTimeStr', title: '分发时间', sort: true},
+                    {
+                        field: 'status', title: '状态', sort: true, templet: function (res) {
+                            if (res.status == 1) {
+                                return '<span style="color:green;">已分发</span>';
+                            } else if (res.status == 2) {
+                                return '<span style="color:red;">已退回</span>';
+                            }
+                        }
+                    },
+                    {fixed: 'right', title: '操作', toolbar: '#table2Operation'}
+                ]
+            ];
+            var queryParams = _this.getRequestParams();
+            var table = layui.table;
+            table.render({
+                id: "dataList1",
+                elem: '#table1',
+                method: 'GET',
+                // where: queryParams,
+                url: '/noc/invoice/getStoreListForFf/' + $('#stockId').val(),
+                title: '入库发票信息',
+                cols: colsData1,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                done: function (res, curr, count) {
+                    //alert(res);
+                }
+            });
+
+            queryParams.fromId = queryParams.stockId;
+            delete queryParams["stockId"];
+            table.render({
+                id: "dataList2",
+                elem: '#table2',
+                method: 'POST',
+                where: queryParams,
+                url: '/noc/invoice/getDistributeLogList',
+                toolbar: '#table2But',
+                defaultToolbar: ['filter'],
+                title: '历史分发',
+                cols: colsData2,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    //alert(res);
+                }
+            });
+            // 左上角按钮
+            table.on('toolbar(table2)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var tableEvent = obj.event;
+                var data = checkStatus.data;
+
+                if (tableEvent === 'batchExport') {
+                    _this.exportExcel();
+                }
+            });
+            // 列表按钮
+            table.on('tool(table1)', function (obj) {
+                var tableEvent = obj.event;
+                var data = obj.data;
+
+                if (tableEvent === 'distribute') {
+                    layer.open({
+                        title: '编辑分发内容',
+                        type: 2,
+                        content: '/noc/invoice/toDistributeOperatePage/' + data.fplx + '/' + data.id,
+                        area: ['55%', '72%'],
+                        shadeClose: true
+                    });
+                }
+            });
+            // 列表按钮
+            table.on('tool(table2)', function (obj) {
+                var tableEvent = obj.event;
+                var data = obj.data;
+
+                if (tableEvent === 'back') {
+                    layer.confirm('是否确认退回？', {'icon': 3}, function (index) {
+                        $.ajax({
+                            url: '/noc/invoice/returnDistribute/' + data.id,
+                            type: 'POST',
+                            dataType: 'json',
+                            success: function (result) {
+                                if (result.status == '200') {
+                                    layer.alert('退回成功！', {'icon': 1});
+                                    _this.loadPage();
+                                } else {
+                                    layer.alert(result.msg, {'icon': 2});
+                                }
+                            },
+                            error: function (error) {
+                                layer.alert('系统异常！', {'icon': 2});
+                            }
+                        });
+                        layer.close(index);
+                    });
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+
+            var fplx = $('#fplx').val();
+            if (fplx != null && fplx != '') {
+                params.fplx = fplx;
+            }
+
+            var stockId = $('#stockId').val();
+            if (stockId != null && stockId != '') {
+                params.stockId = stockId;
+            }
+
+            return params;
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/invoice/exportFfLogExcel');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+</script>
+</body>
+
+</html>

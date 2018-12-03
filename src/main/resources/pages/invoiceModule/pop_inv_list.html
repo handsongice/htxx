@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>列表</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+
+        .itemField {
+            border-bottom: 1px dashed #e7eaec;
+            min-height: 35px;
+            line-height: 35px;
+            padding: 15px 0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .tableFiled {
+            padding-right: 15px;
+        }
+
+        .tableFiled .redStar {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layui-card">
+    <div class="layui-card-body">
+        <input id="hiddenPdType" th:value="${type}" type="hidden">
+        <input id="hiddenKpjCode" th:value="${kpjCode == '0' ? '101' : kpjCode}" type="hidden">
+        <input id="hiddenPdMonth" th:value="${pdMonth}" type="hidden">
+        <input id="hiddenFplx" th:value="${fplx == '0' ? '100' : fplx}" type="hidden">
+
+        <table class="layui-table" id="invListTable" lay-filter="invListTable"></table>
+
+        <script type="text/html" id="invListToolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="batchExport">
+                    <i class="layui-icon">&#xe601;</i>导出
+                </button>
+            </div>
+        </script>
+
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+
+    layui.use(['table', 'laydate'], function () {
+        invListObj.loadPage();
+    });
+
+    var invListObj = {
+        colsData: {
+            kp: [
+                [
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphm', title: '发票号码', sort: true},
+                    {
+                        field: 'fjh', title: '开票机', templet: function (d) {
+                            if (0 == d.fjh) {
+                                return '<span style="color: #4178be;">主机</span>';
+                            } else {
+                                return '<span style="color: #2ec7c9;">开票机' + d.fjh + '</span>';
+                            }
+                        }
+                    },
+                    {
+                        field: 'fpzl', title: '发票类型', sort: true, templet: function (d) {
+                            if (0 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-red cursor-pointer">专票</span>';
+                            } else if (2 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-blue cursor-pointer">普票</span>';
+                            } else if (51 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-green cursor-pointer">电子票</span>';
+                            } else if (41 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-orange cursor-pointer">卷票</span>';
+                            }
+                        }
+                    },
+                    {field: 'gfmc', title: '购方信息', sort: true},
+                    {field: 'gfsh', title: '纳税人识别号', sort: true},
+                    {field: 'kpsj', title: '开票时间', sort: true},
+                    {field: 'jshj', title: '开票金额', sort: true},
+                    {field: 'kpr', title: '开票人'}
+                ]
+            ],
+            zf: [
+                [
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphm', title: '发票号码', sort: true},
+                    {
+                        field: 'fjh', title: '开票机', templet: function (d) {
+                            if (0 == d.fjh) {
+                                return '<span style="color: #4178be;">主机</span>';
+                            } else {
+                                return '<span style="color: #2ec7c9;">开票机' + d.fjh + '</span>';
+                            }
+                        }
+                    },
+                    {
+                        field: 'fpzl', title: '发票类型', sort: true, templet: function (d) {
+                            if (0 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-red cursor-pointer">专票</span>';
+                            } else if (2 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-blue cursor-pointer">普票</span>';
+                            } else if (51 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-green cursor-pointer">电子票</span>';
+                            } else if (41 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-orange cursor-pointer">卷票</span>';
+                            }
+                        }
+                    },
+                    {field: 'gfmc', title: '购方信息', sort: true},
+                    {field: 'gfsh', title: '纳税人识别号', sort: true},
+                    {field: 'kpsj', title: '开票时间', sort: true},
+                    {field: 'jshj', title: '开票金额', sort: true},
+                    {field: 'kpr', title: '开票人'}
+                ]
+            ],
+            ch: [
+                [
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphm', title: '发票号码', sort: true},
+                    {
+                        field: 'fjh', title: '开票机', templet: function (d) {
+                            if (0 == d.fjh) {
+                                return '<span style="color: #4178be;">主机</span>';
+                            } else {
+                                return '<span style="color: #2ec7c9;">开票机' + d.fjh + '</span>';
+                            }
+                        }
+                    },
+                    {
+                        field: 'fpzl', title: '发票类型', sort: true, templet: function (d) {
+                            if (0 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-red cursor-pointer">专票</span>';
+                            } else if (2 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-blue cursor-pointer">普票</span>';
+                            } else if (51 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-green cursor-pointer">电子票</span>';
+                            } else if (41 == d.fpzl) {
+                                return '<span class="layui-badge bg-light-orange cursor-pointer">卷票</span>';
+                            }
+                        }
+                    },
+                    {field: 'gfmc', title: '购方信息', sort: true},
+                    {field: 'gfsh', title: '纳税人识别号', sort: true},
+                    {field: 'kpsj', title: '开票时间', sort: true},
+                    {field: 'jshj', title: '开票金额', sort: true},
+                    {field: 'kpr', title: '开票人'}
+                ]
+            ],
+            kc: [
+                [
+                    {field: 'enterpriseName', title: '公司', unresize: true, sort: true},
+                    {field: 'deptId', title: '部门id', hide: true},
+                    {field: 'deptName', title: '部门', sort: true},
+                    {field: 'kpjName', title: '开票机名', sort: true},
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return "增值税专用发票";
+                            } else if (res.fplx == '2') {
+                                return "增值税普通发票";
+                            } else if (res.fplx == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphmq', title: '发票起始号', sort: true},
+                    {field: 'fpsl', title: '发票数量', sort: true},
+                    {field: 'sysl', title: '剩余数量', sort: true},
+                    {field: 'gmrqStr', title: '购买日期', sort: true}
+                ]
+            ]
+        },
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+            var table = layui.table;
+            var paramsObj = _this.getRequestParams();
+            var colsData = _this.colsData[paramsObj.pdType];
+
+            table.render({
+                id: "invListTable",
+                elem: '#invListTable',
+                method: 'POST',
+                url: '/noc/invoiceMana/getFppdInvList',
+                where: _this.getRequestParams(),
+                toolbar: '#invListToolbar',
+                defaultToolbar: ['filter'],
+                title: '数据列表',
+                cols: colsData,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    // console.log(111);
+                }
+            });
+            // 左上角按钮
+            table.on('toolbar(test)', function (obj) {
+                var tableEvent = obj.event;
+                if (tableEvent === 'batchExport') {
+                    _this.exportExcel();
+                }
+            });
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+
+            var pdType = $('#hiddenPdType').val();
+            if (pdType != null && pdType != '') {
+                params.pdType = pdType;
+            }
+            var kpjCode = $('#hiddenKpjCode').val();
+            if (kpjCode != null && kpjCode != '') {
+                params.kpjCode = kpjCode;
+            }
+            var pdMonth = $('#hiddenPdMonth').val();
+            if (pdMonth != null && pdMonth != '') {
+                params.pdMonth = pdMonth;
+            }
+            var fplx = $('#hiddenFplx').val();
+            if (fplx != null && fplx != '') {
+                params.fplx = fplx;
+            }
+            return params;
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/invoiceMana/exportFppdInvListExcel');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+
+</script>
+</body>
+
+</html>

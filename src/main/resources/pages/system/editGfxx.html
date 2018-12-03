@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<style>
+			.layui-form-label {
+				width: 80px;
+				padding: 0 8px;
+			}
+			
+			.layui-input-block {
+				margin-left: 110px;
+				margin-right: 110px;
+			}
+		</style>
+		<script src="/static/js/respond.min.js"></script>
+
+	</head>
+
+	<body>
+		<form id="noticeForm" class="layui-form" action="" lay-filter="noticeForm" >
+			<input type="hidden" class="id" name="id" th:value="${gfxx.id}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">购方名称<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="gfmc" th:value="${gfxx.gfmc}" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入购方名称" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">购方税号<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="gfsh" th:value="${gfxx.gfsh}" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入购方税号" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">自由票白名单<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<select name="zyp_white_list" th:if="${gfxx.zypWhiteList eq 1}" lay-verify="required" lay-verType="tips">
+						<option value="1" selected>不是</option>
+						<option value="2">是</option>
+					</select>
+					<select name="zyp_white_list" th:if="${gfxx.zypWhiteList eq 2}" lay-verify="required" lay-verType="tips">
+						<option value="1" >不是</option>
+						<option value="2" selected>是</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">地址电话</label>
+				<div class="layui-input-block">
+					<input type="text" name="dzdh" th:value="${gfxx.dzdh}" placeholder="请输入地址电话" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">银行账号</label>
+                <div class="layui-input-block">
+                    <input type="text" name="yhzh" th:value="${gfxx.yhzh}" placeholder="请输入银行账号" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button type="button" class="layui-btn" lay-submit  lay-filter="addOrEdit">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/layui/layui-xtree.js"></script>
+		<script src="/static/js/index.js"></script>
+		<script th:inline="javascript">
+            var windowindex = parent.layer.getFrameIndex(window.name);
+            $(document).ready(function () {
+                layui.use(['form', 'layer'], function() {
+                    var form = layui.form;
+                    var layer = layui.layer;
+
+                    //表单提交验证
+                    form.on('submit(addOrEdit)', function(data){
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/updateGfxx",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                id:data.field.id,
+                                gfmc:data.field.gfmc,
+                                gfsh:data.field.gfsh,
+                                dzdh:data.field.dzdh,
+                                yhzh:data.field.yhzh,
+                                zypWhiteList:data.field.zyp_white_list,
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                        parent._search();
+                                        parent.layer.close(windowindex); //再执行关闭
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    });
+                    //表单自定义验证规则
+                    form.verify({
+                        hm: function(value, item){
+                            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                                return '不能含有有特殊字符';
+                            }
+                        },
+                        je: function(value,item) {
+                            if(!/^\d+(?:.\d{1,2})?$/.test(value)){
+                                return '输入不合法,只能为整数或小数点2位以内的数字';
+                            }
+                        }
+                    });
+                });
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form search-form " lay-filter="component-form-group">
+            <ul>
+                <li>
+                    <label>户名:</label>
+                    <input type="text" name="userName" id="userName" placeholder="请输入户名" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>含税金额(起):</label>
+                    <input type="text" name="minMoneyIncludeTax" id="minMoneyIncludeTax" placeholder="请输入起始含税金额"
+                           autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>含税金额(止):</label>
+                    <input type="text" name="maxMoneyIncludeTax" id="maxMoneyIncludeTax" placeholder="请输入截止含税金额"
+                           autocomplete="off"
+                           class="layui-input">
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <label>税号:</label>
+                    <input type="text" name="taxNum" id="taxNum" placeholder="请输入税号" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>备注:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="text" name="remark" id="remark" placeholder="请输入备注" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>年月:</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="text" class="layui-input" name="searchDate" id="searchDate" placeholder="yyyy-MM-dd">
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm _search" lay-submit
+                            lay-filter="search"
+                    >搜索
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-sm">重置</button>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm _search" lay-submit
+                            lay-filter="submitExport">按条件导出
+                    </button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+        <div>
+            <table id="demo" class="layui-hide" lay-filter="test"></table>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/moment.js"></script>
+<script src="/static/js/common.js"></script>
+<script type="text/javascript" src="/static/js/invoice/fpkj.js"></script>
+<script>
+    var table = null;
+    var layer = null;
+    var laydate = null;
+    var form = null;
+    var struct = null;
+    var active = null;
+    layui.use(['table', 'form', 'layer', 'laydate'], function () {
+        table = layui.table;
+        layer = layui.layer;
+        laydate = layui.laydate;
+        form = layui.form;
+        laydate.render({
+            elem: '#date',
+            trigger: 'click'
+        })
+        struct = [
+            [{
+                checkbox: true,
+            }, {
+                field: 'id',
+                title: 'ID',
+                width: 200
+
+            }, {
+                field: 'identityField',
+                title: '当月唯一标识',
+                width: 200,
+            },
+                {
+                    field: 'userName',
+                    title: '户名',
+                    width: 200,
+                }, {
+                field: 'monthYear',
+                title: '月份',
+                width: 70,
+            }, {
+                field: 'userTaxNo',
+                title: '购方税号',
+                width: 170,
+            }, {
+                field: 'totalMoneyIncludeTax',
+                title: '金额',
+                width: 120,
+            }, {
+                field: '',
+                title: '操作',
+                toolbar: '#operation',
+                width: 150,
+                fixed: 'right'
+            }]
+        ];
+        //加载日期选择框
+        $('._laydate').each(function () {
+            laydate.render({
+                elem: this,      //使用this指向当前元素,不能使用class名, 否则只有第一个有效
+                trigger: 'click'
+            });
+        })
+        table.render({
+            elem: '#demo',
+            size: 'sm',
+            width: '1095',
+            url: "/noc/djxgsh/list",
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter'],
+            page: true,
+            cols: struct,
+            text: {none: '暂无相关数据...'},
+            id: 'reloadId',
+            loading: true
+        });
+        active = {
+            checkJe: function () { //获取当前查询条件值
+                var maxMoneyIncludeTax = $("#maxMoneyIncludeTax").val();
+                var minMoneyIncludeTax = $("#minMoneyIncludeTax").val();
+                if ((undefined != minMoneyIncludeTax && '' != minMoneyIncludeTax) && !(/^\d+(?:.\d{1,2})?$/.test(minMoneyIncludeTax))) {
+                    console.log("最小金额输入不合法" + minMoneyIncludeTax);
+                    layer.msg('最小金额输入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                if ((undefined != maxMoneyIncludeTax && '' != maxMoneyIncludeTax) && !(/^\d+(?:.\d{1,2})?$/.test(maxMoneyIncludeTax))) {
+                    console.log("最大金额输入不合法" + maxMoneyIncludeTax);
+                    layer.msg('最大金额输入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                return true;
+            },
+            search: function (formData, todo) {//查询按钮 + 刷新页面数据
+                if (active.checkJe(formData)) {
+                    //整理时间格式
+                    console.log("重新刷新:" + formData);
+                    //获取当前查询条件值
+                    table.reload('reloadId', {
+                        page: {curr: 1},//从第 1 页 开始刷新
+                        where: formData,
+                        done: function (res, curr, count) {
+                            //如果是异步请求数据方式,res即为你接口返回的信息.
+                            //如果是直接赋值的方式,res即为:{data: [], count: 99} data为当前页数据,count为数据总长度
+                            if (todo) {
+                                if (count > 0) todo(formData);
+                                else layer.alert("无相关查询条件的可操作数据!", {icon: 2, title: '温馨提示'});
+                            }
+                        }
+                    });
+                }
+
+            },
+            searchExport: function (formData) {//按条件导出按钮
+                //刷新页面列表 并 导出数据
+                console.log("按条件导出按钮");
+                layer.confirm('确认导出以下审核记录至Excel?', {icon: 3, title: '温馨提示'},
+                    function (index) {
+                        var url = '/noc/djxgsh/exportExcel?userName=' + formData.userName +
+                            '&taxNum=' + formData.taxNum +
+                            '&remark=' + formData.remark +
+                            '&searchDate=' + formData.searchDate +
+                            '&minMoneyIncludeTax=' + formData.minMoneyIncludeTax +
+                            '&maxMoneyIncludeTax=' + formData.maxMoneyIncludeTax;
+                        window.location.href = url;
+                        layer.close(index);
+                    });
+
+            },
+            getCheckData: function () { //获取选中数据
+                var checkStatus = table.checkStatus('reloadId')
+                    , checkData = checkStatus.data;
+                var dataFormat = "";
+                //格式化获取数据,只过滤tzdId,变成以逗号分隔的字符串
+                for (var i = 0; i < checkData.length; i++) {
+                    if (i != checkData.length - 1) {
+                        dataFormat += checkData[i].djh + ',';
+                    } else {
+                        dataFormat += checkData[i].djh;
+                    }
+                }
+                if ('' == dataFormat) {
+                    layer.alert("您未点选任何数据,不能进行该操作!", {icon: 2, title: '温馨提示'});
+                    return false;
+                } else {
+                    return dataFormat;
+                }
+            },
+            getThisData: function () { //获取选中数据
+                var checkStatus = table.checkStatus('reloadId')
+                    , checkData = checkStatus.data;
+                var dataFormat = "";
+                //格式化获取数据,只过滤tzdId,变成以逗号分隔的字符串
+                for (var i = 0; i < checkData.length; i++) {
+                    if (i != checkData.length - 1) {
+                        dataFormat += checkData[i];
+                    } else {
+                        dataFormat += checkData[i];
+                    }
+                }
+                if ('' == dataFormat) {
+                    layer.alert("您未点选任何数据,不能进行该操作!", {icon: 2, title: '温馨提示'});
+                    return false;
+                } else {
+                    return dataFormat;
+                }
+            },
+            ajaxPost: function (url, data, todo) {// ajax post 请求
+                var indexLoading;
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    data: data,
+                    dataType: 'json',
+                    async: false,
+                    beforeSend: function () {
+                        indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                    },
+                    success: function (rlt) {
+                        console.log(rlt);
+                        if (rlt.status == '200') {
+                            layer.close(indexLoading);
+                            if (todo) {
+                                todo(rlt.data);
+                            } else {
+                                layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'});
+                                active.search({kpsjMin: "", kpsjMax: ""});
+                            }
+                        } else {
+                            layer.close(indexLoading);
+                            layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                        }
+                    },
+                    error: function (rlt) {
+                        layer.close(indexLoading);
+                        layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                    }
+                })
+            }
+        }
+
+        //表单“搜索”按钮
+        form.on('submit(search)', function (data) {
+            active.search(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //表单“批量导出”按钮
+        form.on('submit(submitExport)', function (data) {
+            console.log('submit(submitExport)');
+            active.searchExport(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+        //监听事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'exports':
+                    //批量导出
+                    var djhs = active.getCheckData();
+                    console.log(djhs);
+                    if (false != djhs) {
+                        layer.confirm('确认导出以下点发票据至Excel?', {icon: 3, title: '温馨提示'}, function (index) {
+                            window.location.href = '/noc/zyp/export?djhs=' + djhs;
+                            layer.close(index);
+                        });
+                    }
+                    break;
+            }
+            ;
+        });
+
+        table.on('tool(test)', function (obj) {
+            var tableEvent = obj.event;
+            var data = obj.data;
+            var id = data.id;//单据号
+            console.log(tableEvent);
+            console.log("id:" + id);
+            switch (obj.event) {
+                case 'detail':
+                    //审核内容详情
+                    layer.open({
+                        title: '审核内容详情',
+                        type: 2,
+                        //content: '/noc/ykfp/showDjDetail?djh=' + djh,
+                        content: '/noc/djxgsh/newAndOldDjDel?id=' + id,
+                        area: ['90%', '90%'],
+                        shadeClose: true,
+                        end: function () {
+                            //关闭时刷新页面
+                            active.search();
+                        }
+                    });
+                    break;
+                case 'print':
+                    layer.open({
+                        title: '审核历史记录',
+                        type: 2,
+                        //content: '/noc/ykfp/showDjDetail?djh=' + djh,
+                        content: '/noc/djxgsh/shenHeLiShiJiLu?id=' + id,
+                        area: ['60%', '90%'],
+                        shadeClose: true,
+                        end: function () {
+                            //关闭时刷新页面
+                            active.search();
+                        }
+                    });
+                    break;
+            }
+            ;
+        });
+    })
+</script>
+<script type="text/html" id="operation">
+    <span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">审核</span>
+    <span class="layui-badge bg-light-orange cursor-pointer" lay-event="print">审核记录</span>
+</script>
+<script type="text/html" id="toolbarDemo">
+    <!--<button class="mock-icon-btn" lay-event="exports" title="批量导出Excel">-->
+        <!--<i class="fa fa-share-square-o"></i><span>批量导出</span>-->
+    <!--</button>-->
+    <button class="mock-icon-btn" lay-event="refresh" title="刷新" style="float:right">
+        <i class="fa fa-refresh"></i><span>刷新</span>
+    </button>
+</script>
+</body>
+
+</html>

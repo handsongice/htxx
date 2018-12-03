@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<!--<link rel="stylesheet/less" href="css/common.less" />
+		<link rel="stylesheet/less" href="css/index.less" />-->
+		<link rel="stylesheet" href="/static/css/common.css">
+		<script src="/static/js/respond.min.js"></script>
+		<title></title>
+	</head>
+
+	<body>
+		<div class="layui-row layui-col-space10">
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">阶梯瀑布图</div>
+					<div class="layui-card-body">
+						<div id="echarts1" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">饼图</div>
+					<div class="layui-card-body">
+						<div id="echarts2" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">柱状图</div>
+					<div class="layui-card-body">
+						<div id="echarts3" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">折线图</div>
+					<div class="layui-card-body">
+						<div id="echarts4" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">地图</div>
+					<div class="layui-card-body">
+						<div id="echarts5" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg4 layui-col-md6">
+				<div class="layui-card">
+					<div class="layui-card-header">环形图</div>
+					<div class="layui-card-body">
+						<div id="echarts6" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+			<div class="layui-col-lg12 layui-col-md12">
+				<div class="layui-card">
+					<div class="layui-card-header">标准面积图</div>
+					<div class="layui-card-body">
+						<div id="echarts10" style="height:250px;"></div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/echarts.min.js"></script>
+		<script src="/static/js/macarons.js"></script>
+		<script>
+			echarts.init(document.getElementById('echarts1'), 'macarons').setOption({
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: { // 坐标轴指示器，坐标轴触发有效
+						type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+					},
+					formatter: function(params) {
+						var tar;
+						if(params[1].value != '-') {
+							tar = params[1];
+						} else {
+							tar = params[0];
+						}
+						return tar.name + '<br/>' + tar.seriesName + ' : ' + tar.value;
+					}
+				},
+				legend: {
+					data: ['支出', '收入']
+				},
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					containLabel: true
+				},
+				xAxis: {
+					type: 'category',
+					splitLine: {
+						show: false
+					},
+					data: function() {
+						var list = [];
+						for(var i = 1; i <= 11; i++) {
+							list.push('11月' + i + '日');
+						}
+						return list;
+					}()
+				},
+				yAxis: {
+					type: 'value'
+				},
+				series: [{
+						name: '辅助',
+						type: 'bar',
+						stack: '总量',
+						itemStyle: {
+							normal: {
+								barBorderColor: 'rgba(0,0,0,0)',
+								color: 'rgba(0,0,0,0)'
+							},
+							emphasis: {
+								barBorderColor: 'rgba(0,0,0,0)',
+								color: 'rgba(0,0,0,0)'
+							}
+						},
+						data: [0, 900, 1245, 1530, 1376, 1376, 1511, 1689, 1856, 1495, 1292]
+					},
+					{
+						name: '收入',
+						type: 'bar',
+						stack: '总量',
+						label: {
+							normal: {
+								show: true,
+								position: 'top'
+							}
+						},
+						data: [900, 345, 393, '-', '-', 135, 178, 286, '-', '-', '-']
+					},
+					{
+						name: '支出',
+						type: 'bar',
+						stack: '总量',
+						label: {
+							normal: {
+								show: true,
+								position: 'bottom'
+							}
+						},
+						data: ['-', '-', '-', 108, 154, '-', '-', '-', 119, 361, 203]
+					}
+				]
+			});
+			echarts.init(document.getElementById('echarts2'), 'macarons').setOption({
+				tooltip: {
+					trigger: 'item',
+					formatter: "{a} <br/>{b} : {c} ({d}%)"
+				},
+				legend: {
+					orient: 'vertical',
+					left: 'left',
+					data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+				},
+				series: [{
+					name: '访问来源',
+					type: 'pie',
+					radius: '55%',
+					center: ['50%', '60%'],
+					data: [{
+							value: 335,
+							name: '直接访问'
+						},
+						{
+							value: 310,
+							name: '邮件营销'
+						},
+						{
+							value: 234,
+							name: '联盟广告'
+						},
+						{
+							value: 135,
+							name: '视频广告'
+						},
+						{
+							value: 1548,
+							name: '搜索引擎'
+						}
+					],
+					itemStyle: {
+						emphasis: {
+							shadowBlur: 10,
+							shadowOffsetX: 0,
+							shadowColor: 'rgba(0, 0, 0, 0.5)'
+						}
+					}
+				}]
+			});
+
+			echarts.init(document.getElementById('echarts3'), 'macarons').setOption({
+				tooltip: {
+					trigger: 'axis'
+				},
+				legend: {
+					data: ['蒸发量', '降水量']
+				},
+				toolbox: {
+					show: true,
+					feature: {
+						mark: {
+							show: true
+						},
+						dataView: {
+							show: true,
+							readOnly: false
+						},
+						magicType: {
+							show: true,
+							type: ['line', 'bar']
+						},
+						restore: {
+							show: true
+						},
+						saveAsImage: {
+							show: true
+						}
+					}
+				},
+				calculable: true,
+				xAxis: [{
+					type: 'category',
+					data: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+				}],
+				yAxis: [{
+					type: 'value'
+				}],
+				series: [{
+						name: '蒸发量',
+						type: 'bar',
+						data: [2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3],
+						markPoint: {
+							data: [{
+									type: 'max',
+									name: '最大值'
+								},
+								{
+									type: 'min',
+									name: '最小值'
+								}
+							]
+						},
+						markLine: {
+							data: [{
+								type: 'average',
+								name: '平均值'
+							}]
+						}
+					},
+					{
+						name: '降水量',
+						type: 'bar',
+						data: [2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3],
+						markPoint: {
+							data: [{
+									name: '年最高',
+									value: 182.2,
+									xAxis: 7,
+									yAxis: 183,
+									symbolSize: 18
+								},
+								{
+									name: '年最低',
+									value: 2.3,
+									xAxis: 11,
+									yAxis: 3
+								}
+							]
+						},
+						markLine: {
+							data: [{
+								type: 'average',
+								name: '平均值'
+							}]
+						}
+					}
+				]
+			});
+			echarts.init(document.getElementById('echarts4'), 'macarons').setOption({
+				xAxis: {
+					type: 'category',
+					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+				},
+				yAxis: {
+					type: 'value'
+				},
+				series: [{
+					data: [820, 932, 901, 934, 1290, 1330, 1320],
+					type: 'line'
+				}]
+			});
+			var myChart = echarts.init(document.getElementById('echarts5'), 'macarons');
+			myChart.showLoading();
+
+			$.get('/static/js/HK.json', function(geoJson) {
+
+				myChart.hideLoading();
+				echarts.registerMap('HK', geoJson);
+
+				myChart.setOption({
+					title: {
+						text: '香港18区人口密度 （2011）',
+						subtext: '人口密度数据来自Wikipedia',
+						sublink: 'http://zh.wikipedia.org/wiki/%E9%A6%99%E6%B8%AF%E8%A1%8C%E6%94%BF%E5%8D%80%E5%8A%83#cite_note-12'
+					},
+					tooltip: {
+						trigger: 'item',
+						formatter: '{b}<br/>{c} (p / km2)'
+					},
+					toolbox: {
+						show: true,
+						orient: 'vertical',
+						left: 'right',
+						top: 'center',
+						feature: {
+							dataView: {
+								readOnly: false
+							},
+							restore: {},
+							saveAsImage: {}
+						}
+					},
+					visualMap: {
+						min: 800,
+						max: 50000,
+						text: ['High', 'Low'],
+						realtime: false,
+						calculable: true,
+						inRange: {
+							color: ['lightskyblue', 'yellow', 'orangered']
+						}
+					},
+					series: [{
+						name: '香港18区人口密度',
+						type: 'map',
+						mapType: 'HK', // 自定义扩展图表类型
+						itemStyle: {
+							normal: {
+								label: {
+									show: true
+								}
+							},
+							emphasis: {
+								label: {
+									show: true
+								}
+							}
+						},
+						data: [{
+								name: '中西区',
+								value: 20057.34
+							},
+							{
+								name: '湾仔',
+								value: 15477.48
+							},
+							{
+								name: '东区',
+								value: 31686.1
+							},
+							{
+								name: '南区',
+								value: 6992.6
+							},
+							{
+								name: '油尖旺',
+								value: 44045.49
+							},
+							{
+								name: '深水埗',
+								value: 40689.64
+							},
+							{
+								name: '九龙城',
+								value: 37659.78
+							},
+							{
+								name: '黄大仙',
+								value: 45180.97
+							},
+							{
+								name: '观塘',
+								value: 55204.26
+							},
+							{
+								name: '葵青',
+								value: 21900.9
+							},
+							{
+								name: '荃湾',
+								value: 4918.26
+							},
+							{
+								name: '屯门',
+								value: 5881.84
+							},
+							{
+								name: '元朗',
+								value: 4178.01
+							},
+							{
+								name: '北区',
+								value: 2227.92
+							},
+							{
+								name: '大埔',
+								value: 2180.98
+							},
+							{
+								name: '沙田',
+								value: 9172.94
+							},
+							{
+								name: '西贡',
+								value: 3368
+							},
+							{
+								name: '离岛',
+								value: 806.98
+							}
+						],
+						// 自定义名称映射
+						nameMap: {
+							'Central and Western': '中西区',
+							'Eastern': '东区',
+							'Islands': '离岛',
+							'Kowloon City': '九龙城',
+							'Kwai Tsing': '葵青',
+							'Kwun Tong': '观塘',
+							'North': '北区',
+							'Sai Kung': '西贡',
+							'Sha Tin': '沙田',
+							'Sham Shui Po': '深水埗',
+							'Southern': '南区',
+							'Tai Po': '大埔',
+							'Tsuen Wan': '荃湾',
+							'Tuen Mun': '屯门',
+							'Wan Chai': '湾仔',
+							'Wong Tai Sin': '黄大仙',
+							'Yau Tsim Mong': '油尖旺',
+							'Yuen Long': '元朗'
+						}
+					}]
+				});
+			});
+			echarts.init(document.getElementById('echarts6'), 'macarons').setOption({
+				tooltip: {
+					trigger: 'item',
+					formatter: "{a} <br/>{b}: {c} ({d}%)"
+				},
+				legend: {
+					orient: 'vertical',
+					x: 'left',
+					data: ['直接访问', '邮件营销', '联盟广告', '视频广告', '搜索引擎']
+				},
+				series: [{
+					name: '访问来源',
+					type: 'pie',
+					radius: ['50%', '70%'],
+					avoidLabelOverlap: false,
+					label: {
+						normal: {
+							show: false,
+							position: 'center'
+						},
+						emphasis: {
+							show: true,
+							textStyle: {
+								fontSize: '30',
+								fontWeight: 'bold'
+							}
+						}
+					},
+					labelLine: {
+						normal: {
+							show: false
+						}
+					},
+					data: [{
+							value: 335,
+							name: '直接访问'
+						},
+						{
+							value: 310,
+							name: '邮件营销'
+						},
+						{
+							value: 234,
+							name: '联盟广告'
+						},
+						{
+							value: 135,
+							name: '视频广告'
+						},
+						{
+							value: 1548,
+							name: '搜索引擎'
+						}
+					]
+				}]
+			});
+
+			echarts.init(document.getElementById('echarts10'), 'macarons').setOption({
+				title: {
+					text: '财务软件销售情况',
+				},
+				tooltip: {
+					trigger: 'axis'
+				},
+				legend: {
+					data: ['意向', '预购', '成交']
+				},
+				toolbox: {
+					show: true,
+					feature: {
+						restore: {
+							show: true
+						},
+						saveAsImage: {
+							show: true
+						}
+					}
+				},
+				calculable: true,
+				xAxis: [{
+					type: 'category',
+					boundaryGap: false,
+					data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+				}],
+				yAxis: [{
+					type: 'value'
+				}],
+				series: [{
+						name: '成交',
+						type: 'line',
+						smooth: true,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: 'default'
+								}
+							}
+						},
+						data: [10, 12, 21, 54, 260, 830, 710]
+					},
+					{
+						name: '预购',
+						type: 'line',
+						smooth: true,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: 'default'
+								}
+							}
+						},
+						data: [30, 182, 434, 791, 390, 30, 10]
+					},
+					{
+						name: '意向',
+						type: 'line',
+						smooth: true,
+						itemStyle: {
+							normal: {
+								areaStyle: {
+									type: 'default'
+								}
+							}
+						},
+						data: [1320, 1132, 601, 234, 120, 90, 20]
+					}
+				]
+			});
+		</script>
+	</body>
+
+</html>

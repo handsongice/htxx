@@ -1,0 +1,53 @@
+server:
+  port: 8802
+  #------------------------以下内容不要再放开-----------------------
+#  servlet:
+#    context-path: /AisinoYSHS_Service
+#-----------------------------------------------
+
+
+
+spring:
+  application:
+    name: QdPowerCompany
+  mvc:
+    view:
+      prefix: /jsp
+      suffix: .jsp
+  resources:
+    static-locations: classpath:/upload,classpath:/File
+  datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        url: jdbc:mysql://192.168.200.162:3306/yshs?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true
+        username: root
+        password: EU*5mGVjw$
+        driverClassName: com.mysql.jdbc.Driver
+
+        maxActive: 50
+        initialSize: 1
+        maxWait: 60000
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 1 from dual
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        filters: stat, log4j
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.htxx.entity
+  config-location: classpath:SqlMapConfig.xml
+
+logging:
+  level:
+    com.htxx.mapper: debug
+
+
+
+
+
+

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+
+<body>
+<div class="layui-card">
+
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="id" name="id" th:value=${buyer.id} autocomplete="off" class="layui-input"
+                               readonly="readonly">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">订单号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="orderNum" th:value=${buyer.identityField} autocomplete="off"
+                               class="layui-input" readonly="readonly">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userName" name="userName" th:value=${buyer.userName} required
+                               lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方税号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userTaxNo" name="userTaxNo" th:value=${buyer.userTaxNo}
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方地址电话</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userAddr" name="userAddr" th:value=${buyer.userAddr} autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">购方银行账号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="userBankinfo" name="userBankinfo" th:value=${buyer.userBankinfo}
+                               autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">销方名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="companyName" name="companyName" th:value=${seller.name} required
+                               lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">销方税号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="companyTaxNum" name="companyTaxNum" th:value=${seller.taxNum} required
+                               lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">销方地址电话</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="companyAddr" name="companyAddr" th:value=${seller.addr} required
+                               lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">销方银行账号</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="companyBankInfo" name="companyBankInfo" th:value=${seller.bankInfo}
+                               required lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">商品名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="goodsName" name="goodsName" th:value=${goods.goodsName} required
+                               lay-verify="required" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品单位</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="goodsUnit" name="goodsUnit" th:value=${goods.goodsUnit} required
+                                   lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品规格型号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="goodsMode" name="goodsMode" th:value=${goods.goodsMode}
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">商品数量</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="goodsAmount" name="goodsAmount" th:value=${goods.goodsAmount}
+                                   required lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">商品税率</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="taxRate" name="taxRate" th:value=${goods.taxRate} required
+                                       lay-verify="required" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">商品含税金额</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="moneyIncludeTax" name="moneyIncludeTax"
+                                       th:value=${goods.moneyIncludeTax} required lay-verify="required"
+                                       autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+
+                    <div class="layui-inline">
+                        <label class="layui-form-label">总含税金额</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="totalMoneyIncludeTax" name="totalMoneyIncludeTax"
+                                   th:value=${buyer.totalMoneyIncludeTax} required lay-verify="required"
+                                   autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                </div>
+        </form>
+        <input type="text" id="oldDataType" name="oldDataType" th:value=${buyer.dataType} hidden="hidden">
+
+        <!--<table id="tableName" lay-filter="test" class="layui-table">-->
+        <!--<tr>-->
+        <!--<td>商品名</td>-->
+        <!--<td>商品单位</td>-->
+        <!--<td>商品规格型号</td>-->
+        <!--<td>商品数量</td>-->
+        <!--<td>商品税率</td>-->
+        <!--<td>商品含税金额</td>-->
+        <!--</tr>-->
+        <!--<tr th:each="g: ${goods}">-->
+        <!--<td th:text="${g['goodsName']}"></td>-->
+        <!--<td th:text="${g['goodsUnit']}"></td>-->
+        <!--<td th:text="${g['goodsMode']}"></td>-->
+        <!--<td th:text="${g['goodsAmount']}"></td>-->
+        <!--<td th:text="${g['moneyIncludeTax']}"></td>-->
+        <!--<td th:text="${g['taxRate']}"></td>-->
+        <!--</tr>-->
+        <!--</table>-->
+        <!--<button type="button" id="chongHongOrZuoFei" class="layui-btn layui-btn-danger layui-btn-sm">修改后提交</button>-->
+        <button type="button" class="layui-btn layui-btn-danger" lay-submit lay-filter="addOrEdit">立即提交</button>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script th:inline="javascript">
+    var form = null;
+    var layer = null;
+    var table = null; //表格
+    layui.use(['form', 'layer', 'table', 'element'], function () {
+        form = layui.form;
+        layer = layui.layer;
+        table = layui.table; //表格
+        var taxRate = $('#taxRate');//税率
+        var moneyIncludeTax = $('#moneyIncludeTax');//含税金额
+        var goodsAmount = $('#goodsAmount');//商品数量
+        var goodsMode = $('#goodsMode');//商品规格型号
+        var goodsUnit = $('#goodsUnit');//商品单位
+        var goodsName = $('#goodsName');//商品名称
+        var id = $('#id');//账号
+        var userName = $('#userName');//购方名称
+        var userTaxNo = $('#userTaxNo');//购方税号
+        var userAddr = $('#userAddr');//购方地址电话
+        var userBankinfo = $('#userBankinfo');//购方银行账号
+        var totalMoneyIncludeTax = $('#totalMoneyIncludeTax');//总的含税金额
+        var isAdd = 0;  //1-添加  0-编辑
+//                if(notice.hm){
+//                    //编辑
+//                    isAdd = 0;
+//                    console.log("isAdd:"+isAdd);
+//                    //编辑状态  为noticeForm 设置初始值
+//                    form.val("noticeForm", {
+//                        "hm": notice.hm // "name": "value"
+//                        ,"zh": notice.zh
+//                        ,"gzdh": notice.gzdh
+//                        ,"jfbz": notice.jfbz
+//                        ,"je": notice.je
+//                  });
+//                }
+        var active = {
+            submit: function () {
+                //if(active.getCondition()) {
+                var taxRateVal = $('#taxRate').val();
+                var totalMoneyIncludeTaxVal = $('#totalMoneyIncludeTax').val();
+                var moneyIncludeTaxVal = $('#moneyIncludeTax').val();
+                var goodsAmountVal = $('#goodsAmount').val();
+                var goodsModeVal = $('#goodsMode').val();
+                var goodsUnitVal = $('#goodsUnit').val();
+                var goodsNameVal = $('#goodsName').val();
+                var idVal = $('#id').val();
+                var userNameVal = $('#userName').val();
+                var userTaxNoVal = $('#userTaxNo').val();
+                var userAddrVal = $('#userAddr').val();
+                var userBankinfoVal = $('#userBankinfo').val();
+                var oldDataType = $('#oldDataType').val();
+                var isAdd = 1;//1  为修改  0为增加
+                var url = '/noc/wtdj/saveOrEditWenTiDanJu?isAdd=' + isAdd +
+                    '&taxRate=' + taxRateVal +
+                    '&moneyIncludeTax=' + moneyIncludeTaxVal +
+                    '&goodsAmount=' + goodsAmountVal +
+                    '&goodsMode=' + goodsModeVal +
+                    '&goodsUnit=' + goodsUnitVal +
+                    '&goodsName=' + goodsNameVal +
+                    '&mainId=' + idVal +
+                    '&userName=' + userNameVal +
+                    '&userTaxNo=' + userTaxNoVal +
+                    '&userAddr=' + userAddrVal +
+                    '&userBankinfo=' + userBankinfoVal +
+                    '&totalMoneyIncludeTax=' + totalMoneyIncludeTaxVal +
+                    '&oldDataType=' + oldDataType;
+                active.ajaxPost(url);
+                //}
+
+            },
+            ajaxPost: function (url) {// ajax post 请求
+                var indexLoading;
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    beforeSend: function () {
+                        indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                    },
+                    success: function (rlt) {
+                        console.log(rlt);
+                        if (rlt.status == '200') {
+                            layer.close(indexLoading);
+                            layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'}, function () {
+                                //此方法一般用于在iframe页关闭自身时用到
+                                var indexFrame = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(indexFrame); //再执行关闭
+                                //parent.table.render();
+                                window.parent.location.reload();//刷新父页面
+                            });
+                        } else {
+                            layer.close(indexLoading);
+                            layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                        }
+                    },
+                    error: function () {
+                        layer.close(indexLoading);
+                        layer.alert('前后台数据交互异常', {icon: 2, title: '温馨提示'});
+                    }
+                })
+            }, getCondition: function () { //获取当前查询条件值
+                moneyIncludeTax = $("#moneyIncludeTax").val();
+                totalMoneyIncludeTax = $("#totalMoneyIncludeTax").val();
+                taxRate = $("#taxRate").val();
+                if (("" != moneyIncludeTax) && !(/^\d+(?:.\d{1,2})?$/.test(moneyIncludeTax))) {
+                    console.log("商品含税金额输入不合法" + moneyIncludeTax);
+                    layer.msg('商品含税金额入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                if (("" != totalMoneyIncludeTax) && !(/^\d+(?:.\d{1,2})?$/.test(totalMoneyIncludeTax))) {
+                    console.log("总含税金额输入不合法" + totalMoneyIncludeTax);
+                    layer.msg('总含税金额输入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                if (("" != taxRate) && !(/^\d+(?:.\d{1,4})?$/.test(taxRate))) {
+                    console.log("商品税率输入不合法" + taxRate);
+                    layer.msg('商品税率输入不合法,只能为整数或小数点4位以内的数字', {icon: 5});
+                    return false;
+                }
+                return true;
+            }
+        }
+        //表单提交验证
+        form.on('submit(addOrEdit)', function (data) {
+            active.submit();
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //表单自定义验证规则
+        form.verify({
+            hm: function (value, item) {
+                if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                    return '不能含有有特殊字符';
+                }
+            },
+            je: function (value, item) {
+                if (!/^\d+(?:.\d{1,2})?$/.test(value)) {
+                    return '输入不合法,只能为整数或小数点2位以内的数字';
+                }
+            }
+        });
+    });
+
+</script>
+
+</body>
+
+</html>

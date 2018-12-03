@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.InvoiceStockLogMapper">
+
+    <resultMap id="BaseResultMap" type="com.htxx.entity.InvoiceStockLog">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="enterprise_id" property="enterpriseId" jdbcType="INTEGER"/>
+        <result column="enterprise_name" property="enterpriseName" jdbcType="VARCHAR"/>
+        <result column="dept_id" property="deptId" jdbcType="INTEGER"/>
+        <result column="dept_name" property="deptName" jdbcType="VARCHAR"/>
+        <result column="kpj_id" property="kpjId" jdbcType="INTEGER"/>
+        <result column="kpj_name" property="kpjName" jdbcType="VARCHAR"/>
+        <result column="fpjxh" property="fpjxh" jdbcType="VARCHAR"/>
+        <result column="fplx" property="fplx" jdbcType="VARCHAR"/>
+        <result column="fpdm" property="fpdm" jdbcType="VARCHAR"/>
+        <result column="fphmq" property="fphmq" jdbcType="VARCHAR"/>
+        <result column="fphmz" property="fphmz" jdbcType="VARCHAR"/>
+        <result column="fpsl" property="fpsl" jdbcType="BIGINT"/>
+        <result column="ffsl" property="ffsl" jdbcType="BIGINT"/>
+        <result column="sysl" property="sysl" jdbcType="BIGINT"/>
+        <result column="stock_ref_id" property="stockRefId" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="type" property="type" jdbcType="VARCHAR"/>
+        <result column="create_id" property="createId" jdbcType="BIGINT"/>
+        <result column="create_name" property="createName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="is_del" property="isDel" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, enterprise_id, enterprise_name, dept_id, dept_name, kpj_id, kpj_name, fpjxh,
+        fplx, fpdm, fphmq, fphmz, fpsl, ffsl, sysl, stock_ref_id, `status`, `type`, create_id, create_name,
+        create_time, update_time, is_del
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_invoice_stock_log
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap" parameterType="java.util.Map">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_invoice_stock_log
+        <where>
+            1=1
+            <if test="id != null">
+                and id = #{id,jdbcType=BIGINT}
+            </if>
+            <if test="enterpriseId != null">
+                and enterprise_id = #{enterpriseId,jdbcType=BIGINT}
+            </if>
+            <if test="fplx != null">
+                and fplx = #{fplx,jdbcType=VARCHAR}
+            </if>
+            <if test="status != null">
+                and `status` = #{status,jdbcType=VARCHAR}
+            </if>
+            <if test="type != null">
+                and `type` = #{type,jdbcType=VARCHAR}
+            </if>
+            <if test="stockRefId != null">
+                and stock_ref_id = #{stockRefId,jdbcType=BIGINT}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from dl_invoice_stock_log
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.InvoiceStockLog">
+        insert into dl_invoice_stock_log (id, enterprise_id, enterprise_name,
+        dept_id, dept_name, kpj_id,
+        kpj_name, fpjxh, fplx,
+        fpdm, fphmq, fphmz,
+        fpsl, ffsl, sysl, stock_ref_id,
+        `status`, `type`, create_id, create_name,
+        create_time, update_time, is_del
+        )
+        values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=INTEGER}, #{enterpriseName,jdbcType=VARCHAR},
+        #{deptId,jdbcType=INTEGER}, #{deptName,jdbcType=VARCHAR}, #{kpjId,jdbcType=INTEGER},
+        #{kpjName,jdbcType=VARCHAR}, #{fpjxh,jdbcType=VARCHAR}, #{fplx,jdbcType=VARCHAR},
+        #{fpdm,jdbcType=VARCHAR}, #{fphmq,jdbcType=VARCHAR}, #{fphmz,jdbcType=VARCHAR},
+        #{fpsl,jdbcType=BIGINT}, #{ffsl,jdbcType=BIGINT}, #{sysl,jdbcType=BIGINT}, #{stockRefId,jdbcType=BIGINT},
+        #{status,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{createId,jdbcType=BIGINT}, #{createName,jdbcType=VARCHAR},
+        #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.InvoiceStockLog">
+        insert into dl_invoice_stock_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id,
+            </if>
+            <if test="enterpriseName != null">
+                enterprise_name,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="deptName != null">
+                dept_name,
+            </if>
+            <if test="kpjId != null">
+                kpj_id,
+            </if>
+            <if test="kpjName != null">
+                kpj_name,
+            </if>
+            <if test="fpjxh != null">
+                fpjxh,
+            </if>
+            <if test="fplx != null">
+                fplx,
+            </if>
+            <if test="fpdm != null">
+                fpdm,
+            </if>
+            <if test="fphmq != null">
+                fphmq,
+            </if>
+            <if test="fphmz != null">
+                fphmz,
+            </if>
+            <if test="fpsl != null">
+                fpsl,
+            </if>
+            <if test="ffsl != null">
+                ffsl,
+            </if>
+            <if test="sysl != null">
+                sysl,
+            </if>
+            <if test="stockRefId != null">
+                stock_ref_id,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="createId != null">
+                create_id,
+            </if>
+            <if test="createName != null">
+                create_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="enterpriseId != null">
+                #{enterpriseId,jdbcType=INTEGER},
+            </if>
+            <if test="enterpriseName != null">
+                #{enterpriseName,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null">
+                #{deptId,jdbcType=INTEGER},
+            </if>
+            <if test="deptName != null">
+                #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="kpjId != null">
+                #{kpjId,jdbcType=INTEGER},
+            </if>
+            <if test="kpjName != null">
+                #{kpjName,jdbcType=VARCHAR},
+            </if>
+            <if test="fpjxh != null">
+                #{fpjxh,jdbcType=VARCHAR},
+            </if>
+            <if test="fplx != null">
+                #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="fpdm != null">
+                #{fpdm,jdbcType=VARCHAR},
+            </if>
+            <if test="fphmq != null">
+                #{fphmq,jdbcType=VARCHAR},
+            </if>
+            <if test="fphmz != null">
+                #{fphmz,jdbcType=VARCHAR},
+            </if>
+            <if test="fpsl != null">
+                #{fpsl,jdbcType=BIGINT},
+            </if>
+            <if test="ffsl != null">
+                #{ffsl,jdbcType=BIGINT},
+            </if>
+            <if test="sysl != null">
+                #{sysl,jdbcType=BIGINT},
+            </if>
+            <if test="stockRefId != null">
+                #{stockRefId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="createId != null">
+                #{createId,jdbcType=BIGINT},
+            </if>
+            <if test="createName != null">
+                #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.InvoiceStockLog">
+        update dl_invoice_stock_log
+        <set>
+            <if test="enterpriseId != null">
+                enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+            </if>
+            <if test="enterpriseName != null">
+                enterprise_name = #{enterpriseName,jdbcType=VARCHAR},
+            </if>
+            <if test="deptId != null">
+                dept_id = #{deptId,jdbcType=INTEGER},
+            </if>
+            <if test="deptName != null">
+                dept_name = #{deptName,jdbcType=VARCHAR},
+            </if>
+            <if test="kpjId != null">
+                kpj_id = #{kpjId,jdbcType=INTEGER},
+            </if>
+            <if test="kpjName != null">
+                kpj_name = #{kpjName,jdbcType=VARCHAR},
+            </if>
+            <if test="fpjxh != null">
+                fpjxh = #{fpjxh,jdbcType=VARCHAR},
+            </if>
+            <if test="fplx != null">
+                fplx = #{fplx,jdbcType=VARCHAR},
+            </if>
+            <if test="fpdm != null">
+                fpdm = #{fpdm,jdbcType=VARCHAR},
+            </if>
+            <if test="fphmq != null">
+                fphmq = #{fphmq,jdbcType=VARCHAR},
+            </if>
+            <if test="fphmz != null">
+                fphmz = #{fphmz,jdbcType=VARCHAR},
+            </if>
+            <if test="fpsl != null">
+                fpsl = #{fpsl,jdbcType=BIGINT},
+            </if>
+            <if test="ffsl != null">
+                ffsl = #{ffsl,jdbcType=BIGINT},
+            </if>
+            <if test="sysl != null">
+                sysl = #{sysl,jdbcType=BIGINT},
+            </if>
+            <if test="stockRefId != null">
+                stock_ref_id = #{stockRefId,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                `status` = #{status,jdbcType=VARCHAR},
+            </if>
+            <if test="type != null">
+                `type` = #{type,jdbcType=VARCHAR},
+            </if>
+            <if test="createId != null">
+                create_id = #{createId,jdbcType=BIGINT},
+            </if>
+            <if test="createName != null">
+                create_name = #{createName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.InvoiceStockLog">
+        update dl_invoice_stock_log
+        set enterprise_id = #{enterpriseId,jdbcType=INTEGER},
+          enterprise_name = #{enterpriseName,jdbcType=VARCHAR},
+          dept_id = #{deptId,jdbcType=INTEGER},
+          dept_name = #{deptName,jdbcType=VARCHAR},
+          kpj_id = #{kpjId,jdbcType=INTEGER},
+          kpj_name = #{kpjName,jdbcType=VARCHAR},
+          fpjxh = #{fpjxh,jdbcType=VARCHAR},
+          fplx = #{fplx,jdbcType=VARCHAR},
+          fpdm = #{fpdm,jdbcType=VARCHAR},
+          fphmq = #{fphmq,jdbcType=VARCHAR},
+          fphmz = #{fphmz,jdbcType=VARCHAR},
+          fpsl = #{fpsl,jdbcType=BIGINT},
+          ffsl = #{ffsl,jdbcType=BIGINT},
+          sysl = #{sysl,jdbcType=BIGINT},
+          stock_ref_id = #{stockRefId,jdbcType=BIGINT},
+          `status` = #{status,jdbcType=VARCHAR},
+          `type` = #{type,jdbcType=VARCHAR},
+          create_id = #{createId,jdbcType=BIGINT},
+          create_name = #{createName,jdbcType=VARCHAR},
+          create_time = #{createTime,jdbcType=TIMESTAMP},
+          update_time = #{updateTime,jdbcType=TIMESTAMP},
+          is_del = #{isDel,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>

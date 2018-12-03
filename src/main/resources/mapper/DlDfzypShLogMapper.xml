@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlDfzypShLogMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlDfzypShLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="dept_id" property="deptId" jdbcType="BIGINT" />
+    <result column="dept_name" property="deptName" jdbcType="VARCHAR" />
+    <result column="role_id" property="roleId" jdbcType="BIGINT" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="employee_id" property="employeeId" jdbcType="BIGINT" />
+    <result column="employee_name" property="employeeName" jdbcType="VARCHAR" />
+    <result column="fpsg_id_ref" property="fpsgIdRef" jdbcType="BIGINT" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="end_flag" property="endFlag" jdbcType="INTEGER" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, dept_id, dept_name, role_id, role_name, employee_id, employee_name, 
+    fpsg_id_ref, content, end_flag, status, create_time, update_time, is_del
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlDfzypShLogExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_dfzyp_sh_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_dfzyp_sh_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_dfzyp_sh_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlDfzypShLogExample" >
+    delete from dl_dfzyp_sh_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlDfzypShLog" >
+    insert into dl_dfzyp_sh_log (id, enterprise_id, dept_id, 
+      dept_name, role_id, role_name, 
+      employee_id, employee_name, fpsg_id_ref, 
+      content, end_flag, status, 
+      create_time, update_time, is_del
+      )
+    values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, 
+      #{deptName,jdbcType=VARCHAR}, #{roleId,jdbcType=BIGINT}, #{roleName,jdbcType=VARCHAR}, 
+      #{employeeId,jdbcType=BIGINT}, #{employeeName,jdbcType=VARCHAR}, #{fpsgIdRef,jdbcType=BIGINT}, 
+      #{content,jdbcType=VARCHAR}, #{endFlag,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=TINYINT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlDfzypShLog" >
+    insert into dl_dfzyp_sh_log
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="deptId != null" >
+        dept_id,
+      </if>
+      <if test="deptName != null" >
+        dept_name,
+      </if>
+      <if test="roleId != null" >
+        role_id,
+      </if>
+      <if test="roleName != null" >
+        role_name,
+      </if>
+      <if test="employeeId != null" >
+        employee_id,
+      </if>
+      <if test="employeeName != null" >
+        employee_name,
+      </if>
+      <if test="fpsgIdRef != null" >
+        fpsg_id_ref,
+      </if>
+      <if test="content != null" >
+        content,
+      </if>
+      <if test="endFlag != null" >
+        end_flag,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null" >
+        #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="deptName != null" >
+        #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="roleName != null" >
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeName != null" >
+        #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="fpsgIdRef != null" >
+        #{fpsgIdRef,jdbcType=BIGINT},
+      </if>
+      <if test="content != null" >
+        #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="endFlag != null" >
+        #{endFlag,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlDfzypShLogExample" resultType="java.lang.Integer" >
+    select count(*) from dl_dfzyp_sh_log
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_dfzyp_sh_log
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.enterpriseId != null" >
+        enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="record.deptId != null" >
+        dept_id = #{record.deptId,jdbcType=BIGINT},
+      </if>
+      <if test="record.deptName != null" >
+        dept_name = #{record.deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.roleId != null" >
+        role_id = #{record.roleId,jdbcType=BIGINT},
+      </if>
+      <if test="record.roleName != null" >
+        role_name = #{record.roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.employeeId != null" >
+        employee_id = #{record.employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="record.employeeName != null" >
+        employee_name = #{record.employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fpsgIdRef != null" >
+        fpsg_id_ref = #{record.fpsgIdRef,jdbcType=BIGINT},
+      </if>
+      <if test="record.content != null" >
+        content = #{record.content,jdbcType=VARCHAR},
+      </if>
+      <if test="record.endFlag != null" >
+        end_flag = #{record.endFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=INTEGER},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDel != null" >
+        is_del = #{record.isDel,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_dfzyp_sh_log
+    set id = #{record.id,jdbcType=BIGINT},
+      enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      dept_id = #{record.deptId,jdbcType=BIGINT},
+      dept_name = #{record.deptName,jdbcType=VARCHAR},
+      role_id = #{record.roleId,jdbcType=BIGINT},
+      role_name = #{record.roleName,jdbcType=VARCHAR},
+      employee_id = #{record.employeeId,jdbcType=BIGINT},
+      employee_name = #{record.employeeName,jdbcType=VARCHAR},
+      fpsg_id_ref = #{record.fpsgIdRef,jdbcType=BIGINT},
+      content = #{record.content,jdbcType=VARCHAR},
+      end_flag = #{record.endFlag,jdbcType=INTEGER},
+      status = #{record.status,jdbcType=INTEGER},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      is_del = #{record.isDel,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlDfzypShLog" >
+    update dl_dfzyp_sh_log
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null" >
+        dept_id = #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="deptName != null" >
+        dept_name = #{deptName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleId != null" >
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="roleName != null" >
+        role_name = #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="employeeId != null" >
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeName != null" >
+        employee_name = #{employeeName,jdbcType=VARCHAR},
+      </if>
+      <if test="fpsgIdRef != null" >
+        fpsg_id_ref = #{fpsgIdRef,jdbcType=BIGINT},
+      </if>
+      <if test="content != null" >
+        content = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="endFlag != null" >
+        end_flag = #{endFlag,jdbcType=INTEGER},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlDfzypShLog" >
+    update dl_dfzyp_sh_log
+    set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      dept_id = #{deptId,jdbcType=BIGINT},
+      dept_name = #{deptName,jdbcType=VARCHAR},
+      role_id = #{roleId,jdbcType=BIGINT},
+      role_name = #{roleName,jdbcType=VARCHAR},
+      employee_id = #{employeeId,jdbcType=BIGINT},
+      employee_name = #{employeeName,jdbcType=VARCHAR},
+      fpsg_id_ref = #{fpsgIdRef,jdbcType=BIGINT},
+      content = #{content,jdbcType=VARCHAR},
+      end_flag = #{endFlag,jdbcType=INTEGER},
+      status = #{status,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="getDlDianFeiLogList" parameterType="map" resultType="com.htxx.entity.DlDianfei">
+    select
+       DISTINCT  b.*
+    from dl_dfzyp_sh_log as a right join dl_dianfei as b on  a.fpsg_id_ref=b.id
+    <where>
+
+      <if test="dateType != null and dateType !=''" >
+
+        and b.data_type = #{dateType}
+      </if>
+      <if test="userName != null and userName !=''" >
+
+        and b.user_name like "%"#{userName}"%"
+      </if>
+      <if test="minMoneyIncludeTax != null and minMoneyIncludeTax !=''" >
+        and b.total_money_include_tax &gt;= #{minMoneyIncludeTax}
+      </if>
+      <if test="maxMoneyIncludeTax != null and maxMoneyIncludeTax !=''" >
+        and b.total_money_include_tax &lt;= #{maxMoneyIncludeTax}
+      </if>
+      <if test="taxNum != null and taxNum !=''" >
+        and b.user_tax_no = #{taxNum}
+      </if>
+      <if test="remark != null and remark !=''" >
+        and b.record_info = #{remark}
+      </if>
+      <if test="searchDate != null and searchDate !=''" >
+        and SUBSTRING(b.create_time, 1,10) = #{searchDate}
+      </if>
+      <if test="enterpriseId != null and enterpriseId !=''" >
+        and b.enterprise_id = #{enterpriseId}
+      </if>
+
+      <if test="roleId != null and roleId !=''" >
+        and a.role_id in ${roleId}
+      </if>
+      <!--and a.status='1'  and a.end_flag is null-->
+    </where>
+  </select>
+</mapper>

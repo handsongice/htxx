@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>入库分发</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-card">
+    <div class="layui-card-header">选项</div>
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>开票机：</label>
+                    <select id="openInvoice" lay-filter="kpjSelect">
+                        <option value="">请选择开票机</option>
+                        <option th:each="i:${kpjList}" th:value="${i.id}" th:text="${i.nickName}"
+                                th:data="${i.code}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票类型：</label>
+                    <select id="invoiceType">
+                        <option value="">请选择发票类型</option>
+                        <option th:each="i:${fplxList}" th:value="${i.code}" th:text="${i.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <button id="searchBut" type="button" class="layui-btn layui-btn-primary">查询</button>
+                    <button id="addStockBut" type="button" class="layui-btn layui-btn-normal" style="display:none;">入库</button>
+                    <button id="exportBut" type="button" class="layui-btn">按条件导出</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="test" lay-filter="test"></table>
+
+        <script type="text/html" id="tableOperation">
+            {{# if(d.kpjCode == '0'){ }}
+            <span class="cursor-pointer table_btn" lay-event="distribute">分发</span>
+            <span class="cursor-pointer table_btn" lay-event="storeLog">入库记录</span>
+            {{# } else { }}
+            <span style="color: gray;">--</span>
+            {{# } }}
+        </script>
+
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/invoice/fpkj.js"></script>
+<script src="/static/js/common.js"></script>
+<script>
+    layui.use(['table', 'form'], function () {
+        var form = layui.form;
+        form.on('select(kpjSelect)', function (data) {
+            var code = $(data.elem).find("option:selected").attr("data");
+            if (code == '0') {
+                $('#addStockBut').css('display', 'inline');
+            } else {
+                $('#addStockBut').css('display', 'none');
+            }
+        });
+        stockListObj.loadPage();
+
+        $('#searchBut').on('click', function () {
+            stockListObj.loadPage();
+        });
+        $('#addStockBut').on('click', function () {
+            stockListObj.addStock();
+        });
+    });
+
+    var stockListObj = {
+        changeRkBut: function () {
+
+        },
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+            var colsData = [
+                [
+                    {field: 'enterpriseName', title: '公司', unresize: true, sort: true},
+                    {field: 'deptId', title: '部门id', hide: true},
+                    {field: 'deptName', title: '部门', sort: true},
+                    {field: 'kpjName', title: '开票机名', sort: true},
+                    {
+                        field: 'fplx', title: '发票类型', unresize: true, sort: true, templet: function (res) {
+                            if (res.fplx == '0') {
+                                return "增值税专用发票";
+                            } else if (res.fplx == '2') {
+                                return "增值税普通发票";
+                            } else if (res.fplx == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphmq', title: '发票起始号', sort: true},
+                    {field: 'fpsl', title: '发票数量', sort: true},
+                    {field: 'sysl', title: '剩余数量', sort: true},
+                    {field: 'gmrqStr', title: '购买日期', sort: true},
+                    {fixed: 'right', title: '操作', toolbar: '#tableOperation'}
+                ]
+            ];
+            var table = layui.table;
+            table.render({
+                id: "dataList",
+                elem: '#test',
+                url: '/noc/invoice/getStoreList',
+                method: 'POST',
+                where: _this.getRequestParams(),
+                toolbar: '#tableToolbar',
+                defaultToolbar: ['filter'],
+                title: '数据列表',
+                cols: colsData,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    //alert(res);
+                }
+            });
+            // 列表按钮
+            table.on('tool(test)', function (obj) {
+                var tableEvent = obj.event;
+                var data = obj.data;
+
+                /*if (tableEvent === 'store') {
+                    layer.confirm('是否确定入库？', {'icon': 3}, function (index) {
+                        var openCardResult = openCard();
+                        if (openCardResult.state) {
+                            var kpjInfo = openCardResult.data;
+                            if (kpjInfo.machineNo != 0) {
+                                layer.alert('当前开票机非主机，无法入库！', {title: '操作提示', icon: 2});
+                                return;
+                            }
+                            var storeRes = getStoreInfo(data.fplx);
+                            if (!storeRes.state) {
+                                layer.alert(storeRes.msg, {title: '操作提示', icon: 2});
+                                return;
+                            }
+                            if (storeRes.data.infoTypeCode == 0000000000 || storeRes.data.infoTypeCode == 0) {
+                                layer.alert('尚未查询到该类型的发票库存！', {title: '操作提示', icon: 2});
+                                return;
+                            }
+                            data.rksl = storeRes.data.invStock;
+                            data.fpdm = storeRes.data.infoTypeCode;
+                            data.fphmq = storeRes.data.infoNumber;
+                            data.fphmz = _this.calFphmz(storeRes.data.infoNumber, storeRes.data.invStock);
+
+                            $.ajax({
+                                url: '/noc/invoice/addOrUpdateStore',
+                                type: 'POST',
+                                data: data,
+                                dataType: 'json',
+                                success: function (result) {
+                                    if (result.status == 200) {
+                                        layer.alert('入库成功！', {title: '操作提示', icon: 1});
+                                        _this.loadPage();
+                                    } else {
+                                        layer.alert('入库失败！' + result.msg, {title: '操作提示', icon: 2});
+                                    }
+                                },
+                                error: function (error) {
+                                    layer.alert('入库异常！', {title: '操作提示', icon: 2});
+                                }
+                            });
+                        }
+                        layer.close(index);
+                    });
+                } else*/
+
+                if (tableEvent === 'distribute') {
+                    if (data.fpsl == 0 || data.sysl == 0) {
+                        layer.alert('可分发数量为0，无法分发！', {icon: 2});
+                        return;
+                    }
+                    if (data.qrbz == 1) {
+                        layer.alert('入库发票未确认，无法分发！', {icon: 2});
+                        return;
+                    }
+                    layer.open({
+                        title: '分发',
+                        type: 2,
+                        content: '/noc/invoice/toDistributePage/' + data.fplx + '/' + data.id,
+                        area: ['100%', '100%'],
+                        shadeClose: true
+                    });
+                } else if (tableEvent === 'storeLog') {
+                    layer.open({
+                        title: '入库记录',
+                        type: 2,
+                        content: '/noc/invoice/toStockLogPage/' + data.id,
+                        area: ['100%', '100%'],
+                        shadeClose: true
+                    });
+                }
+            });
+        },
+        addStock: function () {
+            $.ajax({
+                url: '/noc/invoice/addOrUpdateStore',
+                type: 'POST',
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status === '200') {
+                        layer.alert("入库成功", {'icon': 1});
+                        stockListObj.loadPage();
+                    } else {
+                        layer.alert(result.msg, {'icon': 2});
+                    }
+                },
+                error: function (error) {
+                    layer.msg('系统异常！');
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+
+            var openInvoice = $('#openInvoice').val();
+            if (openInvoice != null && openInvoice != '') {
+                params.kpjId = openInvoice;
+            }
+
+            var invoiceType = $('#invoiceType').val();
+            if (invoiceType != null && invoiceType != '') {
+                params.fplx = invoiceType;
+            }
+
+            return params;
+        },
+        calFphmz: function (fphmq, sl) {
+            var fphmz = parseInt(fphmq, 10) + parseInt(sl, 10) - 1;
+            return lpad(fphmz + '', '0', 8);
+        }
+    }
+</script>
+</body>
+
+</html>

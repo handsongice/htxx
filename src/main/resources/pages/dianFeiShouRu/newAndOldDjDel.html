@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+
+<body>
+<div class="layui-card">
+
+
+    <form class="layui-form search-form">
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">购方名称(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldBuyer.userName} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">购方名称(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newBuyer.userName} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">购方税号(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldBuyer.userTaxNo} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">购方税号(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newBuyer.userTaxNo} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">购方地址电话(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldBuyer.userAddr} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">购方地址电话(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newBuyer.userAddr} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">购方银行账号(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldBuyer.userBankinfo} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">购方银行账号(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newBuyer.userBankinfo} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品名称(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldGoods.goodsName} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品名称(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newGoods.goodsName} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品单位(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldGoods.goodsUnit} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品单位(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newGoods.goodsUnit} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品数量(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldGoods.goodsAmount} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品数量(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newGoods.goodsAmount} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品税率(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldGoods.taxRate} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品税率(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newGoods.taxRate} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">商品含税金额(旧)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${oldGoods.moneyIncludeTax} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商品含税金额(新)</label>
+                <div class="layui-input-inline">
+                    <input type="text" id="companyName" name="companyName" th:value=${newGoods.moneyIncludeTax} required
+                           lay-verify="required" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">审核意见</label>
+            <div class="layui-input-block">
+                <select id="shyj" name="shyj" lay-search>
+                    <option value="3">同意</option>
+                    <option value="2">反对</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">意见内容</label>
+            <div class="layui-input-block">
+                <textarea name="suggestion" id="suggestion" placeholder="请输入审核意见内容" class="layui-textarea"></textarea>
+            </div>
+        </div>
+    </form>
+    <input type="text;" hidden="hidden"  id="mainId"  th:value=${oldBuyer.id} >
+    <!--<button type="button" id="chongHongOrZuoFei" class="layui-btn layui-btn-danger layui-btn-sm">修改后提交</button>-->
+    <button type="button" class="layui-btn layui-btn-danger" lay-submit lay-filter="submitSuggestion">提交</button>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script th:inline="javascript">
+    var form = null;
+    var layer = null;
+    var table = null; //表格
+    layui.use(['form', 'layer', 'table', 'element'], function () {
+        form = layui.form;
+        layer = layui.layer;
+        table = layui.table; //表格
+        var active = {
+            submit: function () {
+                var shyj = $('#shyj').val();
+                var suggestion = $('#suggestion').val();
+                var mainId = $('#mainId').val();
+                if(shyj==2 && (suggestion=='' || suggestion==null)){
+                    //如果否决，必须添加原因
+                    layer.msg("否决时，必须填写原因", {icon: 1, time: 1000, title: '温馨提示'}, function () {
+                    });
+                    return;
+                }
+                var url = '/noc/djxgsh/submitSuggestion';
+                var data = {
+                    "shyj": shyj, 'suggestion': suggestion,'mainId': mainId
+                };
+                active.ajaxPost(url, data);
+            },
+            ajaxPost: function (url, data) {// ajax post 请求
+                var indexLoading;
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    data: data,
+                    dataType: 'json',
+                    async: false,
+                    beforeSend: function () {
+                        indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                    },
+                    success: function (rlt) {
+                        console.log(rlt);
+                        if (rlt.status == '200') {
+                            layer.close(indexLoading);
+                            layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'}, function () {
+                                //此方法一般用于在iframe页关闭自身时用到
+                                var indexFrame = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(indexFrame); //再执行关闭
+                                //parent.table.render();
+                                window.parent.location.reload();//刷新父页面
+                            });
+                        } else {
+                            layer.close(indexLoading);
+                            layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                        }
+                    },
+                    error: function () {
+                        layer.close(indexLoading);
+                        layer.alert('前后台数据交互异常', {icon: 2, title: '温馨提示'});
+                    }
+                })
+            }
+        }
+        form.on('submit(submitSuggestion)', function (data) {
+            console.log('submit(submitSuggestion)');
+            active.submit(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+
+
+    });
+
+
+</script>
+
+</body>
+
+</html>

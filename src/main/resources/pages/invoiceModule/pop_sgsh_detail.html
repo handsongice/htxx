@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>审核</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+
+        .itemField {
+            border-bottom: 1px dashed #e7eaec;
+            min-height: 35px;
+            line-height: 35px;
+            padding: 15px 0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .tableFiled {
+            padding-right: 15px;
+            font-weight: bold;
+        }
+
+        .tableText {
+            padding-right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <input id="hiddenId" th:value="${fpsg.id}" type="hidden">
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">发票类型</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:if="${fpsg.fplx} eq 0">增值税普通发票</span>
+                    <span class="tableText" th:if="${fpsg.fplx} eq 1">增值税专用发票</span>
+                    <span class="tableText" th:if="${fpsg.fplx} eq 2">增值税电子发票</span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">发票种类代码</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:text="${fpsg.fpdm}"></span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">申领数量(张)</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:text="${fpsg.slsl}"></span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">经办员</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:text="${fpsg.jby}"></span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">领票方式</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:if="${fpsg.lpfs} eq 0">自行领取</span>
+                    <span class="tableText" th:if="${fpsg.lpfs}  eq 1">快递配送</span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">说明</span>
+                </div>
+                <div class="layui-col-md10">
+                    <span class="tableText" th:text="${fpsg.mark}"></span>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <span class="tableFiled">审核意见</span>
+                </div>
+                <div class="layui-col-md10">
+                    <textarea id="content" placeholder="请输入审核意见" class="layui-textarea" maxlength="200"></textarea>
+                </div>
+            </div>
+
+            <div style="text-align: center; padding-top:15px;">
+                <button id="reviewOkPopBut" type="button" class="layui-btn layui-btn-normal">审核通过</button>
+                <button id="reviewCancelPopBut" type="button" class="layui-btn layui-btn-danger" lay-submit
+                        lay-filter="reviewSubmit">审核不通过
+                </button>
+                <button id="closePopBut" type="button" class="layui-btn layui-btn-primary">关闭</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div style="">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">发票库存</div>
+                <div class="layui-card-body">
+                    <div id="invoiceLeftChart" style="min-height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md6">
+            <div class="layui-card">
+                <div class="layui-card-header">发票用量分析</div>
+                <div class="layui-card-body">
+                    <div id="invoiceUseChart" style="min-height: 300px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/echarts.min.js"></script>
+<script src="/static/js/macarons.js"></script>
+<script>
+
+    $(function () {
+        var l = echarts.init(document.getElementById('invoiceLeftChart'), 'macarons'),
+            u = {
+                title: {
+                    text: "增值税专用发票",
+                    subtext: "纯属虚构",
+                    x: "center"
+                },
+                tooltip: {
+                    trigger: "item",
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+
+                        restore: {
+                            show: true
+                        },
+                        saveAsImage: {
+                            show: true
+                        }
+                    }
+                },
+                legend: {
+                    orient: "vertical",
+                    x: "left",
+                    data: ["青岛分公司", "济南分公司"]
+                },
+                calculable: !0,
+                series: [{
+                    name: "空白发票",
+                    type: "pie",
+                    radius: "55%",
+                    center: ["50%", "60%"],
+                    data: [{
+                        value: 335,
+                        name: "青岛分公司"
+                    }, {
+                        value: 234,
+                        name: "济南分公司"
+                    }]
+                }]
+            };
+        l.setOption(u), $(window).resize(l.resize);
+        var t = echarts.init(document.getElementById('invoiceUseChart'), 'macarons'),
+            n = {
+                title: {
+                    text: "增值税专用发票"
+                },
+                tooltip: {
+                    trigger: "axis"
+                },
+                legend: {
+                    data: ["青岛分公司", "济南分公司"]
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        restore: {
+                            show: true
+                        },
+                        saveAsImage: {
+                            show: true
+                        }
+                    }
+                },
+                grid: {
+                    x: 30,
+                    x2: 40,
+                    y2: 24
+                },
+                calculable: !0,
+                xAxis: [{
+                    type: "category",
+                    data: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"]
+                }],
+                yAxis: [{
+                    type: "value"
+                }],
+                series: [{
+                    name: "济南分公司",
+                    type: "bar",
+                    data: [2, 4.9, 7, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20, 6.4, 3.3],
+                    markPoint: {
+                        data: [{
+                            type: "max",
+                            name: "最大值"
+                        }, {
+                            type: "min",
+                            name: "最小值"
+                        }]
+                    },
+                    markLine: {
+                        data: [{
+                            type: "average",
+                            name: "平均值"
+                        }]
+                    }
+                }, {
+                    name: "青岛分公司",
+                    type: "bar",
+                    data: [2.6, 5.9, 9, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6, 2.3],
+                    markPoint: {
+                        data: [{
+                            name: "年最高",
+                            value: 182.2,
+                            xAxis: 7,
+                            yAxis: 183,
+                            symbolSize: 18
+                        }, {
+                            name: "年最低",
+                            value: 2.3,
+                            xAxis: 11,
+                            yAxis: 3
+                        }]
+                    },
+                    markLine: {
+                        data: [{
+                            type: "average",
+                            name: "平均值"
+                        }]
+                    }
+                }]
+            };
+        t.setOption(n), window.onresize = t.resize;
+    });
+
+    layui.use(['laydate', 'form', 'layer'], function () {
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+
+        $('#reviewOkPopBut').on('click', function () {
+            popReviewObj.review('pass');
+        });
+        $('#reviewCancelPopBut').on('click', function () {
+            popReviewObj.review('reject');
+        });
+        $('#closePopBut').on('click', function () {
+            popReviewObj.closeBut();
+        });
+    });
+    var popReviewObj = {
+        review: function (type) {
+            var _this = this;
+            var params = {};
+            var isPass = 'pass' == type ? true : false;
+
+            var id = $('#hiddenId').val();
+            if (id != null && id != 0) {
+                params.id = id;
+            } else {
+                layer.alert('缺少必要参数，请刷新后再试！');
+                return false;
+            }
+            var content = $('#content').val();
+
+            if (content != null && content != '') {
+                params.content = content;
+            } else {
+                if (!isPass) {
+                    $('#content').focus();
+                    layer.alert('请输入审核意见！', {
+                        icon: 2
+                    });
+                    return;
+                }
+            }
+
+            var msg = 'pass' == type ? '确认审核通过？' : '确认审核不通过？<br>' + '原因：<span style="color:red;">' + content + '</span>';
+
+            layer.confirm(msg, {icon: 3, title: '温馨提示'}, function (index) {
+                layer.close(index);
+                var loading = layer.load(2, {
+                    time: 1500,
+                    shade: [0.3, '#000'],
+                });
+
+                params.type = type;
+                $.ajax({
+                    url: '/noc/purchaseAccount/reviewById',
+                    type: 'POST',
+                    data: params,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === '200') {
+                            _this.closeBut();
+                            layer.close(index);
+                            parent.layer.alert('审核成功！', {icon: 1});
+                            window.parent.$('#searchBut').click();
+                        } else {
+                            layer.alert(result.msg, {icon: 2});
+                        }
+                    },
+                    error: function (error) {
+                        layer.alert('系统异常！', {icon: 2});
+                    }
+                });
+            });
+        },
+        reviewCancel: function () {
+            var _this = this;
+            var params = {};
+
+            var id = $('#hiddenId').val();
+            if (id != null && id != 0) {
+                params.id = id;
+            } else {
+                layer.alert('缺少必要参数，请刷新后再试！');
+                return false;
+            }
+            var content = $('#content').val();
+            if (content == null || content == '') {
+
+            }
+
+            var title = '确认审核不通过？<br>' + '原因：<span style="color:red;">' + content + '</span>';
+            layer.confirm(title, {icon: 3, title: '温馨提示'}, function (index) {
+                layer.close(index);
+
+                var loading = layer.load(2, {
+                    time: 1500,
+                    shade: [0.3, '#000'],
+                });
+
+                params.status = 'reject';
+                $.ajax({
+                    url: '/noc/purchaseAccount/deletById',
+                    type: 'POST',
+                    data: params,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === '200') {
+                            _this.closeBut();
+                            layer.close(index);
+                            parent.layer.alert('操作成功！', {icon: 1});
+                            window.parent.$('#searchBut').click();
+                        } else {
+                            layer.alert(result.msg, {icon: 2});
+                        }
+                    },
+                    error: function (error) {
+                        layer.alert('系统异常', {icon: 2});
+                    }
+                });
+            });
+
+            /*$.ajax({
+                url: '/noc/purchaseAccount/addOrUpdate',
+                type: 'POST',
+                data: params,
+                dataType: 'json',
+                beforeSend: function () {
+                    // 禁用按钮防止重复提交
+                    $("#reviewCancelPopBut").attr({disabled: "disabled"});
+                },
+                success: function (result) {
+                    if (result.status === 200) {
+                        _this.closeBut();
+                        layer.close(index);
+                        layer.msg('新增成功！');
+                        //执行父页面的事件
+                        window.parent.$('#searchBut').click();
+                    } else {
+                        layer.msg(result.msg);
+                    }
+                },
+                complete: function () {
+                    $("#reviewCancelPopBut").attr({disabled: "disabled"});
+                },
+                error: function (error) {
+                    layer.msg('系统异常！');
+                }
+            });*/
+
+        },
+        closeBut: function () {
+            parent.layer.closeAll('iframe');
+        },
+        getSubmitParams: function () {
+            var params = {};
+
+            var id = $('#hiddenId').val();
+            if (id != null && id != 0) {
+                params.id = id;
+            } else {
+                layer.alert('缺少必要参数，请刷新后再试！');
+                return;
+            }
+
+            var reviewContent = $('#reviewContent').val();
+        }
+    }
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htxx.mapper.FplxMapper">
+    <resultMap id="BaseResultMap" type="com.htxx.entity.Fplx">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="enterprise_id" jdbcType="BIGINT" property="enterpriseId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="is_del" jdbcType="INTEGER" property="isDel"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      id, enterprise_id, `name`, code, create_time, update_time, is_del
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fplx
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectByParams" resultMap="BaseResultMap" parameterType="com.htxx.entity.Fplx">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fplx
+        <where>
+            is_del = 0
+            <if test="enterpriseId != null">
+                and enterprise_id = #{enterpriseId}
+            </if>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="code != null">
+                and code = #{code}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="findByParams" resultMap="BaseResultMap" parameterType="com.htxx.entity.Fplx">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_fplx
+        <where>
+            is_del = 0
+            <if test="name != null">
+                and `name` = #{name}
+            </if>
+            <if test="code != null">
+                and `code` = #{code}
+            </if>
+            <if test="enterpriseId != null">
+                and enterprise_id = #{enterpriseId}
+            </if>
+            <if test="id != null">
+                and `id` != #{id}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from dl_fplx
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.Fplx">
+        insert into dl_fplx (id, enterprise_id, `name`,
+          code, create_time, update_time,
+          is_del)
+        values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+          #{code,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+          #{isDel,jdbcType=INTEGER})
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.Fplx">
+        insert into dl_fplx
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="enterpriseId != null">
+                enterprise_id,
+            </if>
+            <if test="name != null">
+                `name`,
+            </if>
+            <if test="code != null">
+                code,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="isDel != null">
+                is_del,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="enterpriseId != null">
+                #{enterpriseId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                #{isDel,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.Fplx">
+        update dl_fplx
+        <set>
+            <if test="enterpriseId != null">
+                enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                `name` = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="code != null">
+                code = #{code,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDel != null">
+                is_del = #{isDel,jdbcType=INTEGER},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.Fplx">
+        update dl_fplx
+        set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+          `name` = #{name,jdbcType=VARCHAR},
+          code = #{code,jdbcType=VARCHAR},
+          create_time = #{createTime,jdbcType=TIMESTAMP},
+          update_time = #{updateTime,jdbcType=TIMESTAMP},
+          is_del = #{isDel,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <select id="getFplxByEnterpriseId" resultType="Fplx">
+        select
+        id,enterprise_id,`name`,code,create_time,update_time,is_del
+        from dl_fplx where enterprise_id = #{enterpriseId}
+    </select>
+
+    <update id="delFplx" parameterType="java.lang.Long">
+        update dl_fplx
+        set is_del = 1
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>

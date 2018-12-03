@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>入库记录</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-card">
+    <div class="layui-card-header">历史入库</div>
+    <div class="layui-card-body">
+        <input id="hiddenStockId" th:value="${stockId}" type="hidden">
+
+        <table class="layui-table" id="table" lay-filter="table"></table>
+
+        <script type="text/html" id="tableToolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-primary layui-btn-sm" lay-event="batchExport">
+                    <i class="layui-icon">&#xe601;</i>批量导出
+                </button>
+            </div>
+        </script>
+
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script>
+    layui.use(['table'], function () {
+        var table = layui.table;
+        storeObj.loadPage();
+    });
+
+    var storeObj = {
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+
+            var colsData = [
+                [
+                    {title: '序号', type: 'numbers', fixed: 'left'},
+                    {field: 'fpdm', title: '发票代码', sort: true},
+                    {field: 'fphmq', title: '发票号码（起始）', sort: true},
+                    {field: 'fpsl', title: '发票张数', sort: true},
+                    {field: 'sysl', title: '剩余发票张数', sort: true},
+                    {
+                        field: 'createTime', title: '入库时间', sort: true,
+                        templet: function (d) {
+                            return d.createTimeStr;
+                        }
+                    },
+                    {field: 'createName', title: '操作人', sort: true}
+                ]
+            ];
+
+            var table = layui.table;
+            table.render({
+                id: "dataList",
+                elem: '#table',
+                where: _this.getRequestParams(),
+                method: 'POST',
+                url: '/noc/invoice/getStockLog',
+                title: '历史入库',
+                cols: colsData,
+                toolbar: '#tableToolbar',
+                defaultToolbar: ['filter'],
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    //alert(res);
+                }
+            });
+            // 左上角按钮
+            table.on('toolbar(table)', function (obj) {
+                var tableEvent = obj.event;
+                if (tableEvent === 'batchExport') {
+                    _this.exportExcel();
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+            var stockRefId = $('#hiddenStockId').val();
+            params.stockRefId = stockRefId;
+            return params;
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/invoice/exportStoreLog');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+</script>
+</body>
+
+</html>

@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlYkfpDelMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlYkfpDel" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="djh" property="djh" jdbcType="VARCHAR" />
+    <result column="xh" property="xh" jdbcType="BIGINT" />
+    <result column="xmmc" property="xmmc" jdbcType="VARCHAR" />
+    <result column="shflbm" property="shflbm" jdbcType="VARCHAR" />
+    <result column="qyzbm" property="qyzbm" jdbcType="VARCHAR" />
+    <result column="ggxh" property="ggxh" jdbcType="VARCHAR" />
+    <result column="jldw" property="jldw" jdbcType="VARCHAR" />
+    <result column="xmsl" property="xmsl" jdbcType="DECIMAL" />
+    <result column="xmdj" property="xmdj" jdbcType="DECIMAL" />
+    <result column="xmje" property="xmje" jdbcType="DECIMAL" />
+    <result column="sl" property="sl" jdbcType="DECIMAL" />
+    <result column="se" property="se" jdbcType="DECIMAL" />
+    <result column="hsdj" property="hsdj" jdbcType="DECIMAL" />
+    <result column="hsje" property="hsje" jdbcType="DECIMAL" />
+    <result column="yhzcbs" property="yhzcbs" jdbcType="TINYINT" />
+    <result column="yhzcnr" property="yhzcnr" jdbcType="VARCHAR" />
+    <result column="lslbs" property="lslbs" jdbcType="TINYINT" />
+    <result column="fphxz" property="fphxz" jdbcType="TINYINT" />
+    <result column="ywlx" property="ywlx" jdbcType="TINYINT" />
+    <result column="hsbz" property="hsbz" jdbcType="TINYINT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, djh, xh, xmmc, shflbm, qyzbm, ggxh, jldw, xmsl, xmdj, xmje, sl, se, hsdj, hsje, 
+    yhzcbs, yhzcnr, lslbs, fphxz, ywlx, hsbz
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlYkfpDelExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_ykfp_del
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_ykfp_del
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_ykfp_del
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlYkfpDelExample" >
+    delete from dl_ykfp_del
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlYkfpDel" >
+    insert into dl_ykfp_del (id, djh, xh, xmmc, 
+      shflbm, qyzbm, ggxh, 
+      , xmsl, xmdj, xmje, 
+      sl, se, hsdj, hsje, 
+      yhzcbs, yhzcnr, lslbs, 
+      fphxz, ywlx, hsbz)
+    values (#{id,jdbcType=BIGINT}, #{djh,jdbcType=VARCHAR}, #{xh,jdbcType=BIGINT}, #{xmmc,jdbcType=VARCHAR}, 
+      #{shflbm,jdbcType=VARCHAR}, #{qyzbm,jdbcType=VARCHAR}, #{ggxh,jdbcType=VARCHAR}, 
+      #{jldw,jdbcType=VARCHAR}, #{xmsl,jdbcType=DECIMAL}, #{xmdj,jdbcType=DECIMAL}, #{xmje,jdbcType=DECIMAL}, 
+      #{sl,jdbcType=DECIMAL}, #{se,jdbcType=DECIMAL}, #{hsdj,jdbcType=DECIMAL}, #{hsje,jdbcType=DECIMAL}, 
+      #{yhzcbs,jdbcType=TINYINT}, #{yhzcnr,jdbcType=VARCHAR}, #{lslbs,jdbcType=TINYINT}, 
+      #{fphxz,jdbcType=TINYINT}, #{ywlx,jdbcType=TINYINT}, #{hsbz,jdbcType=TINYINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlYkfpDel" >
+    insert into dl_ykfp_del
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="djh != null" >
+        djh,
+      </if>
+      <if test="xh != null" >
+        xh,
+      </if>
+      <if test="xmmc != null" >
+        xmmc,
+      </if>
+      <if test="shflbm != null" >
+        shflbm,
+      </if>
+      <if test="qyzbm != null" >
+        qyzbm,
+      </if>
+      <if test="ggxh != null" >
+        ggxh,
+      </if>
+      <if test="jldw != null" >
+        jldw,
+      </if>
+      <if test="xmsl != null" >
+        xmsl,
+      </if>
+      <if test="xmdj != null" >
+        xmdj,
+      </if>
+      <if test="xmje != null" >
+        xmje,
+      </if>
+      <if test="sl != null" >
+        sl,
+      </if>
+      <if test="se != null" >
+        se,
+      </if>
+      <if test="hsdj != null" >
+        hsdj,
+      </if>
+      <if test="hsje != null" >
+        hsje,
+      </if>
+      <if test="yhzcbs != null" >
+        yhzcbs,
+      </if>
+      <if test="yhzcnr != null" >
+        yhzcnr,
+      </if>
+      <if test="lslbs != null" >
+        lslbs,
+      </if>
+      <if test="fphxz != null" >
+        fphxz,
+      </if>
+      <if test="ywlx != null" >
+        ywlx,
+      </if>
+      <if test="hsbz != null" >
+        hsbz,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="djh != null" >
+        #{djh,jdbcType=VARCHAR},
+      </if>
+      <if test="xh != null" >
+        #{xh,jdbcType=BIGINT},
+      </if>
+      <if test="xmmc != null" >
+        #{xmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="shflbm != null" >
+        #{shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzbm != null" >
+        #{qyzbm,jdbcType=VARCHAR},
+      </if>
+      <if test="ggxh != null" >
+        #{ggxh,jdbcType=VARCHAR},
+      </if>
+      <if test="jldw != null" >
+        #{jldw,jdbcType=VARCHAR},
+      </if>
+      <if test="xmsl != null" >
+        #{xmsl,jdbcType=DECIMAL},
+      </if>
+      <if test="xmdj != null" >
+        #{xmdj,jdbcType=DECIMAL},
+      </if>
+      <if test="xmje != null" >
+        #{xmje,jdbcType=DECIMAL},
+      </if>
+      <if test="sl != null" >
+        #{sl,jdbcType=DECIMAL},
+      </if>
+      <if test="se != null" >
+        #{se,jdbcType=DECIMAL},
+      </if>
+      <if test="hsdj != null" >
+        #{hsdj,jdbcType=DECIMAL},
+      </if>
+      <if test="hsje != null" >
+        #{hsje,jdbcType=DECIMAL},
+      </if>
+      <if test="yhzcbs != null" >
+        #{yhzcbs,jdbcType=TINYINT},
+      </if>
+      <if test="yhzcnr != null" >
+        #{yhzcnr,jdbcType=VARCHAR},
+      </if>
+      <if test="lslbs != null" >
+        #{lslbs,jdbcType=TINYINT},
+      </if>
+      <if test="fphxz != null" >
+        #{fphxz,jdbcType=TINYINT},
+      </if>
+      <if test="ywlx != null" >
+        #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="hsbz != null" >
+        #{hsbz,jdbcType=TINYINT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlYkfpDelExample" resultType="java.lang.Integer" >
+    select count(*) from dl_ykfp_del
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_ykfp_del
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.djh != null" >
+        djh = #{record.djh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xh != null" >
+        xh = #{record.xh,jdbcType=BIGINT},
+      </if>
+      <if test="record.xmmc != null" >
+        xmmc = #{record.xmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shflbm != null" >
+        shflbm = #{record.shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qyzbm != null" >
+        qyzbm = #{record.qyzbm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.ggxh != null" >
+        ggxh = #{record.ggxh,jdbcType=VARCHAR},
+      </if>
+      <if test="record.jldw != null" >
+        jldw = #{record.jldw,jdbcType=VARCHAR},
+      </if>
+      <if test="record.xmsl != null" >
+        xmsl = #{record.xmsl,jdbcType=DECIMAL},
+      </if>
+      <if test="record.xmdj != null" >
+        xmdj = #{record.xmdj,jdbcType=DECIMAL},
+      </if>
+      <if test="record.xmje != null" >
+        xmje = #{record.xmje,jdbcType=DECIMAL},
+      </if>
+      <if test="record.sl != null" >
+        sl = #{record.sl,jdbcType=DECIMAL},
+      </if>
+      <if test="record.se != null" >
+        se = #{record.se,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hsdj != null" >
+        hsdj = #{record.hsdj,jdbcType=DECIMAL},
+      </if>
+      <if test="record.hsje != null" >
+        hsje = #{record.hsje,jdbcType=DECIMAL},
+      </if>
+      <if test="record.yhzcbs != null" >
+        yhzcbs = #{record.yhzcbs,jdbcType=TINYINT},
+      </if>
+      <if test="record.yhzcnr != null" >
+        yhzcnr = #{record.yhzcnr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.lslbs != null" >
+        lslbs = #{record.lslbs,jdbcType=TINYINT},
+      </if>
+      <if test="record.fphxz != null" >
+        fphxz = #{record.fphxz,jdbcType=TINYINT},
+      </if>
+      <if test="record.ywlx != null" >
+        ywlx = #{record.ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="record.hsbz != null" >
+        hsbz = #{record.hsbz,jdbcType=TINYINT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_ykfp_del
+    set id = #{record.id,jdbcType=BIGINT},
+      djh = #{record.djh,jdbcType=VARCHAR},
+      xh = #{record.xh,jdbcType=BIGINT},
+      xmmc = #{record.xmmc,jdbcType=VARCHAR},
+      shflbm = #{record.shflbm,jdbcType=VARCHAR},
+      qyzbm = #{record.qyzbm,jdbcType=VARCHAR},
+      ggxh = #{record.ggxh,jdbcType=VARCHAR},
+      jldw = #{record.jldw,jdbcType=VARCHAR},
+      xmsl = #{record.xmsl,jdbcType=DECIMAL},
+      xmdj = #{record.xmdj,jdbcType=DECIMAL},
+      xmje = #{record.xmje,jdbcType=DECIMAL},
+      sl = #{record.sl,jdbcType=DECIMAL},
+      se = #{record.se,jdbcType=DECIMAL},
+      hsdj = #{record.hsdj,jdbcType=DECIMAL},
+      hsje = #{record.hsje,jdbcType=DECIMAL},
+      yhzcbs = #{record.yhzcbs,jdbcType=TINYINT},
+      yhzcnr = #{record.yhzcnr,jdbcType=VARCHAR},
+      lslbs = #{record.lslbs,jdbcType=TINYINT},
+      fphxz = #{record.fphxz,jdbcType=TINYINT},
+      ywlx = #{record.ywlx,jdbcType=TINYINT},
+      hsbz = #{record.hsbz,jdbcType=TINYINT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlYkfpDel" >
+    update dl_ykfp_del
+    <set >
+      <if test="djh != null" >
+        djh = #{djh,jdbcType=VARCHAR},
+      </if>
+      <if test="xh != null" >
+        xh = #{xh,jdbcType=BIGINT},
+      </if>
+      <if test="xmmc != null" >
+        xmmc = #{xmmc,jdbcType=VARCHAR},
+      </if>
+      <if test="shflbm != null" >
+        shflbm = #{shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="qyzbm != null" >
+        qyzbm = #{qyzbm,jdbcType=VARCHAR},
+      </if>
+      <if test="ggxh != null" >
+        ggxh = #{ggxh,jdbcType=VARCHAR},
+      </if>
+      <if test="jldw != null" >
+        jldw = #{jldw,jdbcType=VARCHAR},
+      </if>
+      <if test="xmsl != null" >
+        xmsl = #{xmsl,jdbcType=DECIMAL},
+      </if>
+      <if test="xmdj != null" >
+        xmdj = #{xmdj,jdbcType=DECIMAL},
+      </if>
+      <if test="xmje != null" >
+        xmje = #{xmje,jdbcType=DECIMAL},
+      </if>
+      <if test="sl != null" >
+        sl = #{sl,jdbcType=DECIMAL},
+      </if>
+      <if test="se != null" >
+        se = #{se,jdbcType=DECIMAL},
+      </if>
+      <if test="hsdj != null" >
+        hsdj = #{hsdj,jdbcType=DECIMAL},
+      </if>
+      <if test="hsje != null" >
+        hsje = #{hsje,jdbcType=DECIMAL},
+      </if>
+      <if test="yhzcbs != null" >
+        yhzcbs = #{yhzcbs,jdbcType=TINYINT},
+      </if>
+      <if test="yhzcnr != null" >
+        yhzcnr = #{yhzcnr,jdbcType=VARCHAR},
+      </if>
+      <if test="lslbs != null" >
+        lslbs = #{lslbs,jdbcType=TINYINT},
+      </if>
+      <if test="fphxz != null" >
+        fphxz = #{fphxz,jdbcType=TINYINT},
+      </if>
+      <if test="ywlx != null" >
+        ywlx = #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="hsbz != null" >
+        hsbz = #{hsbz,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlYkfpDel" >
+    update dl_ykfp_del
+    set djh = #{djh,jdbcType=VARCHAR},
+      xh = #{xh,jdbcType=BIGINT},
+      xmmc = #{xmmc,jdbcType=VARCHAR},
+      shflbm = #{shflbm,jdbcType=VARCHAR},
+      qyzbm = #{qyzbm,jdbcType=VARCHAR},
+      ggxh = #{ggxh,jdbcType=VARCHAR},
+      jldw = #{jldw,jdbcType=VARCHAR},
+      xmsl = #{xmsl,jdbcType=DECIMAL},
+      xmdj = #{xmdj,jdbcType=DECIMAL},
+      xmje = #{xmje,jdbcType=DECIMAL},
+      sl = #{sl,jdbcType=DECIMAL},
+      se = #{se,jdbcType=DECIMAL},
+      hsdj = #{hsdj,jdbcType=DECIMAL},
+      hsje = #{hsje,jdbcType=DECIMAL},
+      yhzcbs = #{yhzcbs,jdbcType=TINYINT},
+      yhzcnr = #{yhzcnr,jdbcType=VARCHAR},
+      lslbs = #{lslbs,jdbcType=TINYINT},
+      fphxz = #{fphxz,jdbcType=TINYINT},
+      ywlx = #{ywlx,jdbcType=TINYINT},
+      hsbz = #{hsbz,jdbcType=TINYINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

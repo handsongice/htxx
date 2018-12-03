@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" type="text/css" href="/static/js/ztree/css/zTreeStyle.css" />
+		<style>
+			.layui-form-label {
+				width: 80px;
+				padding: 0 8px;
+			}
+			
+			.layui-input-block {
+				margin-left: 110px;
+				margin-right: 110px;
+			}
+		</style>
+		<script src="/static/js/respond.min.js"></script>
+
+	</head>
+
+	<body>
+		<form id="noticeForm" class="layui-form" action="" lay-filter="noticeForm" >
+			<input type="hidden" name="id" th:value="${fpsgShl.id}">
+			<input type="hidden" class="dept_id" name="dept_id" th:value="${fpsgShl.deptId}">
+			<input type="hidden" class="role_id" name="role_id" th:value="${fpsgShl.roleId}">
+			<input type="hidden" class="code" name="code" th:value="${fpsgShl.code}">
+			<div class="layui-form-item">
+				<label class="layui-form-label">名称<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="name" th:value="${fpsgShl.name}" lay-verType="tips" lay-verify="required" placeholder="请输入名称" autocomplete="off" class="layui-input taskname">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">部门<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<ul id="treeDemo"  class="ztree"></ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">岗位<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<ul id="rtreeDemo"  class="ztree"></ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button type="button" class="layui-btn" lay-submit  lay-filter="addOrEdit">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/layui/layui-xtree.js"></script>
+		<script src="/static/js/index.js"></script>
+		<script src="/static/js/ztree/js/jquery.ztree.all-3.5.js"></script>
+
+		<script th:inline="javascript">
+            var windowindex = parent.layer.getFrameIndex(window.name);
+            var setting = {
+                view: {
+                    showLine: false
+                },
+                check: {
+                    enable: true,
+                    chkStyle:"radio",
+                    radioType: "all"
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "parentId",
+                        rootPId: 0
+                    }
+                }
+            };
+            var treeObj;
+            var rtreeObj;
+            $(document).ready(function () {
+
+                layui.use(['form', 'layer'], function() {
+                    var form = layui.form;
+                    var layer = layui.layer;
+                    $.ajax({
+                        url: "/noc/allDepartmentList",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                            parent_id:$('.dept_id').val()
+                        },
+                        success: function(datas) {
+                            $.fn.zTree.init($("#treeDemo"), setting, datas);
+                            treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                            treeObj.expandAll(true);
+                        }
+                    });
+                    $.ajax({
+                        url: "/noc/allRoleList",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                            rid:$('.role_id').val()
+                        },
+                        success: function(datas) {
+                            $.fn.zTree.init($("#rtreeDemo"), setting, datas);
+                            rtreeObj = $.fn.zTree.getZTreeObj("rtreeDemo");
+                            rtreeObj.expandAll(true);
+                        }
+                    });
+                    //表单提交验证
+                    form.on('submit(addOrEdit)', function(data){
+                        if(!data.field.id) {
+                            layer.msg('数据异常', {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                parent.layer.close(windowindex); //再执行关闭
+                            });
+						}
+                        var nodes = treeObj.getCheckedNodes();
+                        var dept_id = 0;
+                        if(nodes.length>0){
+                            dept_id = nodes[0].id;
+                        }
+                        var rnodes = rtreeObj.getCheckedNodes();
+                        var role_id = 0;
+                        if(rnodes.length>0){
+                            role_id = rnodes[0].id;
+                        }
+                        if(dept_id <= 0) {
+                            layer.alert('请选择部门',{icon: 2, title:'温馨提示'});
+                            return false;
+						}
+                        if(role_id <= 0) {
+                            layer.alert('请选择岗位',{icon: 2, title:'温馨提示'});
+                            return false;
+                        }
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/updateDfzypShl",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                id:data.field.id,
+                                name:data.field.name,
+                                roleId:role_id,
+                                deptId:dept_id,
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                        parent.window.location.reload();
+                                        parent.layer.close(windowindex); //再执行关闭
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    });
+                    //表单自定义验证规则
+                    form.verify({
+                        hm: function(value, item){
+                            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                                return '不能含有有特殊字符';
+                            }
+                        },
+                        je: function(value,item) {
+                            if(!/^\d+(?:.\d{1,2})?$/.test(value)){
+                                return '输入不合法,只能为整数或小数点2位以内的数字';
+                            }
+                        }
+                    });
+                });
+			})
+		</script>
+	</body>
+
+</html>

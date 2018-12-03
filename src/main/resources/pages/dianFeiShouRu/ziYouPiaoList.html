@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css"/>
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form search-form " lay-filter="component-form-group">
+            <ul>
+
+                <li>
+                    <label>发票代码：</label>
+                    <input id="fpdm" type="text" name="fpdm" placeholder="请输入发票代码" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>发票号码：</label>
+                    <input id="fphm" type="text" name="fphm" placeholder="请输入发票号码" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>开票时间：</label>
+                    <input id="kpsjMin" type="text" name="kpsjMin" placeholder="开票时间(起)" autocomplete="off"
+                           class="layui-input _laydate" lay-key="1">
+                    <span> - </span>
+                    <input id="kpsjMax" type="text" name="kpsjMax" placeholder="开票时间(止)" autocomplete="off"
+                           class="layui-input _laydate" lay-key="2">
+                </li>
+
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <label>购方税号：</label>
+                    <input id="gfsh" type="text" name="gfsh" placeholder="请输入购方税号" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>购方名称：</label>
+                    <input id="gfmc" type="text" name="gfmc" placeholder="请输入购方名称" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <li>
+                    <label>价税合计：</label>
+                    <input id="jshjMin" type="text" name="jshjMin" placeholder="￥" autocomplete="off"
+                           class="layui-input _je">
+                    <span> - </span>
+                    <input id="jshjMax" type="text" name="jshjMax" placeholder="￥" autocomplete="off"
+                           class="layui-input _je">
+                </li>
+            </ul>
+            <ul>
+                <li>
+                    <label>发票类型：</label>
+                    <select id="fpzl" name="fpzl" lay-search>
+                        <option value="0">全部</option>
+                        <option th:each="fplx:${fplxList}" th:value="${fplx.code} == 0? '100':${fplx.code}"
+                                th:text="${fplx.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票状态：</label>
+                    <select id="kplx" name="kplx" lay-search>
+                        <option value="0">全部</option>
+                        <option value="1">正常蓝票</option>
+                        <option value="2">红票</option>
+                        <option value="3">被冲红蓝票</option>
+                        <option value="4">废票</option>
+                    </select>
+                </li>
+                <li>
+                    <label>分 机 号 ：</label>
+                    <select id="fjh" name="fjh" lay-search>
+                        <option value="0">全部</option>
+                        <option th:each="kpjxx:${kpjxxList}" th:value="${kpjxx.code} == 0? '101':${kpjxx.code}"
+                                th:text="${kpjxx.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>备注：</label>
+                    <input id="bz" type="text" name="bz" placeholder="请输入备注" autocomplete="off" class="layui-input"
+                           style="width: 130px">
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+            <ul>
+                <li>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm _search" lay-submit
+                            lay-filter="search"
+                    >搜索
+                    </button>
+                    <button type="reset" class="layui-btn layui-btn-sm">重置</button>
+                    <button type="button" class="layui-btn layui-btn-normal layui-btn-sm _search" lay-submit
+                            lay-filter="submitExport">按条件导出
+                    </button>
+                    <button type="button" class="layui-btn layui-btn-sm _search" lay-submit lay-filter="newZiYouPiao">
+                        新建自由票
+                    </button>
+
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+        <div>
+            <table id="demo" class="layui-hide" lay-filter="test"></table>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/moment.js"></script>
+<script src="/static/js/common.js"></script>
+<script type="text/javascript" src="/static/js/invoice/fpkj.js"></script>
+<script>
+    var table = null;
+    var layer = null;
+    var laydate = null;
+    var form = null;
+    var struct = null;
+    var active = null;
+    layui.use(['table', 'form', 'layer', 'laydate'], function () {
+        table = layui.table;
+        layer = layui.layer;
+        laydate = layui.laydate;
+        form = layui.form;
+        struct = [
+            [{checkbox: true,},
+                {field: 'fpdm', title: '发票代码', width: 120,},
+                {field: 'fphm', title: '发票号码', width: 100},
+                {field: 'gfmc', title: '购方名称', width: 200,},
+                {field: 'gfsh', title: '购方税号', width: 200,},
+                {
+                    field: 'kpsj', title: '开票时间', width: 150
+                },
+                {
+                    field: 'fpzl', title: '发票类型', width: 100, templet: function (d) {
+                    if (0 == d.fpzl) {
+                        return '<span class="layui-badge bg-light-red cursor-pointer">专票</span>';
+                    } else if (2 == d.fpzl) {
+                        return '<span class="layui-badge bg-light-blue cursor-pointer">普票</span>';
+                    } else if (51 == d.fpzl) {
+                        console.log(this);
+                        return '<span class="layui-badge bg-light-green cursor-pointer">电子票</span>';
+
+                    } else if (41 == d.fpzl) {
+                        return '<span class="layui-badge bg-light-orange cursor-pointer">卷票</span>';
+                    }
+                }
+                },
+                {
+                    field: 'fjh', title: '分机号', width: 80, templet: function (d) {
+                    if (0 == d.fjh) {
+                        return '<span style="color: #4178be;">主机</span>';
+                    } else {
+                        return '<span style="color: #2ec7c9;">开票机' + d.fjh + '</span>';
+                    }
+                }
+                },
+                {
+                    field: 'kplx', title: '发票状态', width: 100, templet: function (d) {
+                    if (1 == d.kplx) {
+                        return '<span class="layui-badge bg-light-blue cursor-pointer">正常蓝票</span>';
+                    } else if (2 == d.kplx) {
+                        return '<span class="layui-badge bg-light-red cursor-pointer">红票</span>';
+                    } else if (3 == d.kplx) {
+                        return '<span class="layui-badge bg-light-gray cursor-pointer">被冲红蓝票</span>';
+                    } else if (4 == d.kplx) {
+                        return '<span class="layui-badge bg-light-red cursor-pointer">废票</span>';
+                    }
+                }
+                },
+                {field: 'hjse', title: '税额￥', width: 80,},
+                {field: 'jshj', title: '价税合计￥', width: 100},
+                {field: 'bz', title: '备注', width: 150},
+                {field: 'kpr', title: '开票人', width: 80},
+                {field: '', title: '操作', toolbar: '#operation', width: 200, fixed: 'right'}]];
+        //加载日期选择框
+        $('._laydate').each(function () {
+            laydate.render({
+                elem: this,      //使用this指向当前元素,不能使用class名, 否则只有第一个有效
+                trigger: 'click'
+            });
+        })
+
+        //                var ins1 = table.render({
+//                    elem: '#demo', //指定原始表格元素选择器（推荐id选择器）
+//                    url:'/noc/ykfp/list',
+//                    method:'POST',
+//                    where:{'fpdm':$("#fpdm").val(),'fphm':$("#fphm").val(),
+//                        'fplx':$("#fplx").val(),'taxNum':$("#taxNum").val(),
+//                        'remark':$("#remark").val(),'date':$("#date").val(),'dateType':'0'},
+//                    id: 'reloadId',
+//                    size: 'sm',
+//                    // data: tableData,
+//                    page: true,
+//                    toolbar: '#toolbarDemo' ,
+//                    cols: struct
+//                    ,
+//                    done: function () {
+//                        $("[data-field='id']").css('display','none');
+//                        //$("[data-field='identityField']").css('display','none');
+//                    }
+//                });
+        table.render({
+            elem: '#demo',
+            size: 'sm',
+            width: '1095',
+            url: "/noc/zyp/list",
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter'],
+            page: true,
+            cols: struct,
+            text: {none: '暂无相关数据...'},
+            id: 'reloadId',
+            loading: true
+        });
+        active = {
+            checkJe: function () { //获取当前查询条件值
+                var jshjMax = $("#jshjMax").val();
+                var jshjMin = $("#jshjMin").val();
+                if ((undefined != jshjMin && '' != jshjMin) && !(/^\d+(?:.\d{1,2})?$/.test(jshjMin))) {
+                    console.log("最小金额输入不合法" + jshjMin);
+                    layer.msg('最小金额输入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                if ((undefined != jshjMax && '' != jshjMax) && !(/^\d+(?:.\d{1,2})?$/.test(jshjMax))) {
+                    console.log("最大金额输入不合法" + jshjMax);
+                    layer.msg('最大金额输入不合法,只能为整数或小数点2位以内的数字', {icon: 5});
+                    return false;
+                }
+                return true;
+            },
+            search: function (formData, todo) {//查询按钮 + 刷新页面数据
+                if (active.checkJe(formData)) {
+                    //整理时间格式
+                    console.log(formData);
+                    if ('' != formData.kpsjMin && undefined != formData.kpsjMin && null != formData.kpsjMin) {
+                        formData.kpsjMin = formData.kpsjMin + ' 00:00:00';
+                    }
+                    if ('' != formData.kpsjMax && undefined != formData.kpsjMax && null != formData.kpsjMin) {
+                        formData.kpsjMax = formData.kpsjMax + ' 23:59:59';
+                    }
+                    console.log("重新刷新:"+formData);
+                    //获取当前查询条件值
+                    table.reload('reloadId', {
+                        page: {curr: 1},//从第 1 页 开始刷新
+                        where: formData,
+                        done: function (res, curr, count) {
+                            //如果是异步请求数据方式,res即为你接口返回的信息.
+                            //如果是直接赋值的方式,res即为:{data: [], count: 99} data为当前页数据,count为数据总长度
+                            if (todo) {
+                                if (count > 0) todo(formData);
+                                else layer.alert("无相关查询条件的可操作数据!", {icon: 2, title: '温馨提示'});
+                            }
+                        }
+                    });
+                }
+
+            },
+            searchPrint: function (formData) {//按条件打印按钮
+                //TODO 按条件打印按钮
+                active.search(formData, function (formData) {
+                    layer.confirm('确认打印以下发票数据?', {icon: 3, title: '温馨提示'}, function (index) {
+                        layer.close(index);
+                    });
+                });
+            },
+            searchExport: function (formData) {//按条件导出按钮
+                //刷新页面列表 并 导出数据
+                active.search(formData, function (formData) {
+                    console.log("按条件导出按钮");
+                    layer.confirm('确认导出以下发票数据至Excel?', {icon: 3, title: '温馨提示'}, function (index) {
+                        var url = '/noc/zyp/export?fpdm=' + formData.fpdm + '&fphm=' + formData.fphm + '&gfmc=' + formData.gfmc + '&gfsh=' + formData.gfsh + '&bz=' + formData.bz + '&fjh=' + formData.fjh + '&fpzl=' + formData.fpzl + '&kplx=' + formData.kplx + '&jshjMin=' + formData.jshjMin + '&jshjMax=' + formData.jshjMax + '&kpsjMin=' + formData.kpsjMin + '&kpsjMax=' + formData.kpsjMax;
+                        window.location.href = url;
+                        layer.close(index);
+                    });
+                });
+            },
+            getInvoiceMain: function (ykfp, bz) { //获取发票main
+                var main = invoiceMain;
+                main.InfoKind = ykfp.fpzl;//发票类型
+                main.BMBBH = ykfp.bmbbh;//税收分类编码版本号
+                main.InfoClientName = ykfp.gfmc;//购方名称
+                main.InfoClientTaxCode = ykfp.gfsh;//购方税号
+                main.InfoClientBankAccount = ykfp.gfyhzh;//购方地址电话
+                main.InfoClientAddressPhone = ykfp.gfdzdh;//购方银行账号
+                main.InfoSellerBankAccount = ykfp.xfyhzh;//销方银行账号
+                main.InfoSellerAddressPhone = ykfp.xfdzdh;//销方地址电话
+                main.InfoTaxRate = "0.1";//税率
+                main.InfoNotes = bz;//备注
+                main.InfoInvoicer = ykfp.kpr;//开票人
+                main.InfoChecker = ykfp.fhr;//复核人，可为空
+                main.InfoCashier = ykfp.kpr;//收款人，可为空
+                main.InfoListName = "";//如不为空 则填“详见货物清单”
+                main.InfoBillNumber = ykfp.djh;//销售单据编号，可为空
+                main.SellerAddress = "";//见文档
+                return main;
+            },
+            getInvoiceDelArray: function (ykfp) { //获取发票明细列表
+                var del = invoiceDel;
+                var array = [];
+                var ykfpDelList = ykfp.ykfpDelList;
+                console.log(ykfpDelList.length)
+                for (var i = 0; i < ykfpDelList.length; i++) {
+                    del.ListGoodsName = ykfpDelList[i].xmmc;//商品或劳务名称
+                    del.ListTaxItem = "";//税目 4位数字 商品所属类别
+                    del.ListStandard = ykfpDelList[i].ggxh;//规格型号
+                    del.ListUnit = ykfpDelList[i].jldw;//计量单位
+                    del.ListNumber = parseFloat(ykfpDelList[i].xmsl) * (-1);//数量
+                    del.ListPrice = ykfpDelList[i].hsdj;//单价
+                    del.ListAmount = parseFloat(ykfpDelList[i].hsje) * (-1);//金额
+                    del.ListPriceKind = "1";//含税标志 0-不含税 1-含税
+                    del.ListTaxAmount = parseFloat(ykfpDelList[i].se) * (-1);//税额 可以不传（为0） 如传入则应符合计算关系
+                    del.GoodsTaxNo = ykfpDelList[i].shflbm;//税收分类编码
+                    del.TaxPre = "0";//是否享受税收优惠政策 0-不享受 1-享受
+                    del.TaxPreCon = "";//税收优惠政策内容
+                    del.ZeroTax = "";//零税率标识 空：非零税率 0；出口退税 1；免税 2；不征收 3；普通零税率
+                    del.CropGoodsNo = ykfpDelList[i].qyzbm;//企业自编码
+                    del.TaxDeduction = "";//扣除额 ，可为空
+                    del.SL = ykfpDelList[i].sl;//税率
+                    array.push(JSON.parse(JSON.stringify(del)));
+                }
+                return array;
+            },
+            invoiceRed: function (data, value) { //发票冲红
+                var url = '/noc/highPower/ykfpMng/getFpxx';
+                var postData = {djh: data.djh};
+                active.ajaxPost(url, postData, function (ykfp) {
+                    console.log("ykfp:" + JSON.stringify(ykfp));
+                    var bz = '';
+                    if (0 == data.fpzl) {
+                        //专票 备注
+                        bz = '开具红字增值税专用发票信息表编号' + value;
+                    } else {
+                        //普票 备注
+                        bz = '对应正数发票代码:' + ykfp.fpdm + '号码:' + ykfp.fphm + ';冲红原因:' + value;
+                    }
+                    console.log("备注：" + bz);
+                    var invoiceMain = active.getInvoiceMain(ykfp, bz);
+                    console.log("invoiceMain:" + JSON.stringify(invoiceMain));
+                    var invoiceDelArray = active.getInvoiceDelArray(ykfp);
+                    console.log("invoiceDelArray:" + JSON.stringify(invoiceDelArray));
+                    openJinShuiPan(JSON.stringify(invoiceMain), JSON.stringify(invoiceDelArray), null, null, null, null, data.fpzl, function (successData) {
+                        //冲红成功
+                        console.log("冲红成功");
+                        // console.log(successData);
+                        var fpdm = successData.typeCode;// 发票代码
+                        var fphm = successData.number;// 发票号码
+                        var fjh = successData.machineNo;// 分机号
+                        console.log("fpdm:" + fpdm);
+                        console.log("fphm:" + fphm);
+                        //调用单张发票明细接口 存储发票数据
+                        QryInv(data.fpzl, fpdm, fphm, function (queryResult) {
+                            saveFpInfo2Ykfp(queryResult, data.djh + "*red", 2, 2, 3, fjh, data.fpdm, data.fphm, value, function () {
+                                //保存数据成功后  刷新页面
+                                active.search({kpsjMin: "", kpsjMax: ""});
+                            });
+                        }, function (msg) {
+                            layer.alert('查询发票失败，失败原因:<br>' + msg, {icon: 2, title: '温馨提示'});
+                            return false;
+                        });
+                        //调取打印接口
+                        printInv(data.fpzl, fpdm, fphm, 0, 1, function (rtn) {
+                            console.log("rtn.RetCode:" + rtn.RetCode);
+                            console.log("rtn.RetMsg:" + rtn.RetMsg);
+                            if ('5011' == rtn.RetCode) {
+                                //打印成功
+                                layer.alert("冲红成功！打印成功！<br>" + rtn.RetMsg, {icon: 1, title: '温馨提示'})
+                            } else {
+                                //打印失败
+                                layer.alert("冲红成功！打印失败！" + rtn.RetMsg + "<br>可在【已开发票】页面再次打印！", {icon: 2, title: '温馨提示'})
+                            }
+                        });
+                    }, function (failureData) {
+                        //冲红失败
+                        console.log("冲红失败！");
+                        layer.alert("冲红失败！<br>" + failureData, {icon: 2, title: '温馨提示'});
+                    })
+                });
+            },
+            getCheckData: function () { //获取选中数据
+                var checkStatus = table.checkStatus('reloadId')
+                    , checkData = checkStatus.data;
+                var dataFormat = "";
+                //格式化获取数据,只过滤tzdId,变成以逗号分隔的字符串
+                for (var i = 0; i < checkData.length; i++) {
+                    if (i != checkData.length - 1) {
+                        dataFormat += checkData[i].djh + ',';
+                    } else {
+                        dataFormat += checkData[i].djh;
+                    }
+                }
+                if ('' == dataFormat) {
+                    layer.alert("您未点选任何数据,不能进行该操作!", {icon: 2, title: '温馨提示'});
+                    return false;
+                } else {
+                    return dataFormat;
+                }
+            },
+            getThisData: function () { //获取选中数据
+                var checkStatus = table.checkStatus('reloadId')
+                    , checkData = checkStatus.data;
+                var dataFormat = "";
+                //格式化获取数据,只过滤tzdId,变成以逗号分隔的字符串
+                for (var i = 0; i < checkData.length; i++) {
+                    if (i != checkData.length - 1) {
+                        dataFormat += checkData[i];
+                    } else {
+                        dataFormat += checkData[i];
+                    }
+                }
+                if ('' == dataFormat) {
+                    layer.alert("您未点选任何数据,不能进行该操作!", {icon: 2, title: '温馨提示'});
+                    return false;
+                } else {
+                    return dataFormat;
+                }
+            },
+            ajaxPost: function (url, data, todo) {// ajax post 请求
+                var indexLoading;
+                $.ajax({
+                    url: url,
+                    type: 'post',
+                    data: data,
+                    dataType: 'json',
+                    async: false,
+                    beforeSend: function () {
+                        indexLoading = layer.load(2, {time: 1500, shade: [0.3, '#000']});
+                    },
+                    success: function (rlt) {
+                        console.log(rlt);
+                        if (rlt.status == '200') {
+                            layer.close(indexLoading);
+                            if (todo) {
+                                todo(rlt.data);
+                            } else {
+                                layer.msg(rlt.msg, {icon: 1, time: 1000, title: '温馨提示'});
+                                active.search({kpsjMin: "", kpsjMax: ""});
+                            }
+                        } else {
+                            layer.close(indexLoading);
+                            layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                        }
+                    },
+                    error: function (rlt) {
+                        layer.close(indexLoading);
+                        layer.alert(rlt.msg, {icon: 2, title: '温馨提示'});
+                    }
+                })
+            }
+        }
+
+        //表单“搜索”按钮
+        form.on('submit(search)', function (data) {
+            active.search(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //表单“批量导出”按钮
+        form.on('submit(submitExport)', function (data) {
+            console.log('submit(submitExport)');
+            active.searchExport(data.field);
+            return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //表单“新建自由票”按钮
+        form.on('submit(newZiYouPiao)', function (data) {
+//                    layer.open({
+//                        title: '发票种类',
+//                        type: 2,
+//                        content: '/noc/zyp/getAllInvTypeByEnterprise',
+//                        //area: ['100%', '100%'],
+//                        shadeClose: true,
+//                        end:function() {
+//                            //关闭时刷新页面
+//                            active.search();
+//                        }
+//                    });
+            parent.layer.open({
+                title: '发票填开页',
+                type: 2,
+                content: '/noc/zyp/foToNewZiYouPiao?invTypeId=' + 0,
+                area: ['90%', '90%']
+                ,
+                end: function () {
+                    //关闭时刷新页面
+                    active.search();
+                }
+            });
+        });
+
+        //监听事件
+        table.on('toolbar(test)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch (obj.event) {
+                case 'prints':
+                    //批量打印
+                    var datas = active.getThisData();
+                    console.log(datas);
+                    if (false != datas) {
+                        layer.confirm('确认打印以下点选发票?', {icon: 3, title: '温馨提示'}, function (index) {
+                            layer.close(index);
+                            // active.ajaxPost('submit?ids='+tzdIds);
+                            if (openCard().state) {
+                                for (var i = 0; i < datas.length; i++) {
+                                    var fpzl = datas[i].fpzl;//发票种类
+                                    var fpdm = datas[i].fpdm;//发票代码
+                                    var fphm = datas[i].fphm;//发票号码
+                                    var qdbz = datas[i].qdbz;//0 打发票  1打清单
+                                    var showEdge = 1;//是否显示边距确认框 0  否  1是
+                                    printInv(fpzl, fpdm, fphm, qdbz, showEdge);
+                                }
+                            }
+
+                        });
+                    }
+                    break;
+                case 'refresh':
+                    //刷新
+                    var data = {};
+                    data.fpdm = $('#fpdm').val();
+                    data.fphm = $('#fphm').val();
+                    data.gfmc = $('#gfmc').val();
+                    data.gfsh = $('#gfsh').val();
+                    data.bz = $('#bz').val();
+                    data.fjh = $('#fjh').val();
+                    data.fpzl = $('#fpzl').val();
+                    data.kplx = $('#kplx').val();
+                    data.jshjMin = $('#jshjMin').val();
+                    data.jshjMax = $('#jshjMax').val();
+                    data.kpsjMin = $('#kpsjMin').val();
+                    data.kpsjMax = $('#kpsjMax').val();
+                    active.search(data);
+                    break;
+                case 'exports':
+                    //批量导出
+                    var djhs = active.getCheckData();
+                    console.log(djhs);
+                    if (false != djhs) {
+                        layer.confirm('确认导出以下点发票据至Excel?', {icon: 3, title: '温馨提示'}, function (index) {
+                            window.location.href = '/noc/zyp/export?djhs=' + djhs;
+                            layer.close(index);
+                        });
+                    }
+                    break;
+//                case 'batchOpenInv':
+//                    //批量开票
+//                    var datas = active.getThisData();
+//                    console.log(datas);
+//                    if (false != datas) {
+//                        layer.confirm('确认开具以下点选发票?', {icon: 3, title: '温馨提示'}, function (index) {
+//                            layer.close(index);
+//                            // active.ajaxPost('submit?ids='+tzdIds);
+//                            if (openCard().state) {
+//                                for (var i = 0; i < datas.length; i++) {
+//                                    var fpzl = datas[i].fpzl;//发票种类
+//                                    var fpdm = datas[i].fpdm;//发票代码
+//                                    var fphm = datas[i].fphm;//发票号码
+//                                    var qdbz = datas[i].qdbz;//0 打发票  1打清单
+//                                    var showEdge = 1;//是否显示边距确认框 0  否  1是
+//                                    printInv(fpzl, fpdm, fphm, qdbz, showEdge);
+//                                }
+//                            }
+//
+//                        });
+//                    }
+//                    break;
+            }
+            ;
+        });
+
+        table.on('tool(test)', function (obj) {
+            var tableEvent = obj.event;
+            var data = obj.data;
+            var djh = data.djh;//单据号
+            var fpzl = data.fpzl;//发票种类
+            var fpdm = data.fpdm;//发票代码
+            var fphm = data.fphm;//发票号码
+            var qdbz = data.qdbz;//0 打发票  1打清单
+            var showEdge = 1;//是否显示边距确认框 0  否  1是
+            var kplx = data.kplx;//开票类型1-蓝字发票；2-红字发票；3-被冲红；4-作废
+            console.log(tableEvent);
+            console.log("djh:"+djh);
+            switch (obj.event) {
+                case 'detail':
+                    //发票详情
+                    layer.open({
+                        title: '发票详情',
+                        type: 2,
+                        //content: '/noc/ykfp/showDjDetail?djh=' + djh,
+                        content: '/noc/highPower/ykfpMng/invoiceDel?djh=' + djh,
+                        area: ['90%', '90%'],
+                        shadeClose: true,
+                        end: function () {
+                            //关闭时刷新页面
+                            active.search();
+                        }
+                    });
+                    break;
+                case 'print':
+                    //发票单条打印
+                    layer.confirm('确认打印该发票?', {icon: 3, title: '温馨提示'}, function (index) {
+                        layer.close(index);
+                        if (openCard().state) {
+                            printInv(fpzl, fpdm, fphm, qdbz, showEdge, null);
+                        }
+                    });
+                    break;
+                case 'invalid':
+                    //发票作废
+                    layer.confirm('确认作废该发票?', {icon: 3, title: '温馨提示'}, function (index) {
+                        layer.close(index);
+                        if (openCard().state) {
+                            cancelInv(fpzl, fpdm, fphm, function (rtn) {
+                                console.log("作废结果：" + JSON.stringify(rtn));
+                                console.log("kplx：" + kplx);
+                                if ('6011' == rtn.RetCode) {
+                                    //作废成功
+                                    //todo 后台更新数据库状态 红票作废
+                                    var url = '/noc/highPower/ykfpMng/invoiceCancel';
+                                    var postData = {fpdm: fpdm, fphm: fphm, ykplx: kplx};
+                                    if (2 == kplx) {
+                                        //红票作废，则比需更新原来蓝票（被冲红票）状态为2
+                                        postData.yfpdm = data.yfpdm;
+                                        postData.yfphm = data.yfphm;
+                                    }
+                                    active.ajaxPost(url, postData);
+                                } else {
+                                    //作废失败
+                                    layer.alert("作废失败！<br>" + rtn.RetMsg, {icon: 2, title: '温馨提示'});
+                                }
+                            });
+                        }
+                    });
+                    break;
+                case 'red':
+                    //发票冲红
+                    /**
+                     * 开具负数增值税普通发票，必须在备注中注明“对应正数发票代
+                     码:XXXXXXXXXX 号码:YYYYYYYY”字样，其中“X”为发票左上角 10 位
+                     或 12 位代码数字，“Y”为发票右上角 8 位号码数字。
+                     开具负数增值税专用发票，必须在备注中注明“开具红字增值税专用发票
+                     信息表编号 XXXXXXXXXXXXXXXX”，其中 X 为信息表编号。
+                     */
+                    if (1 == kplx) {
+                        if (0 != fpzl) {
+                            //普票 电子票 卷票 冲红
+                            layer.prompt({
+                                formType: 2,
+                                title: '请输入冲红原因',
+                                maxlength: 70, //可输入文本的最大长度，默认500
+                                area: ['300px', '100px'] //自定义文本域宽高
+                            }, function (value, index, elem) {
+                                active.invoiceRed(data, value);
+                                layer.close(index);
+                            });
+                        } else {
+                            //专票冲红
+                            layer.prompt({
+                                formType: 0,
+                                title: '请输入红字专用发票信息表编号',
+                                maxlength: 20, //可输入文本的最大长度，默认500
+                                area: ['300px', '100px'] //自定义文本域宽高
+                            }, function (value, index, elem) {
+                                active.invoiceRed(data, value);
+                                layer.close(index);
+                            });
+                        }
+                    } else {
+                        var tip = '不允许冲红！';
+                        if (2 == kplx) {
+                            tip = '红字发票不可以冲红！';
+                        } else if (3 == kplx) {
+                            tip = '被冲红发票不可以再次冲红！';
+                        } else if (4 == kplx) {
+                            tip = '已作废发票不可以冲红！';
+                        }
+                        layer.alert(tip, {icon: 2, title: '温馨提示'});
+                    }
+                    break;
+            }
+            ;
+        });
+    });
+
+
+    //  冲红单据
+    function chongHongInv(djh, yfpdm, yfphm, note) {
+        var result = getFpInfoFromYkfp(djh);
+
+        if (result != '') {
+            //查询到
+            var fpzl = result.dlYkfpMain.fpzl;
+            console.log(result.dlYkfpMain);
+            result.dlYkfpMain.bz = note;
+            openJinShuiPan(result.dlYkfpMain, result.dlYkfpDels, null, null, null, null, fpzl, function (data) {
+                alert(2);
+                console.log("冲红开票结果:" + JSON.stringify(data));
+                //:{"infoAmount":"0.85","infoTaxAmount":"0.15","infMonth":"undefined","typeCode":"3702141620","number":"182037","goodsListFlag":"0","retCode":"4011","machineNo":"0","retMsg":"4011-开票成功 [0000,]"}
+                //开票成功，打印
+                var fpdm = data.typeCode;
+                var machineNo = data.machineNo;
+                var fphm = pad(data.number, 8);
+                //调接口获取发票信息，保存已开的红字发票信息,更新蓝票信息为已冲红
+                QryInv(fpzl, fpdm, fphm, function (queryResult) {
+                    saveFpInfo2Ykfp(queryResult, null, fpzl, 1, 3, machineNo, yfpdm, yfphm);
+                }, function (msg) {
+                    layer.alert('查询发票失败，失败原因:' + msg, {icon: 2, title: '温馨提示'});
+                    return false;
+                });
+
+            }, function (errorMsg) {
+                alert(3);
+                layer.alert('冲红失败，失败原因:' + errorMsg, {icon: 2, title: '温馨提示'});
+                return false;
+            });
+        }
+        return result;
+    }
+
+    function getFpInfoFromYkfp(djh) {
+        var result = '';
+        $.ajax({
+            type: 'POST',
+            url: '/noc/zyp/getDjDetail?djh=' + djh,
+            cache: false,
+            contentType: 'application/json;charset=utf-8',
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                console.info(data);
+                if (data.status == '200') {
+                    result = data.data;
+                    layer.msg(data.msg, {icon: 1, time: 1000, title: '温馨提示'}, function () {
+                    });
+                } else {
+                    layer.alert(data.msg, {icon: 2, title: '温馨提示'});
+                }
+            },
+            error: function (error) {
+                console.info(error);
+                layer.alert('前后台数据交互异常', {icon: 2, title: '温馨提示'});
+            }
+
+        });
+        return result;
+    }
+
+
+</script>
+<script type="text/html" id="operation">
+    <span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">详情</span>
+    <span class="layui-badge bg-light-orange cursor-pointer" lay-event="print">打印</span>
+
+    <span class="layui-badge bg-light-green cursor-pointer" lay-event="invalid">作废</span>
+    <span class="layui-badge bg-light-red cursor-pointer" lay-event="red">冲红</span>
+</script>
+<script type="text/html" id="toolbarDemo">
+    <button class="mock-icon-btn" lay-event="exports" title="批量导出Excel">
+        <i class="fa fa-share-square-o"></i><span>批量导出</span>
+    </button>
+    <button class="mock-icon-btn" lay-event="prints" title="批量打印">
+        <i class="fa fa-print"></i><span>批量打印</span>
+    </button>
+    <!--<button class="mock-icon-btn" lay-event="batchOpenInv" title="批量打印">-->
+    <!--<i class="fa fa-print"></i><span>批量开票</span>-->
+    <!--</button>-->
+    <button class="mock-icon-btn" lay-event="refresh" title="刷新" style="float:right">
+        <i class="fa fa-refresh"></i><span>刷新</span>
+    </button>
+</script>
+</body>
+
+</html>

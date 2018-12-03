@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.SpxxMapper">
+    <select id="getSpxxListByYwlx" resultType="Spxx">
+        select
+        id,ywlx,spmc,shflbm,sl,sl slPercent
+        from dl_spxx
+        <where>
+            <if test="ywlx != null and ywlx != ''">
+                and ywlx = #{ywlx}
+            </if>
+            <if test="spmc != null and spmc != ''">
+                and spmc LIKE CONCAT(CONCAT('%', #{spmc}),'%')
+            </if>
+        </where>
+    </select>
+</mapper>

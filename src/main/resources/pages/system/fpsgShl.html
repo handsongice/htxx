@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>发票申购审核流</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <link rel="stylesheet" href="/static/js/gooflow0.6/GooFlow/codebase/GooFlow.css"/>
+    <link rel="stylesheet" href="/static/js/gooflow0.6/default.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+<div class="layui-row layui-col-space10">
+    <div class="layui-col-lg12 layui-col-md12">
+        <div class="layui-card">
+            <div id="demo" style="margin:5px;float:left"></div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/gooflow0.6/GooFunc.js"></script>
+<script src="/static/js/gooflow0.6/GooFlow/codebase/GooFlow.js"></script>
+<script src="/static/js/gooflow0.6/json2.js"></script>
+<script src="/static/js/underscore-min.js"></script>
+<script>
+    var property={
+        width:1200,
+        height:600,
+        initLabelText:'发票审核流',
+        toolBtns:["task"],
+        haveHead:true,
+        headBtns:[],
+        haveTool:true,
+        haveGroup:false,
+        useOperStack:true
+    };
+    var remark={
+        cursor:"选择指针",
+        direct:"转换连线",
+        task:"审核人",
+    };
+    var demo;
+    var datas = [];
+    $(document).ready(function () {
+        demo=$.createGooFlow($("#demo"),property);
+        demo.loadDataAjax({
+            type : 'get',
+            url : '/noc/fpsgShlList',
+        })
+        demo.setNodeRemarks(remark);
+        demo.$editable = true
+        layui.use(['table', 'layer', 'laydate'], function () {
+            var table = layui.table,laydate = layui.laydate,layer = layui.layer;
+            demo.onItemAdd = function (id,type,json) {
+                console.log(json)
+                console.log(id)
+                if(json && !json.id) {
+                    if(type == 'line') {
+                        json.type = 'sl'
+                    }
+                    var loadindex;
+                    $.ajax({
+                        url: "/noc/insertFpsgShl",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                            code:id,
+                            style:type,
+                            alt:true,
+                            height:24,
+                            left:json.left,
+                            name:json.name,
+                            top:json.top,
+                            type:json.type,
+                            width:86,
+                            from:json.from,
+                            to:json.to,
+                        },
+                        beforeSend:function(rs){
+                            loadindex = layer.load(2, {
+                                time: 1500,
+                                shade: [0.3,'#000'],
+                            });
+                        },
+                        complete:function(rs){
+                            layer.close(loadindex);
+                        },
+                        success: function(rlt) {
+                            if(rlt && rlt.status == 200) {
+                                json.code = id;
+                                json.id = rlt.data;
+                                window.location.reload();
+                            } else {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                            }
+                        },error: function(rlt) {
+                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                        }
+                    });
+                }
+                return true
+            }
+            demo.onItemDel = function (id,type) {
+                var _ids = id.split('_');
+                if(!_ids || _ids.length<3) {
+                    layer.alert('数据异常！',{icon: 2, title:'温馨提示'});
+                    return false;
+                }
+                var loadindex;
+                var boo = true
+                $.ajax({
+                    url: "/noc/delFpsgShl",
+                    type: 'post',
+                    async : true,
+                    dataType: 'json',
+                    data: {
+                        id:_ids[2],
+                        style:type,
+                    },
+                    beforeSend:function(rs){
+                        loadindex = layer.load(2, {
+                            time: 1500,
+                            shade: [0.3,'#000'],
+                        });
+                    },
+                    complete:function(rs){
+                        layer.close(loadindex);
+                    },
+                    success: function(rlt) {
+                        if(rlt && rlt.status == 200) {
+
+                        } else {
+                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                            boo = false
+                        }
+                    },error: function(rlt) {
+                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                        boo = false
+                    }
+                });
+                return boo;
+            }
+            demo.onItemMove = function (id,type,left,top) {
+                var loadindex;
+                var _ids = id.split('_');
+                if(!_ids || _ids.length<3) {
+                    layer.alert('数据异常！',{icon: 2, title:'温馨提示'});
+                    return false;
+                }
+                $.ajax({
+                    url: "/noc/updateFpsgShl",
+                    type: 'post',
+                    async : true,
+                    dataType: 'json',
+                    data: {
+                        id:_ids[2],
+                        left:left,
+                        top:top,
+                    },
+                    beforeSend:function(rs){
+                        loadindex = layer.load(2, {
+                            time: 1500,
+                            shade: [0.3,'#000'],
+                        });
+                    },
+                    complete:function(rs){
+                        layer.close(loadindex);
+                    },
+                    success: function(rlt) {
+                        if(rlt && rlt.status == 200) {
+                        } else {
+                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                        }
+                    },error: function(rlt) {
+                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                    }
+                });
+                return true
+            }
+            demo.$workArea.delegate(".ico + td", "click", { inthis: demo }, function (e) {
+                var newId = $(this).parents(".GooFlow_item").attr("id");
+                var _d = demo.getItemInfo(newId,'node')
+                console.log(_d)
+                if(_d && _d.id) {
+                    var index = layer.open({
+                        title: "编辑",
+                        type: 2,
+                        content: "/main/drShl?id="+_d.id,
+                        success: function(layero, index) {
+                            setTimeout(function() {
+                                layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                    tips: 3
+                                });
+                            }, 500)
+                        }
+                    })
+                    layer.full(index);
+                    //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                    $(window).on("resize", function() {
+                        layer.full(index);
+                    });
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
+</body>
+
+</html>

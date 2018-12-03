@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <title></title>
+</head>
+
+<body>
+<!--<div class="layui-card">-->
+<!--<div class="layui-card-body">-->
+<!--<table id="demo" lay-filter="test"></table>-->
+<!--</div>-->
+<!--</div>-->
+<ul class="layui-timeline">
+			<span th:each="log : ${logs}">
+				<li class="layui-timeline-item " th:if="${log.status} eq -1">
+					<i class=" layui-icon layui-timeline-axis">&#xe63f;</i>
+					<div class="layui-timeline-content layui-text">
+						审核发起人:<h1 class="layui-timeline-title" th:text="${log.employeeName}"></h1>
+						所属部门:<h4 class="layui-timeline-title" th:text="${log.deptName}"></h4>
+						所属角色:<h4 class="layui-timeline-title" th:text="${log.roleName}"></h4>
+					</div>
+				</li>
+				<li class="layui-timeline-item" th:if="${log.status} gt -1">
+					<i class=" layui-icon layui-timeline-axis">&#xe63f;</i>
+					<div class="layui-timeline-content layui-text">
+						审核人:<h1 class="layui-timeline-title" th:text="${log.employeeName}"></h1>
+						所属部门:<h4 class="layui-timeline-title" th:text="${log.deptName}"></h4>
+						所属角色:<h4 class="layui-timeline-title" th:text="${log.roleName}"></h4>
+						<p>
+						审核结果:<br>
+							<!--<span th:if="${log.status} eq 0" class="layui-bg-gray">-->
+
+								<!--<span>审核等待中</span>-->
+							<!--</span>-->
+							<span th:if="${log.status} eq 1" class="layui-bg-blue">
+
+								<span>审核进行中</span>
+							</span>
+							<span th:if="${log.status} eq 2" class="layui-bg-red">
+
+								<span>审核拒绝</span>
+								<br>意见:<span th:text="${log.content}"></span>
+							</span>
+							<span th:if="${log.status} eq 3" class="layui-bg-green">
+
+								<span>审核通过</span>
+								<br>建议:<span th:text="${log.content}"></span>
+							</span>
+						</p>
+					</div>
+				</li>
+			</span>
+</ul>
+
+<!--<tr th:each="del: ${dlYkfpDels}">-->
+<!--<td th:text="${del['xmmc']}"></td>-->
+<!--<td th:text="${del['hsje']}"></td>-->
+<!--<td th:text="${del['hsdj']}"></td>-->
+<!--<td th:text="${del['se']}"></td>-->
+<!--<td th:text="${del['sl']}"></td>-->
+<!--<td th:text="${del['xmsl']}"></td>-->
+<!--</tr>-->
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script src="/static/js/common.js"></script>
+<script>
+    layui.use(['table', 'form', 'layer'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+    });
+</script>
+</body>
+
+</html>

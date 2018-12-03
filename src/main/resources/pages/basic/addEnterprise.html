@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<style>
+			.layui-form-label {
+				width: 80px;
+				padding: 0 8px;
+			}
+			
+			.layui-input-block {
+				margin-left: 110px;
+				margin-right: 110px;
+			}
+		</style>
+		<script src="/static/js/respond.min.js"></script>
+
+	</head>
+
+	<body>
+		<form id="noticeForm" class="layui-form" action="" lay-filter="noticeForm" >
+			<div class="layui-form-item">
+				<label class="layui-form-label">公司名称<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="name" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入菜单名称" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">税号<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="tax_num" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入税号" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">类型<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<select name="type" lay-verify="required" lay-verType="tips">
+						<option value="1">服务器</option>
+						<option value="2">金税盘</option>
+					</select>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">登录账号<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="login_code" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入税号" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="password" name="password" lay-verType="tips" lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">公司地址</label>
+                <div class="layui-input-block">
+                    <input type="text" name="addr" placeholder="请输入公司地址" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">站点数量</label>
+				<div class="layui-input-block">
+					<input type="text" name="num" placeholder="请输入站点数量" value="1" lay-verType="tips" lay-verify="required|number" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button type="button" class="layui-btn" lay-submit  lay-filter="addOrEdit">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/layui/layui-xtree.js"></script>
+		<script src="/static/js/index.js"></script>
+		<script th:inline="javascript">
+            var windowindex = parent.layer.getFrameIndex(window.name);
+            $(document).ready(function () {
+                layui.use(['form', 'layer'], function() {
+                    var form = layui.form;
+                    var layer = layui.layer;
+                    //表单提交验证
+                    form.on('submit(addOrEdit)', function(data){
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/insertEnterprise",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                name:data.field.name,
+                                taxNum:data.field.tax_num,
+                                loginCode:data.field.login_code,
+                                etype:data.field.type,
+                                password:data.field.password,
+                                addr:data.field.addr,
+                                num:data.field.num,
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                        parent._search();
+                                        parent.layer.close(windowindex); //再执行关闭
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    });
+                    //表单自定义验证规则
+                    form.verify({
+                        hm: function(value, item){
+                            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                                return '不能含有有特殊字符';
+                            }
+                        },
+                        je: function(value,item) {
+                            if(!/^\d+(?:.\d{1,2})?$/.test(value)){
+                                return '输入不合法,只能为整数或小数点2位以内的数字';
+                            }
+                        }
+                    });
+                });
+			})
+		</script>
+	</body>
+
+</html>

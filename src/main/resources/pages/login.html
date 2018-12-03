@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" href="/static/css/login.css" />
+		<title></title>
+	</head>
+
+	<body>
+		<img src="/static/img/background.jpg" width="500" height="333" alt="登录背景图" id="back-img">
+		<form class="layui-form layui-form-pane" id="login-cont" action="">
+			<h1>财税一体化管理平台</h1>
+			<div class="layui-form-item">
+				<label class="layui-form-label">用户名</label>
+				<div class="layui-input-block">
+					<input type="text" name="username" required lay-verify="required" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">密码</label>
+				<div class="layui-input-block">
+					<input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">验证码</label>
+				<div class="layui-input-inline" style="width: 135px;margin: 0;">
+					<input type="text" name="code" required lay-verify="required" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+					<!--<input type="text" name="code" placeholder="请输入验证码" autocomplete="off" class="layui-input">-->
+				</div>
+				<img onclick="verifyCode()" src="/code/getCode" widh="280" height="113" id="yzm-img" alt="验证码">
+			</div>
+			<div class="layui-form-item">
+				<a href="javascript:;" lay-submit lay-filter="dologin" class="layui-btn layui-btn-normal layui-btn-fluid login_button">登录</a>
+			</div>
+		</form>
+	</body>
+	<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/js/layui/layui.js"></script>
+	<script>
+        $(document).ready(function() {
+            document.onkeydown = function(e){
+                var ev = document.all ? window.event : e;
+                if(ev.keyCode==13) {
+                    $('.login_button').trigger('click')
+                }
+            }
+            layui.use(['form','table','layer'], function(){
+                var $ = layui.jquery
+                    ,form = layui.form
+                    ,table = layui.table
+					,layer = layui.layer;
+                form.on('submit(dologin)', function(data){
+                    var base = {};
+
+                    base.username = data.field.username;
+                    base.password = data.field.password;
+                    base.code = data.field.code;
+					var loadindex;
+                    $.ajax({
+                        url: "/dologin",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                            username:base.username,
+                            password:base.password,
+                            code:base.code,
+                        },
+                        beforeSend:function(rs){
+                            loadindex = layer.load(2, {
+                                time: 1500,
+                                shade: [0.3,'#000'],
+                            });
+                        },
+                        complete:function(rs){
+                            layer.close(loadindex);
+                        },
+                        success: function(result) {
+                            if(result.status == 200) {
+                                window.location.href = '/main'
+							} else {
+                                if(result.msg == 1){
+                                    layer.msg('请输入用户名')
+								} else if(result.msg == 2) {
+                                    layer.msg('请输入密码')
+								} else if(result.msg == 3) {
+                                    layer.msg('请输入验证码')
+                                } else if(result.msg == 4) {
+                                    layer.msg('验证码错误')
+                                } else if(result.msg == 5) {
+                                    layer.msg('用户不存在')
+                                } else if(result.msg == 6) {
+                                    layer.msg('密码错误')
+                                } else if(result.msg == 0) {
+                                    layer.msg('系统异常')
+                                } else if(result.msg == 7) {
+                                    layer.msg('公司不存在或者被冻结')
+                                }
+							}
+                            console.log(result);
+                        },
+						error: function (rs) {
+							layer.msg('登录异常')
+                        }
+                    });
+                    return false;
+                });
+
+            });
+		});
+		function verifyCode() {
+			$('#yzm-img').attr("src",'/code/getCode?random='+Math.random());
+        }
+	</script>
+</html>

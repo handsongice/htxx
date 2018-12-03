@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>分发</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+
+        .itemField {
+            border-bottom: 1px dashed #e7eaec;
+            min-height: 35px;
+            line-height: 35px;
+            padding: 15px 0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .tableFiled {
+            padding-right: 15px;
+        }
+
+        .tableFiled .redStar {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="layui-card">
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <input id="stockId" th:value="${stock.id}" type="hidden">
+            <div class="layui-row itemField">
+                <div class="layui-col-md2">
+                    <label class="tableFiled"><span class="redStar">*</span>开票机</label>
+                </div>
+                <div class="layui-col-md10">
+                    <select id="kpjId">
+                        <option th:each="i:${kpjList}" th:value="${i.id}" th:text="${i.name}"
+                                th:disabled="${i.code eq '0'}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2">
+                    <label class="tableFiled"><span class="redStar">*</span>发票号码（开始）</label>
+                </div>
+                <div class="layui-col-md10">
+                    <input id="fphmq" type="text" th:value="${stock.fphmq}" placeholder="请输入发票号码开始"
+                           autocomplete="off"
+                           class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2">
+                    <label class="tableFiled"><span class="redStar">*</span>分发数量</label>
+                </div>
+                <div class="layui-col-md10">
+                    <input id="ffsl" type="number" placeholder="请输入分发数量" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div style="text-align: center; padding-top:15px;">
+                <button id="submitPopBut" type="button" class="layui-btn layui-btn-normal">提交</button>
+                <button id="closePopBut" type="button" class="layui-btn layui-btn-primary">关闭</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+
+<script>
+    layui.use(['table'], function () {
+        $('#submitPopBut').on('click', function () {
+            distributeObj.submitBut();
+        })
+        $('#closePopBut').on('click', function () {
+            distributeObj.closeBut();
+        })
+    });
+
+    var distributeObj = {
+        submitBut: function () {
+            var _this = this;
+            var paramRes = _this.getRequestParams();
+            if (!paramRes.state) {
+                layer.alert(paramRes.msg, {'icon': 2});
+                return;
+            }
+
+            console.log(JSON.stringify(paramRes.data));
+
+            $.ajax({
+                url: '/noc/invoice/addDistribute',
+                type: 'POST',
+                data: paramRes.data,
+                dataType: 'json',
+                success: function (result) {
+                    if (result.status == '200') {
+                        layer.alert('分发成功！', {'icon': 1});
+                        window.parent.storeObj.loadPage();
+                        setTimeout(function () {
+                            _this.closeBut();
+                        }, 3000);
+                    } else {
+                        layer.alert(result.msg, {'icon': 2});
+                    }
+                },
+                error: function (error) {
+                    layer.alert('系统异常！', {'icon': 2});
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {
+                "state": false,
+                "data": {},
+                "msg": ""
+            };
+
+            var rkId = $('#stockId').val();
+            if (rkId != null && rkId != '') {
+                params.data.rkId = rkId;
+            } else {
+                params.msg = '数据异常！';
+                return params;
+            }
+
+            var kpjId = $('#kpjId').val();
+            if (kpjId != null && kpjId != '') {
+                params.data.kpjId = kpjId;
+                params.data.kpjName = $('#kpjId option:selected').text();
+            } else {
+                params.msg = '请选择开票机！';
+                return params;
+            }
+
+            var fphmq = $('#fphmq').val();
+            if (fphmq != null && kpjId != '') {
+                params.data.fphmq = fphmq;
+            } else {
+                params.msg = '请输入起始发票号码！';
+                return params;
+            }
+
+            var ffsl = $('#ffsl').val();
+            if (ffsl != null && ffsl != '') {
+                if (ffsl >= 0) {
+                    params.data.ffsl = ffsl;
+                } else {
+                    params.msg = '分发数量格式错误！';
+                    return params;
+                }
+            } else {
+                params.msg = '请输入分发数量！';
+                return params;
+            }
+            params.state = true;
+            return params;
+        },
+        closeBut: function () {
+            // 获取窗口索引
+            var index = parent.layer.getFrameIndex(window.name);
+            // 关闭layer弹出层
+            parent.layer.close(index);
+        }
+    }
+</script>
+</body>
+
+</html>

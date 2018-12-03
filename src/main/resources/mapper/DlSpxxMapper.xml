@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlSpxxMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlSpxx" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="ywlx" property="ywlx" jdbcType="TINYINT" />
+    <result column="spmc" property="spmc" jdbcType="VARCHAR" />
+    <result column="shflbm" property="shflbm" jdbcType="VARCHAR" />
+    <result column="sl" property="sl" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, ywlx, spmc, shflbm, sl
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlSpxxExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_spxx
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_spxx
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_spxx
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlSpxxExample" >
+    delete from dl_spxx
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlSpxx" >
+    insert into dl_spxx (id, ywlx, spmc, 
+      shflbm, sl)
+    values (#{id,jdbcType=BIGINT}, #{ywlx,jdbcType=TINYINT}, #{spmc,jdbcType=VARCHAR}, 
+      #{shflbm,jdbcType=VARCHAR}, #{sl,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlSpxx" >
+    insert into dl_spxx
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="ywlx != null" >
+        ywlx,
+      </if>
+      <if test="spmc != null" >
+        spmc,
+      </if>
+      <if test="shflbm != null" >
+        shflbm,
+      </if>
+      <if test="sl != null" >
+        sl,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="ywlx != null" >
+        #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="spmc != null" >
+        #{spmc,jdbcType=VARCHAR},
+      </if>
+      <if test="shflbm != null" >
+        #{shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="sl != null" >
+        #{sl,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlSpxxExample" resultType="java.lang.Integer" >
+    select count(*) from dl_spxx
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_spxx
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.ywlx != null" >
+        ywlx = #{record.ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="record.spmc != null" >
+        spmc = #{record.spmc,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shflbm != null" >
+        shflbm = #{record.shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sl != null" >
+        sl = #{record.sl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_spxx
+    set id = #{record.id,jdbcType=BIGINT},
+      ywlx = #{record.ywlx,jdbcType=TINYINT},
+      spmc = #{record.spmc,jdbcType=VARCHAR},
+      shflbm = #{record.shflbm,jdbcType=VARCHAR},
+      sl = #{record.sl,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlSpxx" >
+    update dl_spxx
+    <set >
+      <if test="ywlx != null" >
+        ywlx = #{ywlx,jdbcType=TINYINT},
+      </if>
+      <if test="spmc != null" >
+        spmc = #{spmc,jdbcType=VARCHAR},
+      </if>
+      <if test="shflbm != null" >
+        shflbm = #{shflbm,jdbcType=VARCHAR},
+      </if>
+      <if test="sl != null" >
+        sl = #{sl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlSpxx" >
+    update dl_spxx
+    set ywlx = #{ywlx,jdbcType=TINYINT},
+      spmc = #{spmc,jdbcType=VARCHAR},
+      shflbm = #{shflbm,jdbcType=VARCHAR},
+      sl = #{sl,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

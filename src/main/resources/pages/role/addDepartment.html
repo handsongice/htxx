@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<link rel="stylesheet" type="text/css" href="/static/js/ztree/css/zTreeStyle.css" />
+		<style>
+			.layui-form-label {
+				width: 80px;
+				padding: 0 8px;
+			}
+			
+			.layui-input-block {
+				margin-left: 110px;
+				margin-right: 110px;
+			}
+		</style>
+		<script src="/static/js/respond.min.js"></script>
+
+	</head>
+
+	<body>
+		<form id="noticeForm" class="layui-form" action="" lay-filter="noticeForm" >
+			<div class="layui-form-item">
+				<label class="layui-form-label">名称<span style='color:red'>*</span></label>
+				<div class="layui-input-block">
+					<input type="text" name="name" required lay-verType="tips" lay-verify="required|hm" placeholder="请输入名称" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">上级部门</label>
+				<div class="layui-input-block">
+					<ul id="treeDemo"  class="ztree"></ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">负责人</label>
+				<div class="layui-input-block">
+					<input type="text" name="leader" placeholder="请输入负责人" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">联系方式</label>
+				<div class="layui-input-block">
+					<input type="text" name="phone" placeholder="请输入联系方式" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">描述</label>
+				<div class="layui-input-block">
+					<input type="text" name="desc" placeholder="请输入描述" autocomplete="off" class="layui-input">
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">开票机</label>
+				<div class="layui-input-block">
+					<ul id="treeDemo2"  class="ztree"></ul>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block">
+					<button type="button" class="layui-btn" lay-submit  lay-filter="addOrEdit">立即提交</button>
+					<button type="reset" class="layui-btn layui-btn-primary">重置</button>
+				</div>
+			</div>
+		</form>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/layui/layui-xtree.js"></script>
+		<script src="/static/js/index.js"></script>
+		<script src="/static/js/ztree/js/jquery.ztree.all-3.5.js"></script>
+		<script th:inline="javascript">
+            var windowindex = parent.layer.getFrameIndex(window.name);
+            var setting = {
+                view: {
+                    showLine: false
+                },
+                check: {
+                    enable: true,
+                    chkStyle:"radio",
+                    radioType: "all"
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "parentId",
+                        rootPId: 0
+                    }
+                }
+            };
+            var setting2 = {
+                view: {
+                    showLine: false
+                },
+                check: {
+                    enable: true,
+                    chkboxType: { "Y": "ps", "N": "ps" }
+                },
+                data: {
+                    simpleData: {
+                        enable: true,
+                        idKey: "id",
+                        pIdKey: "parentId",
+                        rootPId: 0
+                    }
+                }
+            };
+            var treeObj;
+            var treeObj2;
+            $(document).ready(function () {
+                layui.use(['form', 'layer'], function() {
+                    var form = layui.form;
+                    var layer = layui.layer;
+                    var loadindex;
+                    $.ajax({
+                        url: "/noc/allDepartmentList",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                        },
+                        beforeSend:function(rs){
+                            loadindex = layer.load(2, {
+                                time: 1500,
+                                shade: [0.3,'#000'],
+                            });
+                        },
+                        complete:function(rs){
+                            layer.close(loadindex);
+                        },
+                        success: function(datas) {
+                            $.fn.zTree.init($("#treeDemo"), setting, datas);
+                            treeObj = $.fn.zTree.getZTreeObj("treeDemo");
+                            treeObj.expandAll(true);
+                        }
+                    });
+                    $.ajax({
+                        url: "/noc/allKpjList",
+                        type: 'post',
+                        async : true,
+                        dataType: 'json',
+                        data: {
+                            add: 1
+                        },
+                        success: function(datas) {
+                            $.fn.zTree.init($("#treeDemo2"), setting2, datas);
+                            treeObj2 = $.fn.zTree.getZTreeObj("treeDemo2");
+                            treeObj2.expandAll(true);
+                        }
+                    });
+                    //表单提交验证
+                    form.on('submit(addOrEdit)', function(data){
+                        var nodes = treeObj.getCheckedNodes();
+                        var parent_id = 0;
+                        if(nodes.length>0){
+                            parent_id = nodes[0].id;
+                        }
+                        var nodes2 = treeObj2.getCheckedNodes();
+                        var str_nodes = JSON.stringify(nodes2);
+                        var loadindex;
+                        $.ajax({
+                            url: "/noc/insertDepartment",
+                            type: 'post',
+                            async : true,
+                            dataType: 'json',
+                            data: {
+                                name:data.field.name,
+                                leader:data.field.leader,
+                                phone:data.field.phone,
+                                desc:data.field.desc,
+                                parentId:parent_id,
+                                nodes:str_nodes,
+                            },
+                            beforeSend:function(rs){
+                                loadindex = layer.load(2, {
+                                    time: 1500,
+                                    shade: [0.3,'#000'],
+                                });
+                            },
+                            complete:function(rs){
+                                layer.close(loadindex);
+                            },
+                            success: function(rlt) {
+                                if(rlt && rlt.status == 200) {
+                                    layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                        parent._search();
+                                        parent.layer.close(windowindex); //再执行关闭
+                                    });
+                                } else {
+                                    layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                    return false;
+                                }
+                            },error: function(rlt) {
+                                layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                        });
+                        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                    });
+                    //表单自定义验证规则
+                    form.verify({
+                        hm: function(value, item){
+                            if(!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)){
+                                return '不能含有有特殊字符';
+                            }
+                        },
+                        je: function(value,item) {
+                            if(!/^\d+(?:.\d{1,2})?$/.test(value)){
+                                return '输入不合法,只能为整数或小数点2位以内的数字';
+                            }
+                        }
+                    });
+                });
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+		<style>
+            .span-my {
+                width:100px;
+                display: inline-block;
+            }
+            .bother-myself {
+                border: 1px solid #e6e6e6;
+            }
+        </style>
+	</head>
+
+	<body>
+		<div class="layui-card">
+			<div class="layui-card-header">
+				月度统计
+			</div>
+			<div class="layui-tab layui-tab-brief" lay-filter="test" style="padding: 0px 10px">
+                <ul class="layui-tab-title">
+                    <li class="zyfp invoice_fplx_select" data-type="zyfp" th:if="${zyfp}">专用发票</li>
+                    <li class="ptfp invoice_fplx_select" data-type="ptfp" th:if="${ptfp}">普通发票</li>
+                    <li class="dzfp invoice_fplx_select" data-type="dzfp" th:if="${dzfp}">电子发票</li>
+                    <li class="jsfp invoice_fplx_select" data-type="jsfp" th:if="${jsfp}">普通发票（卷）</li>
+                </ul>
+                <div class="layui-tab-content" >
+                    <div class="zyfp_item layui-tab-item layui-show" >
+                        <div>
+                            <form class="layui-form search-form " lay-filter="statistics">
+                                <ul>
+                                    <li>
+                                        <label>统计年月：</label>
+                                        <input id="yearMonth" type="text" name="yearMonth" lay-verify="date" placeholder="统计年月" autocomplete="off" class="layui-input " lay-key="1">
+                                    </li>
+                                    <li>
+                                        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm _search"  lay-submit  lay-filter="search">搜索</button>
+                                        <button type="button" class="layui-btn layui-btn-warm layui-btn-sm _search"  lay-submit  lay-filter="submitExport">按条件导出</button>
+                                        <button id="reset" type="button" class="layui-btn layui-btn-sm">重置</button>
+                                    </li>
+                                    <div class="clear-fixed"></div>
+                                </ul>
+                                <ul>
+                                    <div class="bother-myself" style="margin-top: 10px;"></div>
+                                    <li>
+                                        <label>期初库存份数：</label>
+                                        <span type="text" name="startStock" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>正数发票份数：</label>
+                                        <span type="text" name="plusInvoice" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>负数发票份数：</label>
+                                        <span type="text" name="minusInvoice" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>购进发票份数：</label>
+                                        <span type="text" name="purchase" class="span-my" ></span>
+                                    </li>
+                                    <div class="clear-fixed"></div>
+                                </ul>
+                                <ul>
+                                    <li>
+                                        <label>期末库存份数：</label>
+                                        <span type="text" name="endStock" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>正数废票份数：</label>
+                                        <span type="text" name="plusCancelInvoice" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>负数废票份数：</label>
+                                        <span type="text" name="minusCancelInvoice" class="span-my" ></span>
+                                    </li>
+                                    <li>
+                                        <label>退回发票份数：</label>
+                                        <span type="text" name="returnBack" class="span-my" ></span>
+                                    </li>
+                                    <div class="clear-fixed"></div>
+                                    <div class="bother-myself"></div>
+                                </ul>
+                            </form>
+                            <div>
+                            <table id="demo" class="layui-hide" lay-filter="test"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/moment.js"></script>
+		<script>
+            var active = {
+                setCardVal:function(data){ // 设置面板数据
+                    $("span[name=startStock]").text(data.startStock);
+                    $("span[name=plusInvoice]").text(data.plusInvoice);
+                    $("span[name=minusInvoice]").text(data.minusInvoice);
+                    $("span[name=purchase]").text(data.purchase);
+                    $("span[name=endStock]").text(data.endStock);
+                    $("span[name=plusCancelInvoice]").text(data.plusCancelInvoice);
+                    $("span[name=minusCancelInvoice]").text(data.minusCancelInvoice);
+                    $("span[name=returnBack]").text(data.returnBack);
+                },
+                getCurrentFpzl:function (){ //获取当前发票种类
+                    var fpzl = $(".layui-this").attr("data-type");
+                    console.log(fpzl);
+                    switch (fpzl) {
+                        case 'zyfp':
+                            return '0';
+                            break;
+                        case 'ptfp':
+                            return '2';
+                            break;
+                        case 'dzfp':
+                            return '51';
+                            break;
+                        case 'jsfp':
+                            return '41';
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                search: function (formData,todo) {//查询按钮 + 刷新页面数据
+                    console.log(formData);
+                    //获取当前查询条件值
+                    table.reload('reloadId',{
+                        // page: {curr: 1},//从第 1 页 开始刷新
+                        where: formData,
+                        done: function(res, curr, count){
+                            //如果是异步请求数据方式,res即为你接口返回的信息.
+                            //如果是直接赋值的方式,res即为:{data: [], count: 99} data为当前页数据,count为数据总长度
+                            if(todo){
+                                if(count >0) todo(formData);
+                                else layer.alert("无相关查询条件的可操作数据!",{icon: 2, title:'温馨提示'});
+                            }
+                        }
+                    });
+
+                },
+                ajaxPost:function(url,data,refreshFlag,todo) {// ajax post 请求
+                      var indexLoading;
+                        $.ajax({
+                          url: url,
+                          type: 'post',
+                          data: data,
+                          dataType: 'json',
+                          beforeSend:function(){
+                             indexLoading = layer.load(2, {time: 1500,shade: [0.3,'#000']});
+                          },
+                          success: function(rlt) {
+                              console.log(rlt);
+                              if (rlt.status == 200) {
+                                  layer.close(indexLoading);
+                                  // layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'});
+                                  if(refreshFlag && refreshFlag == 1){
+                                      //初始化页面，不用刷新table
+                                      active.setCardVal(rlt.data);
+                                  }else if(refreshFlag && refreshFlag == 2){
+                                      //export 导出
+                                      active.setCardVal(rlt.data);
+                                      active.search(data,todo);
+                                  }else{
+                                      active.setCardVal(rlt.data);
+                                      active.search(data);
+                                  }
+                              }else{
+                                  layer.close(indexLoading);
+                                  layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                              }
+                          },
+                          error: function(rlt) {
+                              console.log("error");
+                              layer.close(indexLoading);
+                              layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                          }
+                      })
+                }
+            }
+			layui.use(['table', 'form', 'layer','laydate'], function() {
+				window.table = layui.table;
+				window.layer = layui.layer;
+				var laydate = layui.laydate;
+				var form = layui.form;
+				var defaultType = [[${defaultType}]]+"";//默认发票票种
+				var url = '/noc/statistics/monthStatistics/total'; //total 数据 url
+				var exportUrl = '/noc/statistics/monthStatistics/export'; //export 数据 导出至 excel
+                switch(defaultType) {
+                    case '51':
+                        $(".dzfp").addClass("layui-this");
+                        break;
+                    case '2':
+                        $(".ptfp").addClass("layui-this");
+                        break;
+                    case '0':
+                        $(".zyfp").addClass("layui-this");
+                        break;
+                    case '41':
+                        $(".jsfp").addClass("layui-this");
+                        break;
+                    default:
+                        break;
+                }
+				var struct = [
+					[{field: 'xmmc',title: '项目名称',width: 150,sort: true},
+					{field: 'total',title: '合计',width: 150,sort: true},
+					{field: 'three',title: '3%',width: 150,sort: true},
+					{field: 'ten',title: '10%',width: 200,sort: true},
+					{field: 'sixteen',title: '16%',width: 200,sort: true},
+                    {field: 'other',title: '其他',sort: true}]];
+				//加载日期选择框
+                laydate.render({
+                    elem: "#yearMonth" ,
+                    trigger: 'click',
+                    type:'month',
+                    value: new Date(),
+                });
+                table.render({
+                   elem: '#demo',
+                   size: 'sm',
+                   width:'1095',
+                   url: "/noc/statistics/monthStatistics/list",
+                   where:{yearMonth:getYearMonth(),fpzl:defaultType},
+                   toolbar: '#toolbarDemo' ,
+                   defaultToolbar: ['filter'],
+                   page: false,
+                   cols: struct,
+                   text: {none: '暂无相关数据...'},
+                   id: 'reloadId',
+                   loading:true
+                });
+                //加载 total 数据
+                var postData = {fpzl:defaultType,yearMonth:getYearMonth()};
+                active.ajaxPost(url,postData,1);
+
+				//表单“搜索”按钮
+                form.on('submit(search)', function(data){
+                    var postData = data.field;
+                    postData.fpzl = active.getCurrentFpzl();
+                    active.ajaxPost(url,postData);
+                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                });
+                //表单“批量导出”按钮
+                form.on('submit(submitExport)', function(data){
+                    console.log('submit(submitExport)');
+                    var postData = data.field;
+                    postData.fpzl = active.getCurrentFpzl();
+                    //刷新页面列表 并 导出数据
+                    active.ajaxPost(url,postData,2,function(formData) {
+                        console.log("按条件导出按钮");
+                        layer.confirm('确认导出以下发票数据至Excel?',{icon: 3, title:'温馨提示'}, function(index) {
+                            var url1 = exportUrl+'?fpzl='+formData.fpzl+'&yearMonth='+formData.yearMonth;
+                            window.location.href = url1;
+                            layer.close(index);
+                        });
+                    });
+                    return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                });
+                //重置
+                $("#reset").on("click",function() {
+                    $("#yearMonth").val(getYearMonth());
+                });
+                //切换发票种类
+                $(".invoice_fplx_select").on("click",function() {
+                    // alert($(this).attr("data-type"));
+                    $(this).addClass("layui-this").siblings().removeClass("layui-this");
+                    var data = {};
+                    data.yearMonth = $('#yearMonth').val();
+                    data.fpzl = active.getCurrentFpzl();
+                    active.ajaxPost(url,data);
+                })
+                //监听事件
+                table.on('toolbar(test)', function(obj){
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    switch(obj.event){
+                    case 'refresh':
+                        //刷新
+                        var data = {};
+                        data.fpzl = active.getCurrentFpzl();
+                        data.yearMonth = $('#yearMonth').val();
+                        active.ajaxPost(url,data);
+                    break;
+                  };
+                });
+			});
+		</script>
+		<script src="/static/js/common.js"></script>
+		<script src="/static/js/invoice/fpkj.js"></script>
+        <script type="text/html" id="toolbarDemo">
+            <button class="mock-icon-btn" lay-event="refresh" title="刷新" style="float:right">
+                <i class="fa fa-refresh"></i><span>刷新</span>
+            </button>
+        </script>
+	</body>
+
+</html>

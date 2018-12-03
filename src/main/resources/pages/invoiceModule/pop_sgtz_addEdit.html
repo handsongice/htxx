@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>申购台账</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+
+        .itemField {
+            border-bottom: 1px dashed #e7eaec;
+            min-height: 35px;
+            line-height: 35px;
+            padding: 15px 0;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .tableFiled {
+            padding-right: 15px;
+        }
+
+        .tableFiled .redStar {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">基本信息</div>
+    <div class="layui-card-body">
+        <form class="layui-form">
+            <input id="fpsgId" type="hidden" th:value="${fpsg.id}">
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">发票类型<span class="redStar">*</span></label>
+                </div>
+                <div class="layui-col-md10">
+                    <select id="fplx" lay-verify="fplx">
+                        <option value="">请选择发票类型</option>
+                        <option th:each="i:${fplxList}" th:value="${i.code}" th:text="${i.name}"
+                                th:selected="${fpsg.fplx == i.code}"></option>
+                        <!--<option th:selected="${fpsg.fplx == '0'}" value="0">增值税普通发票</option>
+                        <option th:selected="${fpsg.fplx == '1'}" value="1">增值税专用发票</option>-->
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">发票种类代码<span class="redStar">*</span></label>
+                </div>
+                <div class="layui-col-md10">
+                    <input id="fpdm" type="text" lay-verify="fpdm" placeholder="请输入发票种类代码" maxlength="12"
+                           autocomplete="off"
+                           class="layui-input"
+                           th:value="${fpsg.fpdm}">
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">申领数量(张)<span class="redStar">*</span></label>
+                </div>
+                <div class="layui-col-md10">
+                    <input id="slsl" type="number" required lay-verify="slsl" placeholder="请输入申领数量"
+                           autocomplete="off" class="layui-input" th:value="${fpsg.slsl}">
+                    <div style="margin-top:3px; height:20px; line-height: 20px; font-size: 12px;">数量必须是100的整数倍</div>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">经办员<span class="redStar">*</span></label>
+                </div>
+                <div class="layui-col-md10">
+                    <input id="jby" type="text" required lay-verify="jby" placeholder="请输入经办员"
+                           autocomplete="off" class="layui-input" th:value="${fpsg.jby}">
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">领票方式</label>
+                </div>
+                <div class="layui-col-md10">
+                    <select id="lpfs">
+                        <option th:selected="${fpsg.lpfs == 0}" value="0">自行领取</option>
+                        <option th:selected="${fpsg.lpfs == 1}" value="1">快递配送</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="layui-row itemField">
+                <div class="layui-col-md2 text-right">
+                    <label class="tableFiled">说明<span class="redStar">*</span></label>
+                </div>
+                <div class="layui-col-md10">
+                    <textarea id="sm" placeholder="请输入说明" required lay-verify="sm" class="layui-textarea"
+                              th:utext="${fpsg.mark}"
+                              maxlength="200"></textarea>
+                </div>
+            </div>
+            <div style="text-align: center; padding-top:15px;">
+                <button id="submitPopBut" type="button" class="layui-btn layui-btn-normal" lay-submit
+                        lay-filter="formSubmit">提交
+                </button>
+                <button id="closePopBut" type="button" class="layui-btn layui-btn-primary">关闭</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['laydate', 'form', 'layer'], function () {
+        var laydate = layui.laydate;
+        var layer = layui.layer;
+        var form = layui.form;
+
+        $('#submitPopBut').on('click', function () {
+            popSgtzObj.submitBut();
+        });
+        $('#closePopBut').on('click', function () {
+            popSgtzObj.closeBut();
+        });
+    });
+    var popSgtzObj = {
+        submitBut: function () {
+            var _this = this;
+            var form = layui.form;
+
+            var params = {};
+
+            form.verify({
+                fplx: function (value, item) { //value：表单的值、item：表单的DOM对象
+                    if (value == null || value == '') {
+                        return '请选择发票类型';
+                    } else {
+                        params.fplx = value;
+                    }
+                },
+                fpdm: function (value, item) {
+                    if (value == null || value === '') {
+                        return '请输入发票种类代码';
+                    } else {
+                        params.fpdm = value;
+                    }
+                },
+                slsl: function (value, item) {
+                    if (value == null || value === '' || value == 0) {
+                        return '请输入申领数量';
+                    } else {
+                        if (value % 100 != 0) {
+                            return '申领数量必须是100的整数倍';
+                        } else {
+                            params.slsl = value;
+                        }
+                    }
+                },
+                jby: function (value, item) {
+                    if (value == null || value === '') {
+                        return '请输入经办员';
+                    } else {
+                        params.jby = value;
+                    }
+                },
+                sm: function (value, item) {
+                    if (value == null || value === '') {
+                        return '请输入说明';
+                    } else {
+                        params.mark = value;
+                    }
+                }
+                //我们既支持上述函数式的方式，也支持下述数组的形式
+                //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+                /*, pass: [
+                    /^[\S]{6,12}$/
+                    , '密码必须6到12位，且不能出现空格'
+                ]*/
+            });
+            //监听提交
+            form.on('submit(formSubmit)', function (data) {
+                var lpfs = $('#lpfs').val();
+                params.lpfs = lpfs;
+
+                var fpsgId = $('#fpsgId').val();
+                if (fpsgId != null && fpsgId != 0) {
+                    params.id = fpsgId;
+                }
+
+                // alert(JSON.stringify(params));
+
+                var layer = layui.layer;
+                var index = layer.load(2, {
+                    time: 1500,
+                    shade: [0.3, '#000'],
+                });
+
+                $.ajax({
+                    url: '/noc/purchaseAccount/addOrUpdate',
+                    type: 'POST',
+                    data: params,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.status === '200') {
+                            _this.closeBut();
+                            layer.close(index);
+                            parent.layer.alert('新增成功！', {icon: '1'});
+                            //执行父页面的事件
+                            window.parent.$('#searchBut').click();
+                        } else {
+                            layer.alert(result.msg, {icon: '2'});
+                        }
+                    },
+                    error: function (error) {
+                        layer.alert('系统异常！', {icon: '2'});
+                    }
+                });
+
+                return false;
+            });
+        },
+        closeBut: function () {
+            // 获取窗口索引
+            var index = parent.layer.getFrameIndex(window.name);
+            // 关闭layer弹出层
+            parent.layer.close(index);
+        }
+    }
+
+</script>
+</body>
+
+</html>

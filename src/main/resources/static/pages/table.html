@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+	</head>
+
+	<body>
+		<div class="layui-card">
+			<div class="layui-card-header">
+				表格
+				<div class="float-right">
+					<span class="layui-badge bg-light-blue cursor-pointer" id="add-user-btn">添加用户</span>
+				</div>
+			</div>
+			<div class="layui-card-body">
+				<form class="layui-form search-form">
+					<ul>
+						<li>
+							<label>用户名</label>
+							<input type="text" name="title" placeholder="请输入用户名" autocomplete="off" class="layui-input">
+						</li>
+						<li>
+							<label>性别</label>
+							<input type="radio" name="sex" value="男" title="男">
+							<input type="radio" name="sex" value="女" title="女">
+						</li>
+						<li>
+							<label>城市</label>
+							<select lay-search>
+								<option></option>
+								<option value="1">北京</option>
+								<option value="2">纽约</option>
+								<option value="3">巴黎</option>
+							</select>
+						</li>
+						<li>
+							<button type="button" class="layui-btn layui-btn-normal layui-btn-sm">搜索</button>
+							<button type="reset" class="layui-btn layui-btn-primary layui-btn-sm">重置</button>
+						</li>
+						<div class="clear-fixed"></div>
+					</ul>
+					<ul>
+						<li>
+							<label>按评分查询</label>
+							<ul class="search-condition-box">
+								<li>80分以上</li>
+								<li>60至80</li>
+								<li>60分以下</li>
+							</ul>
+						</li>
+						<div class="clear-fixed"></div>
+					</ul>
+				</form>
+				<table id="demo" lay-filter="test"></table>
+			</div>
+		</div>
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/layui/layui.js"></script>
+		<script src="/static/js/common.js"></script>
+		<script>
+			layui.use(['table', 'form', 'layer'], function() {
+				var table = layui.table;
+				var layer = layui.layer;
+				var struct = [
+					[{
+						checkbox: true,
+					}, {
+						field: 'id',
+						title: 'ID',
+						sort: true,
+					}, {
+						field: 'username',
+						title: '用户名',
+					}, {
+						field: 'sex',
+						title: '性别',
+						sort: true
+					}, {
+						field: 'city',
+						title: '城市',
+					}, {
+						field: 'sign',
+						title: '签名',
+					}, {
+						field: 'experience',
+						title: '积分',
+						sort: true
+					}, {
+						field: 'score',
+						title: '评分',
+						width: 80,
+						sort: true
+					}, {
+						field: 'classify',
+						title: '职业',
+						width: 80
+					}, {
+						field: 'wealth',
+						title: '财富',
+						sort: true
+					}, {
+						field: '',
+						title: '操作',
+						toolbar: '#operation',
+						width: 120
+					}]
+				];
+				var tableData = [{
+						"id": 10000,
+						"username": "user-0",
+						"sex": "女",
+						"city": "城市-0",
+						"sign": "签名-0",
+						"experience": 255,
+						"logins": 24,
+						"wealth": 82830700,
+						"classify": "作家",
+						"score": 57
+					},
+					{
+						"id": 10001,
+						"username": "user-1",
+						"sex": "男",
+						"city": "城市-1",
+						"sign": "签名-1",
+						"experience": 884,
+						"logins": 58,
+						"wealth": 64928690,
+						"classify": "词人",
+						"score": 27
+					},
+					{
+						"id": 10002,
+						"username": "user-2",
+						"sex": "女",
+						"city": "城市-2",
+						"sign": "签名-2",
+						"experience": 650,
+						"logins": 77,
+						"wealth": 6298078,
+						"classify": "酱油",
+						"score": 31
+					},
+					{
+						"id": 10003,
+						"username": "user-3",
+						"sex": "女",
+						"city": "城市-3",
+						"sign": "签名-3",
+						"experience": 362,
+						"logins": 157,
+						"wealth": 37117017,
+						"classify": "诗人",
+						"score": 68
+					},
+					{
+						"id": 10004,
+						"username": "user-4",
+						"sex": "男",
+						"city": "城市-4",
+						"sign": "签名-4",
+						"experience": 807,
+						"logins": 51,
+						"wealth": 76263262,
+						"classify": "作家",
+						"score": 6
+					},
+					{
+						"id": 10005,
+						"username": "user-5",
+						"sex": "女",
+						"city": "城市-5",
+						"sign": "签名-5",
+						"experience": 173,
+						"logins": 68,
+						"wealth": 60344147,
+						"classify": "作家",
+						"score": 87
+					},
+					{
+						"id": 10006,
+						"username": "user-6",
+						"sex": "女",
+						"city": "城市-6",
+						"sign": "签名-6",
+						"experience": 982,
+						"logins": 37,
+						"wealth": 57768166,
+						"classify": "作家",
+						"score": 34
+					},
+					{
+						"id": 10007,
+						"username": "user-7",
+						"sex": "男",
+						"city": "城市-7",
+						"sign": "签名-7",
+						"experience": 727,
+						"logins": 150,
+						"wealth": 82030578,
+						"classify": "作家",
+						"score": 28
+					},
+					{
+						"id": 10008,
+						"username": "user-8",
+						"sex": "男",
+						"city": "城市-8",
+						"sign": "签名-8",
+						"experience": 951,
+						"logins": 133,
+						"wealth": 16503371,
+						"classify": "词人",
+						"score": 14
+					},
+					{
+						"id": 10009,
+						"username": "user-9",
+						"sex": "女",
+						"city": "城市-9",
+						"sign": "签名-9",
+						"experience": 484,
+						"logins": 25,
+						"wealth": 86801934,
+						"classify": "词人",
+						"score": 75
+					},
+					{
+						"id": 10010,
+						"username": "user-10",
+						"sex": "女",
+						"city": "城市-10",
+						"sign": "签名-10",
+						"experience": 1016,
+						"logins": 182,
+						"wealth": 71294671,
+						"classify": "诗人",
+						"score": 34
+					}
+				];
+				var ins1 = table.render({
+					elem: '#demo',
+					id: 'test-table',
+					size: 'sm',
+					data: tableData,
+					page: true,
+					cols: struct
+				});
+				//				$('.export-table-data').on('click', function() {
+				//					table.exportFile(ins1.config.id);
+				//				});
+
+				table.on('tool(test)', function(obj) {
+					var tableEvent = obj.event;
+					var data = obj.data;
+					if(tableEvent === 'detail') {
+						console.info(data);
+						nemo.showDetail();
+					} else if(tableEvent === 'delete') {
+						layer.confirm('确认删除该数据？', function(index) {
+							obj.del();
+							layer.close(index);
+						});
+					} else if(tableEvent === 'edit') {
+						layer.open({
+							title: '编辑用户信息',
+							type: 2,
+							content: './popup-form.html?data=' + data,
+							area: ['100%', '100%'],
+							shadeClose: true,
+
+						});
+					}
+
+				});
+
+				//点击添加用户弹出表单
+				$('#add-user-btn').on('click', function() {
+					layer.open({
+						title: '添加用户',
+						type: 2,
+						content: './popup-form.html',
+						area: ['100%', '100%'],
+						shadeClose: true,
+
+					});
+				});
+			});
+		</script>
+		<script type="text/html" id="operation">
+			<!--<span class="layui-badge bg-light-blue cursor-pointer" lay-event="detail">查看详情</span>-->
+			<span class="layui-badge bg-light-red cursor-pointer" lay-event="delete">删除</span>
+			<span class="layui-badge bg-light-green cursor-pointer" lay-event="edit">编辑</span>
+		</script>
+	</body>
+
+</html>

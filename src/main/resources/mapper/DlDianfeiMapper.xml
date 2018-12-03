@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlDianfeiMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlDianfei" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="enterprise_id" property="enterpriseId" jdbcType="BIGINT" />
+    <result column="identity_field" property="identityField" jdbcType="VARCHAR" />
+    <result column="data_type" property="dataType" jdbcType="TINYINT" />
+    <result column="dj_type" property="djType" jdbcType="TINYINT" />
+    <result column="month_year" property="monthYear" jdbcType="VARCHAR" />
+    <result column="user_num" property="userNum" jdbcType="VARCHAR" />
+    <result column="export_nnum" property="exportNnum" jdbcType="CHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_tax_no" property="userTaxNo" jdbcType="VARCHAR" />
+    <result column="user_addr" property="userAddr" jdbcType="VARCHAR" />
+    <result column="total_money_include_tax" property="totalMoneyIncludeTax" jdbcType="DECIMAL" />
+    <result column="user_bankInfo" property="userBankinfo" jdbcType="VARCHAR" />
+    <result column="record_info" property="recordInfo" jdbcType="VARCHAR" />
+    <result column="operator" property="operator" jdbcType="BIGINT" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="is_del" property="isDel" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, enterprise_id, identity_field, data_type, dj_type, month_year, user_num, export_nnum, 
+    user_name, user_tax_no, user_addr, total_money_include_tax, user_bankInfo, record_info, 
+    operator,DATE_FORMAT(create_time,'%Y-%m-%d %H:%i:%s')  create_time,DATE_FORMAT(update_time,'%Y-%m-%d %H:%i:%s')  update_time, is_del
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlDianfeiExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_dianfei
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <select id="selectFromDlDianfeiTemp" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlDianfeiExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_dianfei_temp
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_dianfei
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_dianfei
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlDianfeiExample" >
+    delete from dl_dianfei
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlDianfei" >
+    insert into dl_dianfei (id, enterprise_id, identity_field, 
+      data_type, dj_type, month_year, 
+      user_num, export_nnum, user_name, 
+      user_tax_no, user_addr, total_money_include_tax, 
+      user_bankInfo, record_info, operator, 
+      create_time, update_time, is_del
+      )
+    values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{identityField,jdbcType=VARCHAR}, 
+      #{dataType,jdbcType=TINYINT}, #{djType,jdbcType=TINYINT}, #{monthYear,jdbcType=VARCHAR}, 
+      #{userNum,jdbcType=VARCHAR}, #{exportNnum,jdbcType=CHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{userTaxNo,jdbcType=VARCHAR}, #{userAddr,jdbcType=VARCHAR}, #{totalMoneyIncludeTax,jdbcType=DECIMAL}, 
+      #{userBankinfo,jdbcType=VARCHAR}, #{recordInfo,jdbcType=VARCHAR}, #{operator,jdbcType=BIGINT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{isDel,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlDianfei" >
+    insert into dl_dianfei
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="identityField != null" >
+        identity_field,
+      </if>
+      <if test="dataType != null" >
+        data_type,
+      </if>
+      <if test="djType != null" >
+        dj_type,
+      </if>
+      <if test="monthYear != null" >
+        month_year,
+      </if>
+      <if test="userNum != null" >
+        user_num,
+      </if>
+      <if test="exportNnum != null" >
+        export_nnum,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userTaxNo != null" >
+        user_tax_no,
+      </if>
+      <if test="userAddr != null" >
+        user_addr,
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        total_money_include_tax,
+      </if>
+      <if test="userBankinfo != null" >
+        user_bankInfo,
+      </if>
+      <if test="recordInfo != null" >
+        record_info,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="identityField != null" >
+        #{identityField,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null" >
+        #{dataType,jdbcType=TINYINT},
+      </if>
+      <if test="djType != null" >
+        #{djType,jdbcType=TINYINT},
+      </if>
+      <if test="monthYear != null" >
+        #{monthYear,jdbcType=VARCHAR},
+      </if>
+      <if test="userNum != null" >
+        #{userNum,jdbcType=VARCHAR},
+      </if>
+      <if test="exportNnum != null" >
+        #{exportNnum,jdbcType=CHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userTaxNo != null" >
+        #{userTaxNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userAddr != null" >
+        #{userAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        #{totalMoneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="userBankinfo != null" >
+        #{userBankinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="recordInfo != null" >
+        #{recordInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlDianfeiExample" resultType="java.lang.Integer" >
+    select count(*) from dl_dianfei
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_dianfei
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.enterpriseId != null" >
+        enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="record.identityField != null" >
+        identity_field = #{record.identityField,jdbcType=VARCHAR},
+      </if>
+      <if test="record.dataType != null" >
+        data_type = #{record.dataType,jdbcType=TINYINT},
+      </if>
+      <if test="record.djType != null" >
+        dj_type = #{record.djType,jdbcType=TINYINT},
+      </if>
+      <if test="record.monthYear != null" >
+        month_year = #{record.monthYear,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userNum != null" >
+        user_num = #{record.userNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportNnum != null" >
+        export_nnum = #{record.exportNnum,jdbcType=CHAR},
+      </if>
+      <if test="record.userName != null" >
+        user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userTaxNo != null" >
+        user_tax_no = #{record.userTaxNo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userAddr != null" >
+        user_addr = #{record.userAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.totalMoneyIncludeTax != null" >
+        total_money_include_tax = #{record.totalMoneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="record.userBankinfo != null" >
+        user_bankInfo = #{record.userBankinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.recordInfo != null" >
+        record_info = #{record.recordInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.operator != null" >
+        operator = #{record.operator,jdbcType=BIGINT},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.isDel != null" >
+        is_del = #{record.isDel,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_dianfei
+    set id = #{record.id,jdbcType=BIGINT},
+      enterprise_id = #{record.enterpriseId,jdbcType=BIGINT},
+      identity_field = #{record.identityField,jdbcType=VARCHAR},
+      data_type = #{record.dataType,jdbcType=TINYINT},
+      dj_type = #{record.djType,jdbcType=TINYINT},
+      month_year = #{record.monthYear,jdbcType=VARCHAR},
+      user_num = #{record.userNum,jdbcType=VARCHAR},
+      export_nnum = #{record.exportNnum,jdbcType=CHAR},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      user_tax_no = #{record.userTaxNo,jdbcType=VARCHAR},
+      user_addr = #{record.userAddr,jdbcType=VARCHAR},
+      total_money_include_tax = #{record.totalMoneyIncludeTax,jdbcType=DECIMAL},
+      user_bankInfo = #{record.userBankinfo,jdbcType=VARCHAR},
+      record_info = #{record.recordInfo,jdbcType=VARCHAR},
+      operator = #{record.operator,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      is_del = #{record.isDel,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlDianfei" >
+    update dl_dianfei
+    <set >
+      <if test="enterpriseId != null" >
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="identityField != null" >
+        identity_field = #{identityField,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null" >
+        data_type = #{dataType,jdbcType=TINYINT},
+      </if>
+      <if test="djType != null" >
+        dj_type = #{djType,jdbcType=TINYINT},
+      </if>
+      <if test="monthYear != null" >
+        month_year = #{monthYear,jdbcType=VARCHAR},
+      </if>
+      <if test="userNum != null" >
+        user_num = #{userNum,jdbcType=VARCHAR},
+      </if>
+      <if test="exportNnum != null" >
+        export_nnum = #{exportNnum,jdbcType=CHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userTaxNo != null" >
+        user_tax_no = #{userTaxNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userAddr != null" >
+        user_addr = #{userAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        total_money_include_tax = #{totalMoneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="userBankinfo != null" >
+        user_bankInfo = #{userBankinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="recordInfo != null" >
+        record_info = #{recordInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        operator = #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        is_del = #{isDel,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlDianfei" >
+    update dl_dianfei
+    set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      identity_field = #{identityField,jdbcType=VARCHAR},
+      data_type = #{dataType,jdbcType=TINYINT},
+      dj_type = #{djType,jdbcType=TINYINT},
+      month_year = #{monthYear,jdbcType=VARCHAR},
+      user_num = #{userNum,jdbcType=VARCHAR},
+      export_nnum = #{exportNnum,jdbcType=CHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_tax_no = #{userTaxNo,jdbcType=VARCHAR},
+      user_addr = #{userAddr,jdbcType=VARCHAR},
+      total_money_include_tax = #{totalMoneyIncludeTax,jdbcType=DECIMAL},
+      user_bankInfo = #{userBankinfo,jdbcType=VARCHAR},
+      record_info = #{recordInfo,jdbcType=VARCHAR},
+      operator = #{operator,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      is_del = #{isDel,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <select id="countByMap" parameterType="map" resultType="java.lang.Integer" >
+    select count(*) from dl_dianfei where 1=1
+    <if test="identityField != null and identityField !=''" >
+      and identity_field=#{identityField}
+    </if>
+    <if test="dataType != null and dataType !=''" >
+      and data_type=#{dataType}
+    </if>
+  </select>
+
+  <delete id="deleteByMap" parameterType="map"  >
+    delete  from dl_dianfei
+
+      where identity_field=#{identityField}
+
+      and data_type=#{dataType}
+  </delete>
+  <select id="selectByMap" parameterType="map"  resultType="com.htxx.entity.DlDianfei">
+    select *  from dl_dianfei where 1=1
+    <if test="identityField != null and identityField !=''" >
+      and identity_field=#{identityField}
+    </if>
+    <if test="dataType != null and dataType !=''" >
+      and data_type=#{dataType}
+    </if>
+  </select>
+
+  <!--<select id="selectByCondition" parameterType="map" resultType="com.htxx.entity.DlDianfei" >-->
+  <select id="selectByCondition" parameterType="map" resultMap="BaseResultMap" >
+    select
+    <include refid="Base_Column_List" />
+    from dl_dianfei where 1=1
+    <if test="dateType != null and dateType !=''" >
+
+      and data_type = #{dateType}
+    </if>
+    <if test="userName != null and userName !=''" >
+
+      and user_name like "%"#{userName}"%"
+    </if>
+    <if test="minMoneyIncludeTax != null and minMoneyIncludeTax !=''" >
+      and total_money_include_tax &gt;= #{minMoneyIncludeTax}
+    </if>
+    <if test="maxMoneyIncludeTax != null and maxMoneyIncludeTax !=''" >
+      and total_money_include_tax &lt;= #{maxMoneyIncludeTax}
+    </if>
+    <if test="taxNum != null and taxNum !=''" >
+      and user_tax_no = #{taxNum}
+    </if>
+    <if test="remark != null and remark !=''" >
+      and record_info = #{remark}
+    </if>
+    <if test="searchDate != null and searchDate !=''" >
+      and SUBSTRING(create_time, 1,10) = #{searchDate}
+    </if>
+    <if test="enterpriseId != null and enterpriseId !=''" >
+      and enterprise_id = #{enterpriseId}
+    </if>
+  </select>
+
+  <insert id="insertSelectiveAndGetId" parameterType="com.htxx.entity.DlDianfei"
+          useGeneratedKeys="true" keyProperty="id">
+    insert into dl_dianfei
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="identityField != null" >
+        identity_field,
+      </if>
+      <if test="dataType != null" >
+        data_type,
+      </if>
+      <if test="djType != null" >
+        dj_type,
+      </if>
+      <if test="monthYear != null" >
+        month_year,
+      </if>
+      <if test="userNum != null" >
+        user_num,
+      </if>
+      <if test="exportNnum != null" >
+        export_nnum,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userTaxNo != null" >
+        user_tax_no,
+      </if>
+      <if test="userAddr != null" >
+        user_addr,
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        total_money_include_tax,
+      </if>
+      <if test="userBankinfo != null" >
+        user_bankInfo,
+      </if>
+      <if test="recordInfo != null" >
+        record_info,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="identityField != null" >
+        #{identityField,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null" >
+        #{dataType,jdbcType=TINYINT},
+      </if>
+      <if test="djType != null" >
+        #{djType,jdbcType=TINYINT},
+      </if>
+      <if test="monthYear != null" >
+        #{monthYear,jdbcType=VARCHAR},
+      </if>
+      <if test="userNum != null" >
+        #{userNum,jdbcType=VARCHAR},
+      </if>
+      <if test="exportNnum != null" >
+        #{exportNnum,jdbcType=CHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userTaxNo != null" >
+        #{userTaxNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userAddr != null" >
+        #{userAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        #{totalMoneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="userBankinfo != null" >
+        #{userBankinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="recordInfo != null" >
+        #{recordInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <insert id="insertSelectiveInToTempAndGetId" parameterType="com.htxx.entity.DlDianfei"
+          useGeneratedKeys="true"  keyProperty="id">
+    insert into dl_dianfei_temp
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+
+      <if test="enterpriseId != null" >
+        enterprise_id,
+      </if>
+      <if test="identityField != null" >
+        identity_field,
+      </if>
+      <if test="dataType != null" >
+        data_type,
+      </if>
+      <if test="djType != null" >
+        dj_type,
+      </if>
+      <if test="monthYear != null" >
+        month_year,
+      </if>
+      <if test="userNum != null" >
+        user_num,
+      </if>
+      <if test="exportNnum != null" >
+        export_nnum,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userTaxNo != null" >
+        user_tax_no,
+      </if>
+      <if test="userAddr != null" >
+        user_addr,
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        total_money_include_tax,
+      </if>
+      <if test="userBankinfo != null" >
+        user_bankInfo,
+      </if>
+      <if test="recordInfo != null" >
+        record_info,
+      </if>
+      <if test="operator != null" >
+        operator,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="isDel != null" >
+        is_del,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="enterpriseId != null" >
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="identityField != null" >
+        #{identityField,jdbcType=VARCHAR},
+      </if>
+      <if test="dataType != null" >
+        #{dataType,jdbcType=TINYINT},
+      </if>
+      <if test="djType != null" >
+        #{djType,jdbcType=TINYINT},
+      </if>
+      <if test="monthYear != null" >
+        #{monthYear,jdbcType=VARCHAR},
+      </if>
+      <if test="userNum != null" >
+        #{userNum,jdbcType=VARCHAR},
+      </if>
+      <if test="exportNnum != null" >
+        #{exportNnum,jdbcType=CHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userTaxNo != null" >
+        #{userTaxNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userAddr != null" >
+        #{userAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="totalMoneyIncludeTax != null" >
+        #{totalMoneyIncludeTax,jdbcType=DECIMAL},
+      </if>
+      <if test="userBankinfo != null" >
+        #{userBankinfo,jdbcType=VARCHAR},
+      </if>
+      <if test="recordInfo != null" >
+        #{recordInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="operator != null" >
+        #{operator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="isDel != null" >
+        #{isDel,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+
+  <select id="getDlDianfeiListById" resultType="com.htxx.entity.DlDianfei" >
+    select <include refid="Base_Column_List" /> from dl_dianfei
+    where id in
+    <foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+      #{item}
+    </foreach>
+  </select>
+</mapper>

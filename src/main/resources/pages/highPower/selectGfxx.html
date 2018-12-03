@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="/static/js/layui/css/layui.css">
+		<link rel="stylesheet" href="/static/js/font-awesome/css/font-awesome.css" />
+		<link rel="stylesheet" href="/static/css/common.css" />
+		<!--[if lte IE 8]>
+		<script src="/static/js/respond.min.js"></script>
+		<![endif]-->
+		<title></title>
+        <style></style>
+	</head>
+	<body>
+		<div class="layui-card">
+			<div class="layui-card-body">
+				<form class="layui-form search-form " lay-filter="component-form-group">
+					<ul>
+ 						<li>
+ 							<input id="keyword" type="text" name="keyword" placeholder="请输入企业名称或税号" autocomplete="off" class="layui-input">
+ 						</li>
+                        <li>
+                            <button class="layui-btn layui-btn-normal layui-btn-sm " lay-submit lay-filter="search">搜索</button>
+                            <button type="reset" class="layui-btn layui-btn-sm">重置</button>
+                        </li>
+						<div class="clear-fixed"></div>
+					</ul>
+				</form>
+				<table id="demo" lay-filter="test"></table>
+			</div>
+		</div>
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/layui/layui.js"></script>
+    <script src="/static/js/moment.js"></script>
+    <script src="/static/js/common.js"></script>
+    <script th:inline="javascript">
+    layui.use(['table', 'form', 'layer','laydate'], function() {
+        var table = layui.table;
+        var layer = layui.layer;
+        var form = layui.form;
+        var struct = [
+            [
+            {field: 'gfmc',title: '企业名称',width: '60%'},
+            {field: 'gfsh',title: '企业税号'}]];
+        //table初始化
+        table.render({
+               elem: '#demo',
+               size: 'sm',
+               skin: 'line', //行边框风格
+               even: true, //开启隔行背景
+               url: "/noc/highPower/invoiceMng/gfxxList",
+               page: true,
+               cols: struct,
+               text: {none: '暂无相关数据...'},
+               id: 'reloadId',
+               loading:true
+           });
+
+        //表单提交按钮 搜索
+        form.on('submit(search)', function(data){
+            console.log(data.field);
+            table.reload('reloadId',{
+                page: {curr: 1},//从第 1 页 开始刷新
+                where: { keyword: data.field.keyword }
+            });
+          return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+        });
+        //监听行双击事件
+        table.on('rowDouble(test)', function(obj){
+            parent.getGfxxData(obj.data);
+            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+            parent.layer.close(index); //再执行关闭
+        });
+    });
+
+    </script>
+    </body>
+</html>

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htxx.mapper.DfdjxgShlMapper">
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DfdjxgShl">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="enterprise_id" jdbcType="BIGINT" property="enterpriseId" />
+    <result column="style" jdbcType="VARCHAR" property="style" />
+    <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="line_id" jdbcType="BIGINT" property="lineId" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="next_id" jdbcType="BIGINT" property="nextId" />
+    <result column="dept_id" jdbcType="BIGINT" property="deptId" />
+    <result column="role_id" jdbcType="BIGINT" property="roleId" />
+    <result column="employee_id" jdbcType="BIGINT" property="employeeId" />
+    <result column="alt" jdbcType="VARCHAR" property="alt" />
+    <result column="height" jdbcType="BIGINT" property="height" />
+    <result column="left" jdbcType="BIGINT" property="left" />
+    <result column="top" jdbcType="BIGINT" property="top" />
+    <result column="width" jdbcType="BIGINT" property="width" />
+    <result column="from" jdbcType="VARCHAR" property="from" />
+    <result column="marked" jdbcType="VARCHAR" property="marked" />
+    <result column="to" jdbcType="VARCHAR" property="to" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="operator" jdbcType="VARCHAR" property="operator" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, enterprise_id, style, `type`, `name`, code, line_id, parent_id, next_id, dept_id,
+    role_id, employee_id, alt, height, `left`, top, width, `from`, marked, `to`, create_time,
+    update_time, operator
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dl_dfdjxg_shl
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectByParams" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from dl_dfdjxg_shl
+    <where>
+      1 = 1
+      <if test="id != null">
+        and id = #{id}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from dl_dfdjxg_shl
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DfdjxgShl">
+    insert into dl_dfdjxg_shl (id, enterprise_id, style,
+      `type`, `name`, code, line_id,
+      parent_id, next_id, dept_id,
+      role_id, employee_id, alt,
+      height, `left`, top,
+      width, `from`, marked,
+      `to`, create_time, update_time,
+      operator)
+    values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{style,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{code,jdbcType=VARCHAR}, #{lineId,jdbcType=BIGINT},
+      #{parentId,jdbcType=BIGINT}, #{nextId,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT},
+      #{roleId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}, #{alt,jdbcType=VARCHAR},
+      #{height,jdbcType=BIGINT}, #{left,jdbcType=BIGINT}, #{top,jdbcType=BIGINT},
+      #{width,jdbcType=BIGINT}, #{from,jdbcType=VARCHAR}, #{marked,jdbcType=VARCHAR},
+      #{to,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+      #{operator,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DfdjxgShl">
+    insert into dl_dfdjxg_shl
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="enterpriseId != null">
+        enterprise_id,
+      </if>
+      <if test="style != null">
+        style,
+      </if>
+      <if test="type != null">
+        `type`,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="lineId != null">
+        line_id,
+      </if>
+      <if test="parentId != null">
+        parent_id,
+      </if>
+      <if test="nextId != null">
+        next_id,
+      </if>
+      <if test="deptId != null">
+        dept_id,
+      </if>
+      <if test="roleId != null">
+        role_id,
+      </if>
+      <if test="employeeId != null">
+        employee_id,
+      </if>
+      <if test="alt != null">
+        alt,
+      </if>
+      <if test="height != null">
+        height,
+      </if>
+      <if test="left != null">
+        `left`,
+      </if>
+      <if test="top != null">
+        top,
+      </if>
+      <if test="width != null">
+        width,
+      </if>
+      <if test="from != null">
+        `from`,
+      </if>
+      <if test="marked != null">
+        marked,
+      </if>
+      <if test="to != null">
+        `to`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="operator != null">
+        operator,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null">
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="style != null">
+        #{style,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="lineId != null">
+        #{lineId,jdbcType=BIGINT},
+      </if>
+      <if test="parentId != null">
+        #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="nextId != null">
+        #{nextId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null">
+        #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null">
+        #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null">
+        #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="alt != null">
+        #{alt,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        #{height,jdbcType=BIGINT},
+      </if>
+      <if test="left != null">
+        #{left,jdbcType=BIGINT},
+      </if>
+      <if test="top != null">
+        #{top,jdbcType=BIGINT},
+      </if>
+      <if test="width != null">
+        #{width,jdbcType=BIGINT},
+      </if>
+      <if test="from != null">
+        #{from,jdbcType=VARCHAR},
+      </if>
+      <if test="marked != null">
+        #{marked,jdbcType=VARCHAR},
+      </if>
+      <if test="to != null">
+        #{to,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        #{operator,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DfdjxgShl">
+    update dl_dfdjxg_shl
+    <set>
+      <if test="enterpriseId != null">
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="style != null">
+        style = #{style,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="lineId != null">
+        line_id = #{lineId,jdbcType=BIGINT},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+      <if test="nextId != null">
+        next_id = #{nextId,jdbcType=BIGINT},
+      </if>
+      <if test="deptId != null">
+        dept_id = #{deptId,jdbcType=BIGINT},
+      </if>
+      <if test="roleId != null">
+        role_id = #{roleId,jdbcType=BIGINT},
+      </if>
+      <if test="employeeId != null">
+        employee_id = #{employeeId,jdbcType=BIGINT},
+      </if>
+      <if test="alt != null">
+        alt = #{alt,jdbcType=VARCHAR},
+      </if>
+      <if test="height != null">
+        height = #{height,jdbcType=BIGINT},
+      </if>
+      <if test="left != null">
+        `left` = #{left,jdbcType=BIGINT},
+      </if>
+      <if test="top != null">
+        top = #{top,jdbcType=BIGINT},
+      </if>
+      <if test="width != null">
+        width = #{width,jdbcType=BIGINT},
+      </if>
+      <if test="from != null">
+        `from` = #{from,jdbcType=VARCHAR},
+      </if>
+      <if test="marked != null">
+        marked = #{marked,jdbcType=VARCHAR},
+      </if>
+      <if test="to != null">
+        `to` = #{to,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="operator != null">
+        operator = #{operator,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DfdjxgShl">
+    update dl_dfdjxg_shl
+    set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      style = #{style,jdbcType=VARCHAR},
+      `type` = #{type,jdbcType=VARCHAR},
+      `name` = #{name,jdbcType=VARCHAR},
+      code = #{code,jdbcType=VARCHAR},
+      line_id = #{lineId,jdbcType=BIGINT},
+      parent_id = #{parentId,jdbcType=BIGINT},
+      next_id = #{nextId,jdbcType=BIGINT},
+      dept_id = #{deptId,jdbcType=BIGINT},
+      role_id = #{roleId,jdbcType=BIGINT},
+      employee_id = #{employeeId,jdbcType=BIGINT},
+      alt = #{alt,jdbcType=VARCHAR},
+      height = #{height,jdbcType=BIGINT},
+      `left` = #{left,jdbcType=BIGINT},
+      top = #{top,jdbcType=BIGINT},
+      width = #{width,jdbcType=BIGINT},
+      `from` = #{from,jdbcType=VARCHAR},
+      marked = #{marked,jdbcType=VARCHAR},
+      `to` = #{to,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      operator = #{operator,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

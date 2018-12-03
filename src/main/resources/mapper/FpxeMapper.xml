@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.htxx.mapper.FpxeMapper">
+  <resultMap id="BaseResultMap" type="com.htxx.entity.Fpxe">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="enterprise_id" jdbcType="BIGINT" property="enterpriseId" />
+    <result column="kpj_id" jdbcType="BIGINT" property="kpjId" />
+    <result column="fplx_id" jdbcType="BIGINT" property="fplxId" />
+    <result column="amount" property="amount" />
+    <result column="kpj" property="kpj" jdbcType="VARCHAR" />
+    <result column="fplx" property="fplx" jdbcType="VARCHAR" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, enterprise_id, kpj_id, fplx_id,kpj, fplx, amount, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from dl_fpxe
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="findByParams" resultMap="BaseResultMap" parameterType="com.htxx.entity.Fpxe" >
+    select
+    <include refid="Base_Column_List" />
+    from dl_fpxe
+    <where>
+      1 = 1
+      <if test="kpjId != null">
+        and `kpj_id` = #{kpjId}
+      </if>
+      <if test="fplxId != null">
+        and fplx_id = #{fplxId}
+      </if>
+      <if test="enterpriseId != null">
+        and enterprise_id = #{enterpriseId}
+      </if>
+      <if test="id != null">
+        and id != #{id}
+      </if>
+    </where>
+  </select>
+  <select id="selectByParams" resultMap="BaseResultMap" parameterType="java.util.Map" >
+    select
+    <include refid="Base_Column_List" />
+    from dl_fpxe
+    <where>
+      1 = 1
+      <if test="enterprise_id != null">
+        and enterprise_id = #{enterprise_id}
+      </if>
+      <if test="kpj_id != null">
+        and kpj_id = #{kpj_id}
+      </if>
+      <if test="kpj != null">
+        and `kpj` like CONCAT('%',#{kpj},'%')
+      </if>
+      <if test="fplx_id != null">
+        and fplx_id = #{fplx_id}
+      </if>
+      <if test="fplx != null">
+        and `fplx` like CONCAT('%',#{fplx},'%')
+      </if>
+      <if test="id != null">
+        and id = #{id}
+      </if>
+    </where>
+    order by create_time desc
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from dl_fpxe
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.Fpxe">
+    insert into dl_fpxe (id, enterprise_id, kpj_id, 
+      fplx_id, amount, create_time, 
+      update_time, kpj,
+      fplx)
+    values (#{id,jdbcType=BIGINT}, #{enterpriseId,jdbcType=BIGINT}, #{kpjId,jdbcType=BIGINT}, 
+      #{fplxId,jdbcType=BIGINT}, #{amount}, #{createTime,jdbcType=TIMESTAMP},
+      #{updateTime,jdbcType=TIMESTAMP}, #{kpj},
+      #{fplx})
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.Fpxe">
+    insert into dl_fpxe
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="enterpriseId != null">
+        enterprise_id,
+      </if>
+      <if test="kpjId != null">
+        kpj_id,
+      </if>
+      <if test="fplxId != null">
+        fplx_id,
+      </if>
+      <if test="amount != null">
+        amount,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="kpj != null">
+        kpj,
+      </if>
+      <if test="fplx != null">
+        fplx,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="enterpriseId != null">
+        #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="kpjId != null">
+        #{kpjId,jdbcType=BIGINT},
+      </if>
+      <if test="fplxId != null">
+        #{fplxId,jdbcType=BIGINT},
+      </if>
+      <if test="amount != null">
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kpj != null">
+        #{kpj},
+      </if>
+      <if test="fplx != null">
+        #{fplx},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.Fpxe">
+    update dl_fpxe
+    <set>
+      <if test="enterpriseId != null">
+        enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      </if>
+      <if test="kpjId != null">
+        kpj_id = #{kpjId,jdbcType=BIGINT},
+      </if>
+      <if test="fplxId != null">
+        fplx_id = #{fplxId,jdbcType=BIGINT},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kpj != null">
+        kpj = #{kpj},
+      </if>
+      <if test="fplx != null">
+        fplx = #{fplx},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.Fpxe">
+    update dl_fpxe
+    set enterprise_id = #{enterpriseId,jdbcType=BIGINT},
+      kpj_id = #{kpjId,jdbcType=BIGINT},
+      fplx_id = #{fplxId,jdbcType=BIGINT},
+      kpj = #{kpj},
+      fplx = #{fplx},
+      amount = #{amount,jdbcType=DECIMAL},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+    <select id="getFpxeByEnterpsIdAndKpjCodeAndFplxCode" resultType="Fpxe">
+        select x.id,x.enterprise_id,x.kpj_id,x.fplx_id,x.amount,x.create_time,x.update_time from (dl_fpxe x inner join dl_fplx l on x.enterprise_id = l.enterprise_id = #{enterpriseId} and l.code = #{fplxCode} and x.fplx_id = l.id)
+        inner join dl_Kpjxx k on  x.enterprise_id = k.enterprise_id = #{enterpriseId} and k.code = #{kpjCode} and x.kpj_id = k.id;
+    </select>
+</mapper>

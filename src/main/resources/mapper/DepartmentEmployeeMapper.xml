@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DepartmentEmployeeMapper">
+
+    <resultMap id="BaseResultMap" type="com.htxx.entity.DepartmentEmployee">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="dept_id" property="deptId" jdbcType="BIGINT"/>
+        <result column="employee_id" property="employeeId" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <!--员工对应所有部门-->
+    <resultMap id="empDeptsResultMap" type="Employee">
+        <id column="e_id" property="id" jdbcType="BIGINT"/>
+        <result column="e_login_code" property="loginCode" jdbcType="VARCHAR"/>
+        <result column="e_enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+        <result column="e_department_id" property="departmentId" jdbcType="BIGINT"/>
+        <result column="e_type" property="type" jdbcType="INTEGER"/>
+        <result column="e_role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="e_name" property="name" jdbcType="VARCHAR"/>
+        <result column="e_phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="e_password" property="password" jdbcType="VARCHAR"/>
+        <result column="e_sex" property="sex" jdbcType="INTEGER"/>
+        <result column="e_birthday" property="birthday" jdbcType="DATE"/>
+        <result column="e_idcard" property="idcard" jdbcType="VARCHAR"/>
+        <result column="e_bankcard" property="bankcard" jdbcType="VARCHAR"/>
+        <result column="e_qq" property="qq" jdbcType="VARCHAR"/>
+        <result column="e_email" property="email" jdbcType="VARCHAR"/>
+        <result column="e_work_type" property="workType" jdbcType="INTEGER"/>
+        <result column="e_address" property="address" jdbcType="VARCHAR"/>
+        <result column="e_in_date" property="inDate" jdbcType="DATE"/>
+        <result column="e_regular_date" property="regularDate" jdbcType="DATE"/>
+        <result column="e_is_admin" property="isAdmin" jdbcType="INTEGER"/>
+        <result column="e_desc" property="desc" jdbcType="VARCHAR"/>
+        <result column="e_is_del" property="isDel" jdbcType="INTEGER"/>
+        <result column="e_status" property="status" jdbcType="INTEGER"/>
+        <result column="e_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="e_update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <collection ofType="Department" property="departmentList">
+            <id column="d_id" property="id" jdbcType="BIGINT"/>
+            <result column="d_parent_id" property="parentId" jdbcType="BIGINT"/>
+            <result column="d_name" property="name" jdbcType="VARCHAR"/>
+            <result column="d_desc" property="desc" jdbcType="VARCHAR"/>
+            <result column="d_enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+            <result column="d_leader" property="leader" jdbcType="VARCHAR"/>
+            <result column="d_phone" property="phone" jdbcType="VARCHAR"/>
+            <result column="d_tree_code" property="treeCode" jdbcType="VARCHAR"/>
+            <result column="d_sort" property="sort" jdbcType="INTEGER"/>
+            <result column="d_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="d_update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+            <result column="d_is_del" property="isDel" jdbcType="INTEGER"/>
+        </collection>
+    </resultMap>
+
+    <!--部门对应所有员工-->
+    <resultMap id="deptEmpsResultMap" type="Department">
+        <id column="d_id" property="id" jdbcType="BIGINT"/>
+        <result column="d_parent_id" property="parentId" jdbcType="BIGINT"/>
+        <result column="d_name" property="name" jdbcType="VARCHAR"/>
+        <result column="d_desc" property="desc" jdbcType="VARCHAR"/>
+        <result column="d_enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+        <result column="d_leader" property="leader" jdbcType="VARCHAR"/>
+        <result column="d_phone" property="phone" jdbcType="VARCHAR"/>
+        <result column="d_tree_code" property="treeCode" jdbcType="VARCHAR"/>
+        <result column="d_sort" property="sort" jdbcType="INTEGER"/>
+        <result column="d_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="d_update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="d_is_del" property="isDel" jdbcType="INTEGER"/>
+        <collection ofType="Employee" property="employeeList">
+            <id column="e_id" property="id" jdbcType="BIGINT"/>
+            <result column="e_login_code" property="loginCode" jdbcType="VARCHAR"/>
+            <result column="e_enterprise_id" property="enterpriseId" jdbcType="BIGINT"/>
+            <result column="e_department_id" property="departmentId" jdbcType="BIGINT"/>
+            <result column="e_type" property="type" jdbcType="INTEGER"/>
+            <result column="e_role_id" property="roleId" jdbcType="BIGINT"/>
+            <result column="e_name" property="name" jdbcType="VARCHAR"/>
+            <result column="e_phone" property="phone" jdbcType="VARCHAR"/>
+            <result column="e_password" property="password" jdbcType="VARCHAR"/>
+            <result column="e_sex" property="sex" jdbcType="INTEGER"/>
+            <result column="e_birthday" property="birthday" jdbcType="DATE"/>
+            <result column="e_idcard" property="idcard" jdbcType="VARCHAR"/>
+            <result column="e_bankcard" property="bankcard" jdbcType="VARCHAR"/>
+            <result column="e_qq" property="qq" jdbcType="VARCHAR"/>
+            <result column="e_email" property="email" jdbcType="VARCHAR"/>
+            <result column="e_work_type" property="workType" jdbcType="INTEGER"/>
+            <result column="e_address" property="address" jdbcType="VARCHAR"/>
+            <result column="e_in_date" property="inDate" jdbcType="DATE"/>
+            <result column="e_regular_date" property="regularDate" jdbcType="DATE"/>
+            <result column="e_is_admin" property="isAdmin" jdbcType="INTEGER"/>
+            <result column="e_desc" property="desc" jdbcType="VARCHAR"/>
+            <result column="e_is_del" property="isDel" jdbcType="INTEGER"/>
+            <result column="e_status" property="status" jdbcType="INTEGER"/>
+            <result column="e_create_time" property="createTime" jdbcType="TIMESTAMP"/>
+            <result column="e_update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        </collection>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      id, dept_id, employee_id
+    </sql>
+
+    <sql id="emp_dept_ref">
+        SELECT
+            e.id AS e_id,
+            e.login_code AS e_login_code,
+            e.enterprise_id AS e_enterprise_id,
+            e.department_id AS e_department_id,
+            e.`type` AS e_type,
+            e.role_id AS e_role_id,
+            e.`name` AS e_name,
+            e.phone AS e_phone,
+            e.PASSWORD AS e_password,
+            e.sex AS e_sex,
+            e.birthday AS e_birthday,
+            e.idcard AS e_idcard,
+            e.bankcard AS e_bankcard,
+            e.qq AS e_qq,
+            e.email AS e_email,
+            e.work_type AS e_work_type,
+            e.address AS e_address,
+            e.in_date AS e_in_date,
+            e.regular_date AS e_regular_date,
+            e.is_admin AS e_is_admin,
+            e.`desc` AS e_desc,
+            e.is_del AS e_is_del,
+            e.STATUS AS e_status,
+            e.create_time AS e_create_time,
+            e.update_time AS e_update_time,
+            d.id as d_id,
+            d.parent_id as d_parent_id,
+            d.`name` as d_name,
+            d.`desc` as d_desc,
+            d.enterprise_id as d_enterprise_id,
+            d.leader as d_leader,
+            d.phone as d_phone,
+            d.tree_code as d_tree_code,
+            d.sort as d_sort,
+            d.create_time as d_create_time,
+            d.update_time as d_update_time,
+            d.is_del as d_is_del
+        FROM
+            dl_department d,
+            dl_employee e,
+            dl_department_employee de
+        WHERE
+            d.id = de.dept_id
+            AND e.id = de.employee_id
+            AND e.enterprise_id = d.enterprise_id
+    </sql>
+
+    <select id="selectEmpDeptsList" resultMap="empDeptsResultMap" parameterType="Employee">
+        SELECT
+        e.id AS e_id,
+        e.login_code AS e_login_code,
+        e.enterprise_id AS e_enterprise_id,
+        e.department_id AS e_department_id,
+        e.`type` AS e_type,
+        e.role_id AS e_role_id,
+        e.`name` AS e_name,
+        e.phone AS e_phone,
+        e.PASSWORD AS e_password,
+        e.sex AS e_sex,
+        e.birthday AS e_birthday,
+        e.idcard AS e_idcard,
+        e.bankcard AS e_bankcard,
+        e.qq AS e_qq,
+        e.email AS e_email,
+        e.work_type AS e_work_type,
+        e.address AS e_address,
+        e.in_date AS e_in_date,
+        e.regular_date AS e_regular_date,
+        e.is_admin AS e_is_admin,
+        e.`desc` AS e_desc,
+        e.is_del AS e_is_del,
+        e.STATUS AS e_status,
+        e.create_time AS e_create_time,
+        e.update_time AS e_update_time,
+        d.id as d_id,
+        d.parent_id as d_parent_id,
+        d.`name` as d_name,
+        d.`desc` as d_desc,
+        d.enterprise_id as d_enterprise_id,
+        d.leader as d_leader,
+        d.phone as d_phone,
+        d.tree_code as d_tree_code,
+        d.sort as d_sort,
+        d.create_time as d_create_time,
+        d.update_time as d_update_time,
+        d.is_del as d_is_del
+        FROM
+        dl_department d,
+        dl_employee e,
+        dl_department_employee de
+        WHERE
+        d.id = de.dept_id
+        AND e.id = de.employee_id
+        AND e.enterprise_id = d.enterprise_id
+        <if test="id != null">
+            and e.id = #{id}
+        </if>
+        <if test="enterpriseId != null">
+            and e.enterprise_id = #{enterpriseId}
+        </if>
+    </select>
+
+    <select id="selectDeptEmpsList" resultMap="deptEmpsResultMap" parameterType="Department">
+        SELECT
+        e.id AS e_id,
+        e.login_code AS e_login_code,
+        e.enterprise_id AS e_enterprise_id,
+        e.department_id AS e_department_id,
+        e.`type` AS e_type,
+        e.role_id AS e_role_id,
+        e.`name` AS e_name,
+        e.phone AS e_phone,
+        e.PASSWORD AS e_password,
+        e.sex AS e_sex,
+        e.birthday AS e_birthday,
+        e.idcard AS e_idcard,
+        e.bankcard AS e_bankcard,
+        e.qq AS e_qq,
+        e.email AS e_email,
+        e.work_type AS e_work_type,
+        e.address AS e_address,
+        e.in_date AS e_in_date,
+        e.regular_date AS e_regular_date,
+        e.is_admin AS e_is_admin,
+        e.`desc` AS e_desc,
+        e.is_del AS e_is_del,
+        e.STATUS AS e_status,
+        e.create_time AS e_create_time,
+        e.update_time AS e_update_time,
+        d.id as d_id,
+        d.parent_id as d_parent_id,
+        d.`name` as d_name,
+        d.`desc` as d_desc,
+        d.enterprise_id as d_enterprise_id,
+        d.leader as d_leader,
+        d.phone as d_phone,
+        d.tree_code as d_tree_code,
+        d.sort as d_sort,
+        d.create_time as d_create_time,
+        d.update_time as d_update_time,
+        d.is_del as d_is_del
+        FROM
+        dl_department d,
+        dl_employee e,
+        dl_department_employee de
+        WHERE
+        d.id = de.dept_id
+        AND e.id = de.employee_id
+        AND e.enterprise_id = d.enterprise_id
+        <if test="id != null">
+            and d.id = #{id}
+        </if>
+        <if test="enterpriseId != null">
+            and d.enterprise_id = #{enterpriseId}
+        </if>
+    </select>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_department_employee
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="findByParams" resultMap="BaseResultMap" parameterType="com.htxx.entity.DepartmentEmployee">
+        select
+        <include refid="Base_Column_List"/>
+        from dl_department_employee
+        <where>
+            1 = 1
+            <if test="deptId != null">
+                and `dept_id` = #{deptId}
+            </if>
+            <if test="employeeId != null">
+                and employee_id = #{employeeId}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from dl_department_employee
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <delete id="deleteByParams" parameterType="com.htxx.entity.DepartmentEmployee">
+        delete from dl_department_employee
+        where `employee_id` = #{employeeId}
+    </delete>
+
+    <insert id="insert" parameterType="com.htxx.entity.DepartmentEmployee">
+        insert into dl_department_employee (
+          id, dept_id, employee_id
+        ) values (
+          #{id,jdbcType=BIGINT}, #{deptId,jdbcType=BIGINT}, #{employeeId,jdbcType=BIGINT}
+        )
+    </insert>
+
+    <insert id="insertSelective" parameterType="com.htxx.entity.DepartmentEmployee">
+        insert into dl_department_employee
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="deptId != null">
+                dept_id,
+            </if>
+            <if test="employeeId != null">
+                employee_id,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test="deptId != null">
+                #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                #{employeeId,jdbcType=BIGINT},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DepartmentEmployee">
+        update dl_department_employee
+        <set>
+            <if test="deptId != null">
+                dept_id = #{deptId,jdbcType=BIGINT},
+            </if>
+            <if test="employeeId != null">
+                employee_id = #{employeeId,jdbcType=BIGINT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DepartmentEmployee">
+        update dl_department_employee
+        set dept_id = #{deptId,jdbcType=BIGINT},
+          employee_id = #{employeeId,jdbcType=BIGINT}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>

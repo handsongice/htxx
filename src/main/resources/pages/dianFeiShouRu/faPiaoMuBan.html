@@ -1,0 +1,876 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>开具增值税普通发票</title>
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+
+    <link rel="stylesheet" type="text/css" href="/static/css/kp_css.css">
+    <script type="text/javascript" src="/static/js/fapiao/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/jquery-migrate-1.2.1.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/kjfpbyhand.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/easyui_126/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/easyui_126/locale/easyui-lang-zh_CN.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/js/fapiao/easyui_126/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="/static/js/fapiao/easyui_126/themes/icon.css">
+    <script type="text/javascript" src="/static/js/fapiao/kjfpbyhand.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/ChineseBigNumberUtil.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/tablelineoperation.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/insertfpinfo_qdzk.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/insertfpinfo_zk.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/insertfpinfo_qingdan.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/insertfpinfo.js"></script>
+    <script type="text/javascript" src="/static/js/fapiao/fp/layer/layer.js"></script>
+    <!-- <link rel="stylesheet" href="//apps.bdimg.com/libs/jqueryui/1.10.4/css/jquery-ui.min.css">
+    <script src="//apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script> -->
+    <script type="text/javascript" src="/static/js/fapiao/fp/jquery-ui-1.10.4.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/jquery-ui-1.10.4.min.css">
+    <script type="text/javascript">
+
+        var infoKind = 0;//发票种类
+        var qybhList = 'qybh';
+        var qybh = qybhList[0];
+
+        function formatyhzc(val, row, index) {
+            var s;
+            if (row.YHZC == "0") {
+                s = '不享受';
+            } else if (row.YHZC == "1") {
+                s = '享受';
+            }
+            return s;
+        }
+
+        function formatyhzclx(val, row, index) {
+            var s;
+            if (row.YHZCLX == "0") {
+                s = '无';
+            } else if (row.YHZCLX == "1") {
+                s = '免税';
+            } else if (row.YHZCLX == "2") {
+                s = '不征税';
+            } else {
+                s = "";
+            }
+            return s;
+        }
+
+        $(function () {
+            win = $('#fpinfo_fpitem').window({
+                shadow: false,
+                modal: true,
+                closed: true,
+                left: ($(window).width() - 1150) * 0.5,
+                top: -800
+            });
+            qdwin = $('#qingdan-list').window({
+                shadow: false,
+                modal: true,
+                closed: true,
+                left: ($(window).width() - 1150) * 0.5,
+                top: -800
+            });
+            form = win.find('form');
+            //查询当前登录人信息，作为手工开票的SKR/FHR/KPR
+            //getLoginName();
+
+            //初始化 autoComplete数据 购方信息
+            //initCustomerInfoData();
+            //初始化信息 销方信息
+            //initXFInfoData();
+        });
+
+        function getLoginName() {
+            $.ajax({
+                type: 'POST',
+                url: 'fpcx/getLoginName',
+                cache: false,
+                contentType: 'application/json;charset=utf-8',
+                dataType: "json",
+                success: function (rst) {
+                    console.info(rst);
+                    if (rst.state == 1) {
+                        $("#xxfp_skr").val(rst.data);
+                        $("#xxfp_fhr").val(rst.data);
+                        $("#xxfp_kpr").val(rst.data);
+                    } else {
+                        alert("未找到登录人信息");
+                    }
+                },
+                error: function (error) {
+                    console.info(error);
+                    alert("未找到登录人信息");
+                    return;
+                }
+
+            });
+        }
+
+        function productSearch() {
+            var product_spbm = $("#product_spbm").val();
+            var product_spmc = $("#product_spmc").val();
+
+            $("#products").datagrid("reload", {spbm: product_spbm, spmc: product_spmc});
+        }
+    </script>
+</head>
+
+<body style="height:100%">
+
+<div class="fapiao44">
+
+    <div class="fapiao45">
+
+        <div class="fapiao46">
+
+            <div class="fapiao70">
+                <input type="text" name="textfield" id="xxfp_fpdm"
+                       style=" width:170px; height:30px; border-radius:4px; padding-left:10px;" placeholder="0"/>
+            </div><!--fapiao70 end-->
+
+            <div class="fapiao71">
+                <div class="fapiao72">Email：</div>
+                <div class="fapiao73">
+                    <input type="text" name="textfield" id="email"
+                           style=" width:170px; height:30px; border-radius:4px; padding-left:10px;" placeholder="0"/>
+                </div><!--fapiao73 end-->
+            </div><!--fapiao71 end-->
+
+        </div><!--fapiao46 end-->
+
+        <div class="fapiao47"><img id="kplxImg" src="/static/img/kp/9.png" width="385" height="140"></div>
+
+
+        <div class="fapiao48">
+
+            <div class="fapiao50">
+                <div class="fapiao51"><img src="/static/img/kp/7.png" width="45" height=""></div>
+                <div class="fapiao52">
+                    <input type="text" name="textfield" id="xxfp_fphm"
+                           style=" width:180px; height:30px; border:#ccc 1px solid; border-radius:4px; padding-left:10px;"
+                           placeholder="000"/>
+                </div><!--fapiao52 end-->
+            </div><!--fapiao50 end-->
+            <!--<div class="fapiao53">-->
+                <!--<div class="fapiao51">开票日期：</div>-->
+                <!--<div class="fapiao52">-->
+                    <!--<fmt:formatDate type="date" pattern="yyyy年MM月dd日 " value="<%=new java.util.Date()%>"/>-->
+                <!--</div>&lt;!&ndash;fapiao52 end&ndash;&gt;-->
+            <!--</div>&lt;!&ndash;fapiao53 end&ndash;&gt;-->
+        </div><!--fapiao48 end-->
+
+    </div><!--fapiao45 end-->
+
+
+    <div class="fapiao54">
+
+
+        <table width="100%" border="0" cellspacing="1" cellpadding="0">
+            <tr>
+                <td bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="4%" height="30" align="center" style="border-right:#444 1px solid;"><p>购</p>
+                                <p>买</p>
+                                <p>方</p></td>
+                            <td width="43%" style="border-right:#444 1px solid;">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td width="28%" height="35" align="right"><span class="nowrap">名称:</span></td>
+                                        <td width="72%">
+                                            <input type="text" name="xxfp_gfmc" id="xxfp_gfmc"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">纳税人识别号:</span></td>
+                                        <td><input type="text" name="xxfp_gfsh" id="xxfp_gfsh"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;"
+                                                   autocomplete="off"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">地址、电话:</span></td>
+                                        <td><input type="text" name="xxfp_gfdzdhg" id="xxfp_gfdzdhg"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;"
+                                                   autocomplete="off"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">开户行及账号:</span></td>
+                                        <td><input type="text" name="xxfp_gfyhzh" id="xxfp_gfyhzh"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;"
+                                                   autocomplete="off"/></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="4%" align="center" style="border-right:#444 1px solid;"><p>密</p>
+                                <p>码</p>
+                                <p>区</p></td>
+                            <td width="49%">&nbsp;</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="30" bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="9%" height="30" align="center" class="bian">序号</td>
+                            <td width="21%" align="center" class="bian">货物或应税劳务、服务名称</td>
+                            <td width="7%" align="center" class="bian">规格型号</td>
+                            <td width="7%" align="center" class="bian">单位</td>
+                            <td width="9%" align="center" class="bian">数量</td>
+                            <!--
+                            <td width="8%" align="center" class="bian">单价</td>
+                            -->
+                            <td width="8%" align="center" class="bian">含税单价</td>
+                            <!--
+                            <td width="11%" display="none" align="center" class="bian">金额</td>
+                            -->
+                            <td width="9%" align="center" class="bian">含税金额</td>
+                            <td width="6%" align="center" class="bian">税率</td>
+                            <td width="10%" align="center" class="bian2">税额</td>
+                        </tr>
+                        <tr>
+                            <td height="249" colspan="9" align="center" valign="top">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" id="xxfp_table_item">
+                                    <tr class="fpitem_line">
+                                        <td width="9%" height="30" align="center" class="bian">
+                                            <input type="radio" name="xxfp-line-radio" id="radio" value="radio"
+                                                   class="qd_fpitem_radio"/>
+                                            选中
+                                        </td>
+                                        <td width="23%" align="center" class="bian2"><input class="fpitem_mc" th:value="${notice?.noticeDelList[0]?.xmmc}"
+                                                                                            style="text-align:center;width: 100%; height: 100%;"
+                                                                                            placeholder="从商品编码表中一个一个的选"
+                                                                                            ;disabled="disabled"
+                                                                                            readonly="readonly"/></td>
+                                        <td width="3%" class="bian fpitem_a" th:if="${ywlx} != 2"><a href="javascript:void(0)"
+                                                                                onclick="fpitemClickspan(this)"><img
+                                                src="/static/img/kp/1.jpg" width="26" height="23"/></a></td>
+                                        <td width="8%" class="bian"><input class="fpitem_ggxh" th:value="${notice?.noticeDelList[0]?.ggxh}"
+                                                                           style="text-align:center;width: 100%; height: 100%;"/>
+                                        </td>
+                                        <td width="8%" class="bian"><input class="fpitem_jldw" th:value="${notice?.noticeDelList[0]?.jldw}"
+                                                                           style="text-align:center;width: 100%; height: 100%;"/>
+                                        </td>
+                                        <td width="10%" class="bian"><input class="fpitem_number" th:value="${notice?.noticeDelList[0]?.xmsl}"
+                                                                            onblur="numberBlur(this)"
+                                                                            style="text-align:center;width: 100%; height: 100%;"/>
+                                        </td>
+                                        <!--
+                                        <td width="0%" class="bian"><input class="fpitem_dj" onblur="djBlur(this)"
+                                                                           style="text-align:center;width: 100%; height: 100%;"/>
+                                        </td> -->
+                                        <td width="10%" class="bian"><input class="fpitem_hsdj" onblur="hsdjBlur(this)" th:value="${notice?.noticeDelList[0]?.hsdj}"
+                                                                            style="text-align:center;width: 100%; height: 100%;"/>
+                                        </td>
+                                        <!--
+                                        <td width="0%" class="bian"><input class="fpitem_price"
+                                                                           style="display:none;text-align:center;width: 100%; height: 100%;"
+                                                                           placeholder="" ;disabled="disabled"
+                                                                           readonly="readonly"/></td> -->
+                                        <td width="11%" class="bian"><input class="fpitem_hsje" th:value="${notice?.noticeDelList[0]?.hsje}"
+                                                                            style="text-align:center;width: 100%; height: 100%;"
+                                                                            placeholder="" ;disabled="disabled"
+                                                                            onblur='autoGetPriceBlur(this);'/></td>
+                                        <td width="6%" class="bian fpitem_slv" align="center" th:text="${notice?.noticeDelList[0]?.slStr}"></td>
+                                        <td width="12%" class="bian2"><input class="fpitem_shuie" th:value="${notice?.noticeDelList[0]?.se}"
+                                                                             style="text-align:center;width: 100%; height: 100%;"
+                                                                             placeholder="" ;disabled="disabled"/></td>
+                                        <td style="display:none" class="fpitem_spbm">&nbsp;</td>
+                                        <td style="display:none" class="fpitem_spbh">&nbsp;</td>
+                                        <td style="display:none" class="fpitem_yhzc">&nbsp;</td>
+                                        <td style="display:none" class="fpitem_yhzclx">&nbsp;</td>
+                                        <td style="display:none" class="fpitem_zerotax">&nbsp;</td>
+                                        <td style="display:none" class="fpitem_bmbbh">&nbsp;</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="30" bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="33%" height="30" align="center" class="bian1">合计</td>
+                            <td width="14%" class="bian1">&nbsp;</td>
+                            <td width="7%" class="bian1">&nbsp;</td>
+                            <td width="9%" class="bian1">&nbsp;</td>
+                            <td width="8%" class="bian1">&nbsp;</td>
+                            <td width="11%" align="center" class="bian1"><span style="color:#999;"
+                                                                               id="xxfp_jehj">￥0.00</span></td>
+                            <td width="6%" class="bian1">&nbsp;</td>
+                            <td width="12%" align="center"><span style="color:#999;" id="xxfp_sehj">￥0.00</span></td>
+                            <!-- <td width="11%" align="center" class="bian1"><input id="xxfp_jehj" readonly="readonly" style="text-align: center"/></td>
+                            <td width="6%" class="bian1">&nbsp;</td>
+                            <td width="12%" align="center"><input id="xxfp_sehj" readonly="readonly" style="text-align: center"/></td> -->
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="30" bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="25%" height="30" align="center" class="bian1">含税合计（大写）</td>
+                            <td width="25%" align="center" class="bian1"><input type="text" id="xxfp_dx" placeholder=""
+                                                                                readonly="readonly"
+                                                                                onkeyup="this.value=this.value.replace(/[^\u4e00-\u9fa5]/g,'')">
+                            </td>
+                            <td width="19%" align="center" class="bian1">（小写）</td>
+                            <td width="31%" align="center"><input type="text" id="xxfp_xx" placeholder=""
+                                                                  readonly="readonly"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="30" bgcolor="#FFFFFF">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td width="4%" height="30" align="center" style="border-right:#444 1px solid;"><p>销</p>
+                                <p>售</p>
+                                <p>方</p></td>
+                            <td width="43%" style="border-right:#444 1px solid;">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <td width="28%" height="35" align="right"><span class="nowrap">名称:</span></td>
+                                        <td width="72%"><input type="text" name="textfield6" id="xxfp_xfmc" th:value="${notice?.xfmc}"
+                                                               style="width:300px; height:25px; border:#ccc 1px solid;"  disabled="disabled" readonly="readonly"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">纳税人识别号:</span></td>
+                                        <td><input type="text" name="textfield6" id="xxfp_xfsh" th:value="${notice?.xfsh}"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;" disabled="
+                                                   disabled" readonly="readonly"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">地址、电话:</span></td>
+                                        <td><input type="text" name="textfield6" id="xxfp_xfdzdh" th:value="${notice?.xfdzdh}"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;" disabled="
+                                                   disabled" readonly="readonly"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td height="35" align="right"><span class="nowrap">开户行及账号:</span></td>
+                                        <td><input type="text" name="textfield6" id="xxfp_xfyhzh" th:value="${notice?.xfyhzh}"
+                                                   style="width:300px; height:25px; border:#ccc 1px solid;"  disabled="
+                                                   disabled" readonly="readonly"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td width="4%" align="center" style="border-right:#444 1px solid;"><p>备</p>
+                                <p>注</p>
+                            <td width="49%"><input id="xxfp_bz" type="textarea" style="width: 100%; height: 175px;"/>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+
+
+        <div class="fapiao67" th:if="${ywlx} != 2">
+            <div class="fapiao68"><a href="javascript:void(0)" onclick="qingdan();"><img src="/static/img/kp/a1.png"
+                                                                                         width="59" height="20"></a>
+            </div>
+            <!--
+            <div class="fapiao68"><a href="#"><img src="/static/img/kp/a2.png" width="58" height="22"></a></div>
+            -->
+            <div class="fapiao68"><a href="javascript:void(0)" onclick="addXxfpItemLineHtmlData()"><img
+                    src="/static/img/kp/a3.png" width="58" height="20"></a></div>
+            <div class="fapiao68"><a href="javascript:void(0)" onclick="xxfpdelline()"><img
+                    src="/static/img/kp/a4.png" width="58" height="21"></a></div>
+        </div><!--fapiao67 end-->
+
+
+        <div class="clear"></div>
+    </div><!--fapiao54 end-->
+
+
+    <div class="fapiao55">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td height="30" align="right">收款人：</td>
+                <td><input type="text" name="textfield7" id="xxfp_skr" th:value="${notice?.skr}"
+                           style="width:160px; height:25px; border:#ccc 1px solid;"/></td>
+                <td align="right">复核人：</td>
+                <td><input type="text" name="textfield8" id="xxfp_fhr" th:value="${notice?.fhr}"
+                           style="width:160px; height:25px; border:#ccc 1px solid;"/></td>
+                <td align="right">开票人：</td>
+                <td><input type="text" name="textfield9" id="xxfp_kpr" th:value="${notice?.kpr}"
+                           style="width:160px; height:25px; border:#ccc 1px solid;"/></td>
+                <td>销售方（）章</td>
+            </tr>
+        </table>
+
+
+    </div><!--fapiao55 end-->
+
+
+    <div style="width:100%; height:30px; padding-top:15px; text-align:right;"><a href="javascript:void(0)"
+                                                                                 onclick="fpkj();"><img
+            src="/static/img/kp/a5.png" width="58" height="30"/></a></div>
+    <div class="clear"></div>
+</div><!--fapiao44 end-->
+<div id="fpinfo_fpitem" title="选择商品信息" class="easyui-window"
+     style="positions:absolute;width:1120px;height:550px;top:0px;padding-top:0;">
+
+    <div class="fapiao21">
+
+        <div class="fapiao11">
+
+            <!--
+            <div class="fapiao12">
+                <div class="fapiao13">选择商品信息</div>
+                <div class="fapiao14_14"><img src="/static/img/kp/5.png" width="20" height="20"></div>
+            </div><!--fapiao12 end--> -->
+
+
+            <div class="fapiao14">
+
+
+                <div class="fapiao66">
+
+
+                    <!-- 1 -->
+                    <div id="lib_Tab1">
+                        <!-- <div class="lib_Menubox">
+                        <ul>
+                           <li id="one1" onclick="setTab('one',1,4)" style="border-left:0px;" class="hover">商品编码表</li>
+                           <li id="one2" onclick="setTab('one',2,4)" >税收编码表</li>
+
+                        </ul>
+                        </div> -->
+                        <div class="lib_Contentbox">
+
+                            <div id="con_one_1">
+                                <div class="fapiao22">
+                                    <div class="fapiao23">税收分类编码</div>
+                                    <div class="fapiao24">
+                                        <input type="text" name="textfield" id="product_spbm"
+                                               style="width:198px; height:28px; border:#ccc 1px solid; border-radius:4px;"/>
+                                    </div><!--fapiao24 end-->
+                                    <!--  <div class="fapiao25"><a href="javascript:void(0)" onclick="productSearch()">搜 索</a>搜索</div> -->
+
+
+                                    <div class="fapiao23_1">商品名称</div>
+                                    <div class="fapiao24">
+                                        <input type="text" name="textfield" id="product_spmc"
+                                               style="width:198px; height:28px; border:#ccc 1px solid; border-radius:4px;"/>
+                                    </div><!--fapiao24 end-->
+                                    <div class="fapiao25"><a href="javascript:void(0)" onclick="productSearch()">搜 索</a>
+                                    </div>
+
+
+                                </div><!--fapiao22 end-->
+
+
+                                <div class="fapiao32">
+
+                                    <div class="fapiao26">
+                                        <div class="fapiao27">
+                                            <div class="fapiao29">商品编码信息</div>
+                                        </div><!--fapiao27 end-->
+
+                                        <div class="fapiao28">
+
+                                            <div class="fapiao30">
+                                                <table width="100%" border="0" cellspacing="1" cellpadding="0"
+                                                       id="products">
+                                                    <!--   <tr>
+                                                        <td height="30" align="center" bgcolor="#EDEAEA">序号</td>
+                                                        <td align="center" bgcolor="#EDEAEA">编码</td>
+                                                        <td align="center" bgcolor="#EDEAEA">名称</td>
+                                                        <td align="center" bgcolor="#EDEAEA">商品税目</td>
+                                                        <td align="center" bgcolor="#EDEAEA">税率</td>
+                                                        <td align="center" bgcolor="#EDEAEA">规格型号</td>
+                                                        <td align="center" bgcolor="#EDEAEA">计量单位</td>
+                                                        <td align="center" bgcolor="#EDEAEA">单价</td>
+                                                        <td align="center" bgcolor="#EDEAEA">含税价标志</td>
+                                                        <td align="center" bgcolor="#EDEAEA">税收分类编码</td>
+                                                        <td align="center" bgcolor="#EDEAEA">享受优惠政策</td>
+                                                        <td align="center" bgcolor="#EDEAEA">税收分类名称</td>
+                                                        <td align="center" bgcolor="#EDEAEA">优惠政策类型</td>
+                                                      </tr> -->
+                                                </table>
+
+
+                                            </div><!--fapiao30 end-->
+
+
+                                            <!--
+                                                                            <div class="fapiao31">
+                                                                                  上一页  下一页  总共XXXX页
+                                                                            </div>fapiao31 end -->
+
+
+                                        </div><!--fapiao28 end-->
+
+
+                                    </div><!--fapiao26 end-->
+
+                                    <div class="clear"></div>
+                                </div><!--fapiao32 end-->
+
+
+                            </div><!--商品编码表 end-->
+
+                        </div>
+                    </div><!--tab 结束-->
+
+
+                </div><!--fapiao66 end-->
+
+
+                <div class="clear"></div>
+            </div><!--fapiao14 end-->
+
+
+            <div class="clear"></div>
+        </div><!--fapiao11 end-->
+
+        <div class="clear"></div>
+    </div><!--fapiao21 end-->
+
+</div>
+
+<div class="fapiao11  easyui-window" id="qingdan-list" title="清单填开"
+     style="positions:absolute;width:1120px;height:400px;top:0px;padding-top:0;">
+
+    <div class="fapiao14">
+
+
+        <div class="fapiao15">
+            <div class="fapiao16"><a href="javascript:void(0)" onclick="qingdanFinish();"><img
+                    src="/static/img/kp/4.png" width="52" height="21"></a></div>
+            <div class="fapiao16"><a href="javascript:void(0)" onclick="qingdanPrint();"><img
+                    src="/static/img/kp/3.png" width="54" height="21"></a></div>
+            <div class="fapiao16"><a href="javascript:void(0)" onclick="qingdanDelLine();"><img
+                    src="/static/img/kp/2.png" width="52" height="21"></a></div>
+            <div class="fapiao16"><a href="javascript:void(0)" onclick="qingdanAddLine();"><img
+                    src="/static/img/kp/1.png" width="50" height="21"></a></div>
+        </div><!--fapiao15 end-->
+
+
+        <div class="fapiao17">
+            <div class="fapiao18">发票代码：<span id="qd_fpdm"></span></div>
+            <div class="fapiao18">发票号码：<span id="qd_fphm"></span></div>
+        </div><!--fapiao17 end-->
+
+        <div class="fapiao19">
+
+            <div class="fapiao20">
+                <table width="100%" border="0" cellspacing="1" cellpadding="0">
+                    <tr>
+                        <td width="9%" height="30" align="center" bgcolor="#E5EEFF">序号</td>
+                        <td width="23%" align="center" bgcolor="#E5EEFF">货物活应税劳务、服务名称1</td>
+                        <td width="8%" align="center" bgcolor="#E5EEFF">规格型号</td>
+                        <td width="8%" align="center" bgcolor="#E5EEFF">单位</td>
+                        <td width="10%" align="center" bgcolor="#E5EEFF">数量</td>
+                        <!--
+                        <td width="10%" align="center" bgcolor="#E5EEFF">单价</td>
+                        -->
+                        <td width="10%" align="center" bgcolor="#E5EEFF">含税单价</td>
+                        <!--
+                        <td width="9%" align="center" bgcolor="#E5EEFF">金额</td>
+                        -->
+                        <td width="11%" align="center" bgcolor="#E5EEFF">含税金额</td>
+                        <td width="6%" align="center" bgcolor="#E5EEFF">税率</td>
+                        <td width="12%" align="center" bgcolor="#E5EEFF">税额</td>
+                    </tr>
+                    <tr>
+                        <td colspan="9" align="center" bgcolor="#FFFFFF">
+                            <table width="100%" border="1" borderColor="#E5EEFF" cellspacing="0" cellpadding="0"
+                                   id="xxfp_qingdan_item_table">
+
+                            </table>
+
+                        </td>
+                    </tr>
+                </table>
+            </div><!--fapiao20 end-->
+
+            <div class="clear"></div>
+        </div><!--fapiao19 end-->
+        <div class="clear"></div>
+    </div><!--fapiao14 end-->
+
+
+    <div class="clear"></div>
+</div><!--fapiao11 end-->
+
+</body>
+<script type="text/javascript">
+    var picUrl = "/static/img/kp/1.jpg";
+    var $mCurrentLineTr;
+    var mCurrentQdbz = 0;
+    //$(document).ready(function(){
+    //	//初始化 autoComplete数据 购方信息
+    //	initCustomerInfoData();
+    //	//初始化信息 销方信息
+    //	initXFInfoData();
+    //});
+    /* 页面加载后 jquery 初始化  */
+    /** 购销方信息数组 */
+    var mCustomerInfos;
+
+    function initCustomerInfoData() {
+        // var jsonObj = JSON
+        $.ajax({
+            type: 'POST',
+            url: "business/xxfp/findAllGfInfos",
+            cache: false,
+            contentType: 'application/json;charList=utf-8',
+            data: "",
+            success: function (data) {
+                if (data.flag) {
+                    //console.info(data.obj);
+                    initAutoCompleteGouxiao(data.obj);
+                }
+                else {
+                    alert('数据加载失败,请刷新页面');
+                }
+            },
+            error: function (error) {
+                console.info(error);
+                alert("未找到该页面");
+                return;
+                //alert(error.name);
+            }
+
+        });
+    }
+
+    //获取销方信息
+    function initXFInfoData() {
+        console.log(qybh);
+        var qybhJson = JSON.stringify(qybh);
+        $.ajax({
+            type: 'POST',
+            url: "business/xxfp/findXfInfoByQydm",
+            cache: false,
+            dataType: 'json',
+            data: {qybh: qybhJson},
+            success: function (data) {
+                if (data.flag) {
+                    var datas = data.obj;
+                    $("#xxfp_xfmc").val(datas[0].qymc);
+                    $("#xxfp_xfsh").val(datas[0].qysh);
+                    $("#xxfp_xfdzdh").val(datas[0].qydzdh);
+                    $("#xxfp_xfyhzh").val(datas[0].yhzh);
+                    $("#xxfp_skr").val(datas[0].skr);
+                    $("#xxfp_fhr").val(datas[0].fhr);
+                    $("#xxfp_kpr").val(datas[0].kpr);
+                }
+                else {
+                    alert('数据加载失败,请刷新页面');
+                }
+            },
+            error: function (error) {
+                console.info(error);
+                alert("未找到该页面");
+                return;
+                //alert(error.name);
+            }
+
+        });
+    }
+
+    function clickGoodsCodeLine(rowData) {
+        console.info(rowData);
+        $mCurrentLineTr.find(".fpitem_mc").val(rowData.SPM);
+        $mCurrentLineTr.find(".fpitem_a").html("");
+        $mCurrentLineTr.find(".fpitem_ggxh").val(rowData.SPGG);
+        $mCurrentLineTr.find(".fpitem_jldw").val(rowData.SPDW);
+        $mCurrentLineTr.find(".fpitem_dj").val(rowData.BHSDJ);
+        var n = rowData.SL * 100;
+        $mCurrentLineTr.find(".fpitem_slv").html(n + '%');
+        $mCurrentLineTr.find(".fpitem_spbm").html(rowData.SPBM);
+        $mCurrentLineTr.find(".fpitem_spbh").html(rowData.SPBH);
+        $mCurrentLineTr.find(".fpitem_yhzc").html(rowData.YHZC);
+        $mCurrentLineTr.find(".fpitem_yhzclx").html(rowData.YHZCLX);
+        $mCurrentLineTr.find(".fpitem_zerotax").html(rowData.ZEROTAX);
+        $mCurrentLineTr.find(".fpitem_bmbbh").html(rowData.BMBBH);
+        //清单里的点击事件...
+        $mCurrentLineTr.find(".qd_fpitem_mc").val(rowData.SPM);
+        $mCurrentLineTr.find(".qd_fpitem_a").html("");
+        $mCurrentLineTr.find(".qd_fpitem_ggxh").val(rowData.SPGG);
+        $mCurrentLineTr.find(".qd_fpitem_jldw").val(rowData.SPDW);
+        $mCurrentLineTr.find(".qd_fpitem_dj").val(rowData.BHSDJ);
+        var n = rowData.SL * 100;
+        $mCurrentLineTr.find(".qd_fpitem_slv").html(n + '%');
+        $mCurrentLineTr.find(".qd_fpitem_spbm").html(rowData.SPBM);
+        $mCurrentLineTr.find(".qd_fpitem_spbh").html(rowData.SPBH);
+        $mCurrentLineTr.find(".qd_fpitem_yhzc").html(rowData.YHZC);
+        $mCurrentLineTr.find(".qd_fpitem_yhzclx").html(rowData.YHZCLX);
+        $mCurrentLineTr.find(".qd_fpitem_zerotax").html(rowData.ZEROTAX);
+        $mCurrentLineTr.find(".qd_fpitem_bmbbh").html(rowData.BMBBH);
+        //隐藏
+        win.window('close');
+
+    };
+
+    //添加发票数据->database
+    function insertXXfpInfo(posbh) {
+        //console.info("into insertXXfp"+mCurrentQdbz);
+        /* 从input中取值  下面的内容会报错 */
+        var fpdm = $("#xxfp_fpdm").val();
+        var fphm = $("#xxfp_fphm").val();
+        //时间 , 要整理成date格式
+        var year = $("#xxfp_year").val();
+        var month = $("#xxfp_month").val();
+        var day = $("#xxfp_day").val();
+        var date = new Date();
+        //date.setFullYear(year,month,day);
+        //时间 over
+        var gfmc = $("#xxfp_gfmc").val();
+        var gfsh = $("#xxfp_gfsh").val();
+        var gfdzdhg = $("#xxfp_gfdzdhg").val();
+        var gfyhzh = $("#xxfp_gfyhzh").val();
+        var xx = $("#xxfp_xx").val();
+        var xfmc = $("#xxfp_xfmc").val();
+        var xfsh = $("#xxfp_xfsh").val();
+        var xfdzdh = $("#xxfp_xfdzdh").val();
+        var xfyhzh = $("#xxfp_xfyhzh").val();
+        var skr = $("#xxfp_skr").val();
+        var fhr = $("#xxfp_fhr").val();
+        var kpr = $("#xxfp_kpr").val();
+        var hjje = $("#xxfp_jehj").html();
+        var hjse = $("#xxfp_sehj").html();
+        var bz = $("#xxfp_bz").val();
+        //alert(bz);
+        var email = $("#email").val();
+        if (xx == "NaN") {
+            alert('数额出错!');
+            return;
+        }
+        var fpzl = infoKind;
+        if (fpzl == "0") {
+            //专票不能超过1亿
+            if (Number(xx) > 100000000) {
+                alert('专票的发票额不能超过一亿!');
+                return;
+            }
+        }
+        else if (fpzl == "2") {
+            //普票不能超过1百万
+            if (Number(xx) > 1000000) {
+                alert('普票的发票额不能超过一百万!');
+                return;
+            }
+        }
+        //先处理发票明细
+        var array = new Array();
+        console.log("清单标识:" + mCurrentQdbz);
+        var b = fpmxArrayPush(array, mCurrentQdbz);
+        console.log(b);
+        console.log(array);
+        console.log(array.length);
+        if (!array || array.length == 0 || b == 0) {
+            alert('请补全商品信息1');
+            return;
+        }
+        console.info("----------");
+        console.info(array);
+        console.info("----------");
+        if (!array || array.length == 0) {
+            alert('请补全商品信息2');
+            return;
+        }
+        /* 打包json对象 */
+
+
+        // 对象赋值开始
+        var xxfp = {};
+        xxfp.fpzl = 51;
+        xxfp.fpdm = fpdm;
+        xxfp.fphm = fphm;
+        xxfp.czsj = date;
+        /* xxfp.year=year;
+        xxfp.month= month;
+        xxfp.day=day; */
+        xxfp.nsrsbh = xfsh + "";
+        xxfp.fjh = "";
+        xxfp.gfmc = gfmc;
+        xxfp.gfsh = gfsh;
+
+        xxfp.gfdzdh = gfdzdhg;
+        xxfp.gfyhzh = gfyhzh;
+        xxfp.xfmc = xfmc;
+        xxfp.xfsh = xfsh;
+        xxfp.xfdzdh = xfdzdh;
+        xxfp.xfyhzh = xfyhzh;
+        xxfp.skr = skr;
+        xxfp.fhr = fhr;
+        xxfp.kpr = kpr;
+        xxfp.hjje = Number(hjje);
+        xxfp.hjse = Number(hjse);
+        xxfp.jshj = (Number(hjje) + Number(hjse)).toFixed(2);
+        xxfp.bz = bz;
+        xxfp.hzbh = posbh + "";
+        xxfp.email = email;
+        if (array.length > 8) {
+            xxfp.qdbz = 1;
+        }
+        else {
+            xxfp.qdbz = 0;
+        }
+        xxfp.xxfpMxs = array;
+        console.log(array);
+        var json = JSON.stringify(xxfp);
+
+        console.info(json);
+
+        $.ajax({
+            type: 'POST',
+            url: 'fpgl/dzfpkj',
+            cache: false,
+            contentType: 'application/json;charset=utf-8',
+            data: json,
+            dataType: "json",
+            success: function (data) {
+                console.info(data);
+                if (data.ifSuccess) {
+                    //window.open(data.obj);
+                    //alert(data.message);
+                    window.location.href = 'pages/business/xxfp/show.jsp?msg=' + data.info;
+
+                } else {
+                    alert(data.info);
+                }
+                //alert(rst.info);
+                // window.location.href='pages/business/xxfp/show.jsp?msg='+rst.info;
+            },
+            error: function (error) {
+                console.info(error);
+                alert("发票开具异常");
+            }
+
+        });
+    };
+
+    function fpkj() {
+//        var posbh =
+//    <
+//        %= request.getParameter("posbh") % >;//开票盒子
+//        layer.confirm('确定要开具此电子票吗？', {icon: 6, title: '提示'}, function (index) {
+//            insertXXfpInfo(posbh);
+//            layer.close(index);
+//        });
+//    }
+//
+//    function qingdanPrint() {
+//        layer.confirm('确定要打印此清单吗？', {icon: 6, title: '提示'}, function (index) {
+//            layer.close(index);
+//        });
+    }
+</script>
+</html>

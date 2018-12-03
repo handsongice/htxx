@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>员工管理</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #4178be;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">选项</div>
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>名称：</label>
+                    <input type="text" placeholder="请输入员工名" autocomplete="off"
+                           class="layui-input name">
+                </li>
+                <li>
+                    <label>电话：</label>
+                    <input type="text" placeholder="请输入电话" autocomplete="off"
+                           class="layui-input phone">
+                </li>
+                <li>
+                    <button id="searchBut" type="button" class="layui-btn">查询</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="test" lay-filter="test"></table>
+
+        <script type="text/html" id="tableOperation">
+            <span class="layui-btn layui-btn-xs" lay-event="edit">编辑</span>
+            <span class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</span>
+        </script>
+
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script type="text/html" id="toolbarDemo">
+    <button class="mock-icon-btn"  lay-event="add" title="添加菜单">
+        <i class="fa fa-plus"></i><span>添加</span>
+    </button>
+</script>
+<script>
+    var sgshObj = {};
+    $(document).ready(function () {
+        layui.use(['table', 'laypage', 'layer', 'laydate'], function () {
+            var table = layui.table,laypage = layui.laypage,laydate = layui.laydate,layer = layui.layer;
+            sgshObj = {
+                loadPage: function () {
+                    var _this = this;
+                    _this.tableRender();
+                },
+                tableRender: function () {
+                    var _this = this;
+                    var colsData = [
+                        [
+                            {field: 'name', title: '姓名', sort: true},
+                            {field: 'loginCode', title: '登录名', sort: true},
+                            {field: 'phone', title: '电话', sort: true},
+                            {field: 'desc', title: '描述', sort: true},
+                            {field: 'createTime', title: '创建时间'},
+                            {field: 'updateTime', title: '更新时间'},
+                            {fixed: 'right', title: '操作', width: '15%', toolbar: '#tableOperation'}]
+                    ];
+                    table.render({
+                        id: "dataList",
+                        elem: '#test',
+                        url: '/noc/pageEmployeeList',
+                        toolbar: '#toolbarDemo' ,
+                        where: _this.getRequestParams(),
+                        title: '数据列表',
+                        cols: colsData,
+                        even: true, //开启隔行背景
+                        size: 'sm', //小尺寸的表格
+                        page: true,
+                        done: function (res, curr, count) {
+                            //alert(res);
+                        }
+                    });
+                    table.on('toolbar(test)', function(obj){
+                        var checkStatus = table.checkStatus(obj.config.id);
+                        switch(obj.event){
+                            case 'add':
+                                //添加通知单
+                                var index = layer.open({
+                                    title: "新建",
+                                    type: 2,
+                                    content: "/main/addEmployee",
+                                    success: function(layero, index) {
+                                        setTimeout(function() {
+                                            layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                                tips: 3
+                                            });
+                                        }, 500)
+                                    }
+                                })
+                                layer.full(index);
+                                //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                                $(window).on("resize", function() {
+                                    layer.full(index);
+                                });
+                                break;
+                        };
+                    });
+                    // 列表按钮
+                    table.on('tool(test)', function (obj) {
+                        var tableEvent = obj.event;
+                        var data = obj.data;
+                        var dataId = data.id;
+                        var isAdmin = data.isAdmin;
+
+                        if (tableEvent === 'edit') {
+                            var index = layer.open({
+                                title: "编辑",
+                                type: 2,
+                                content: "/main/editEmployee?id="+dataId,
+                                success: function(layero, index) {
+                                    setTimeout(function() {
+                                        layer.tips('点击此处返回列表', '.layui-layer-setwin .layui-layer-close', {
+                                            tips: 3
+                                        });
+                                    }, 500)
+                                }
+                            })
+                            layer.full(index);
+                            //改变窗口大小时，重置弹窗的宽高，防止超出可视区域（如F12调出debug的操作）
+                            $(window).on("resize", function() {
+                                layer.full(index);
+                            });
+                        } else if (tableEvent === 'del') {
+                            if(isAdmin == 1) {
+                                layer.alert('超级管理员不得删除！',{icon: 2, title:'温馨提示'});
+                                return false;
+                            }
+                            layer.confirm('是否确认删除?',{icon: 3, title:'温馨提示'}, function(index) {
+                                var loadindex;
+                                $.ajax({
+                                    url: "/noc/delEmployee",
+                                    type: 'post',
+                                    async : true,
+                                    dataType: 'json',
+                                    data: {
+                                        id:dataId,
+                                    },
+                                    beforeSend:function(rs){
+                                        loadindex = layer.load(2, {
+                                            time: 1500,
+                                            shade: [0.3,'#000'],
+                                        });
+                                    },
+                                    complete:function(rs){
+                                        layer.close(loadindex);
+                                    },
+                                    success: function(rlt) {
+                                        if(rlt && rlt.status == 200) {
+                                            layer.msg(rlt.msg, {icon: 1,time: 1000,title:'温馨提示'}, function(){
+                                                _search();
+                                            });
+                                        } else {
+                                            layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                            return false;
+                                        }
+                                    },error: function(rlt) {
+                                        layer.alert(rlt.msg,{icon: 2, title:'温馨提示'});
+                                        return false;
+                                    }
+                                });
+                            });
+                        }
+                    });
+                },
+                getRequestParams: function () { //获取查询参数
+                    var params = {};
+                    if($('.name').val()) {
+                        params.name = $('.name').val();
+                    }
+                    if($('.phone').val()) {
+                        params.phone = $('.phone').val();
+                    }
+                    params.type = 2;
+                    return params;
+                }
+            }
+            sgshObj.loadPage();
+
+            $('#searchBut').on('click', function () {
+                sgshObj.loadPage();
+            });
+        });
+    });
+    function _search() {
+        sgshObj.loadPage();
+    }
+
+</script>
+</body>
+
+</html>

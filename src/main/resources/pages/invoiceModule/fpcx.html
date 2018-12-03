@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <title>发票查询</title>
+    <link rel="stylesheet" href="/static/js/layui/css/layui.css">
+    <link rel="stylesheet" href="/static/css/common.css"/>
+    <!--[if lte IE 8]>
+    <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <style type="text/css">
+        .layui-table th {
+            font-weight: bold;
+        }
+
+        .table_btn {
+            color: #1E9FFF;
+            padding: 0 3px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layui-card">
+    <div class="layui-card-header">选项</div>
+    <div class="layui-card-body">
+        <form class="layui-form search-form">
+            <ul>
+                <li>
+                    <label>开票终端：</label>
+                    <select id="kpjCode">
+                        <option value="">请选择开票终端</option>
+                        <option th:each="kpjxx:${kpjList}" th:value="${kpjxx.code}"
+                                th:text="${kpjxx.nickName}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票类型：</label>
+                    <select id="fplx">
+                        <option value="">请选择发票类型</option>
+                        <option th:each="fplx:${fplxList}" th:value="${fplx.code}" th:text="${fplx.name}"></option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票状态：</label>
+                    <select id="kplx">
+                        <option value="0">全部</option>
+                        <option value="1">正常</option>
+                        <option value="2">红票</option>
+                        <option value="3">被冲红</option>
+                        <option value="4">废票</option>
+                    </select>
+                </li>
+                <div class="clear-fixed"></div>
+
+                <li>
+                    <label>发票性质：</label>
+                    <select id="fpxz">
+                        <option value="">全部</option>
+                        <option value="1">正数发票</option>
+                        <option value="2">负数发票</option>
+                    </select>
+                </li>
+                <li>
+                    <label>发票税率：</label>
+                    <input type="checkbox" name="rate" value="0" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="0%">
+                    <input type="checkbox" name="rate" value="0.03" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="3%">
+                    <input type="checkbox" name="rate" value="0.05" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="5%">
+                    <input type="checkbox" name="rate" value="0.06" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="6%">
+                    <input type="checkbox" name="rate" value="0.1" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="10%">
+                    <input type="checkbox" name="rate" value="0.11" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="11%">
+                    <input type="checkbox" name="rate" value="0.13" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="13%">
+                    <input type="checkbox" name="rate" value="0.16" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="16%">
+                    <input type="checkbox" name="rate" value="0.17" class="rate-normal" lay-filter="normal"
+                           lay-skin="primary" title="17%">
+                    <input type="checkbox" name="rate" value="1" class="rate-other" lay-filter="other"
+                           lay-skin="primary" title="其他">
+                </li>
+                <div class="clear-fixed"></div>
+                <li>
+                    <label>购方名称：</label>
+                    <input type="text" id="gfmc" placeholder="请输入购方名称" autocomplete="off" class="layui-input">
+                </li>
+                <li>
+                    <label>开票时间：</label>
+                    <input type="text" id="kpsjMin" lay-verify="date" placeholder="请选择起始开票时间" autocomplete="off"
+                           class="layui-input">
+                    <span> - </span>
+                    <input type="text" id="kpsjMax" lay-verify="date" placeholder="请选择截止开票时间" autocomplete="off"
+                           class="layui-input">
+                </li>
+                <!--<li>
+                    <label>开票时间（止）：</label>
+                    <input type="text" id="kpsjMax" lay-verify="date" placeholder="请选择截止开票时间" autocomplete="off"
+                           class="layui-input">
+                </li>-->
+                <div class="clear-fixed"></div>
+                <li>
+                    <label>发票代码：</label>
+                    <input type="text" id="fpdm" placeholder="请输入发票代码" autocomplete="off" class="layui-input">
+                </li>
+                <li>
+                    <label>发票号码：</label>
+                    <input type="text" id="fphmq" placeholder="请输入起始发票号码" autocomplete="off" class="layui-input">
+                    <span> - </span>
+                    <input type="text" id="fphmz" placeholder="请输入截止发票号码" autocomplete="off" class="layui-input">
+                </li>
+                <!--<li>
+                    <label>发票号码（止）：</label>
+                    <input type="text" id="fphmz" placeholder="请输入截止发票号码" autocomplete="off" class="layui-input">
+                </li>-->
+                <div class="clear-fixed"></div>
+                <li>
+                    <button id="searchBut" type="button" class="layui-btn layui-btn-normal">查询</button>
+                    <button id="exportBut" type="button" class="layui-btn">导出</button>
+                </li>
+                <div class="clear-fixed"></div>
+            </ul>
+        </form>
+    </div>
+</div>
+<div class="layui-card">
+    <div class="layui-card-body">
+
+        <table class="layui-table" id="test" lay-filter="test"></table>
+
+    </div>
+</div>
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'form', 'laydate'], function () {
+        var laydate = layui.laydate;
+        var form = layui.form;
+
+        laydate.render({
+            elem: '#kpsjMin'
+        });
+        laydate.render({
+            elem: '#kpsjMax'
+        });
+
+        fpcxObj.loadPage();
+
+        $('#searchBut').on('click', function () {
+            fpcxObj.loadPage();
+        });
+        $('#exportBut').on('click', function () {
+            fpcxObj.exportExcel();
+        });
+
+        form.on('checkbox(other)', function (data) {
+            var other = $('.rate-other');
+            var item = $('.rate-normal');
+            if (other.prop("checked")) {
+                item.each(function () {
+                    if ($(this).prop("checked")) {
+                        $(this).prop("checked", false);
+                    }
+                });
+            }
+            form.render('checkbox');
+        });
+
+        form.on('checkbox(normal)', function (data) {
+            var other = $('.rate-other');
+            var item = $('.rate-normal');
+            item.each(function () {
+                if ($(this).prop("checked")) {
+                    other.prop("checked", false);
+                }
+            });
+            form.render('checkbox');
+        });
+    });
+
+    var fpcxObj = {
+        loadPage: function () {
+            var _this = this;
+            console.log(JSON.stringify(_this.getRequestParams()));
+            _this.tableRender();
+        },
+        tableRender: function () {
+            var _this = this;
+            var colsData = [
+                [
+                    {
+                        fixed: 'left', field: 'fpzl', title: '发票类型', width:115, templet: function (res) {
+                            if (res.ykfp.fpzl == '0') {
+                                return "增值税专用发票";
+                            } else if (res.ykfp.fpzl == '2') {
+                                return "增值税普通发票";
+                            } else if (res.ykfp.fpzl == '51') {
+                                return "增值税电子普通发票";
+                            }
+                        }
+                    },
+                    {
+                        fixed: 'left', field: 'fpdm', title: '发票代码', width:110, sort: true, templet: function (res) {
+                            return res.ykfp.fpdm;
+                        }
+                    },
+                    {
+                        fixed: 'left', field: 'fphm', title: '发票号码', width:110, sort: true, templet: function (res) {
+                            return res.ykfp.fphm;
+                        }
+                    },
+                    {
+                        field: 'ykfp.fjh', title: '开票机号', width:100, sort: true, templet: function (d) {
+                            if (0 == d.ykfp.fjh) {
+                                return '<span style="color: #4178be;">主机</span>';
+                            } else {
+                                return '<span style="color: #2ec7c9;">开票机' + d.ykfp.fjh + '</span>';
+                            }
+                        }
+                    },
+                    {
+                        field: 'gfsh', title: '购方税号', width:110, templet: function (res) {
+                            return res.ykfp.gfsh;
+                        }
+                    },
+                    {
+                        field: 'gfmc', title: '购方名称', width:110, templet: function (res) {
+                            return res.ykfp.gfmc;
+                        }
+                    },
+                    {
+                        field: 'kpsj', title: '开票时间', width:100, sort: true, templet: function (res) {
+                            return res.ykfp.kpsj;
+                        }
+                    },
+                    {field: 'xmmc', title: '商品名称', width:110},
+                    {
+                        field: 'kpr', title: '开票人', width:90, templet: function (res) {
+                            return res.ykfp.kpr;
+                        }
+                    },
+                    {field: 'sl', title: '税率', width:80, sort: true},
+                    {field: 'se', title: '税额', width:80, sort: true},
+                    {field: 'hsje', title: '含税合计', width:100, sort: true},
+                    {
+                        field: 'ykfp.kpsj', title: '所属月份', width:90, templet: function (d) {
+                            return d.ykfp.kpsj.substring(0, 7);
+                        }
+                    },
+                    {
+                        field: 'bz', title: '备注', width:110, templet: function (res) {
+                            return res.ykfp.bz;
+                        }
+                    }
+                ]
+            ];
+            var table = layui.table;
+            table.render({
+                id: "dataList",
+                elem: '#test',
+                url: '/noc/invoiceMana/getFpcxList',
+                method: 'POST',
+                where: _this.getRequestParams(),
+                title: '数据列表',
+                cols: colsData,
+                even: true, //开启隔行背景
+                size: 'sm', //小尺寸的表格
+                page: true,
+                done: function (res, curr, count) {
+                    //alert(res);
+                }
+            });
+        },
+        getRequestParams: function () { //获取查询参数
+            var params = {};
+
+            var kpjCode = $('#kpjCode').val();
+            if (kpjCode != null && kpjCode != '') {
+                params.kpjCode = kpjCode;
+            }
+
+            var fplx = $('#fplx').val();
+            if (fplx != null && fplx != '') {
+                params.fpzl = fplx;
+            }
+
+            var kplx = $('#kplx').val();
+            if (kplx != null && kplx != '') {
+                params.kplx = kplx;
+            }
+
+            var fpxz = $('#fpxz').val();
+            if (fpxz != null && fpxz != '') {
+                params.fpxz = fpxz;
+            }
+
+            var slvArr = new Array();
+            $("input:checkbox[name='rate']:checked").each(function (i) {
+                slvArr[i] = $(this).val();
+            });
+            var slvStr = slvArr.join(",");
+            if(slvArr.length > 0){
+                if (slvArr.length == 1 && slvArr[1] == '1') {
+                    params.notNormalSlv = '1';//将数组合并成字符串
+                } else {
+                    params.slvStr = slvStr;
+                }
+            }
+
+            var gfmc = $('#gfmc').val();
+            if (gfmc != null && gfmc != '') {
+                params.gfmc = gfmc;
+            }
+
+            var kpsjMin = $('#kpsjMin').val();
+            if (kpsjMin != null && kpsjMin != '') {
+                params.kpsjMin = kpsjMin;
+            }
+
+            var kpsjMax = $('#kpsjMax').val();
+            if (kpsjMax != null && kpsjMax != '') {
+                params.kpsjMax = kpsjMax;
+            }
+
+            var fpdm = $('#fpdm').val();
+            if (fpdm != null && fpdm != '') {
+                params.fpdm = fpdm;
+            }
+
+            var fphmq = $('#fphmq').val();
+            if (fphmq != null && fphmq != '') {
+                params.fphmq = fphmq;
+            }
+
+            var fphmz = $('#fphmz').val();
+            if (fphmz != null && fphmz != '') {
+                params.fphmz = fphmz;
+            }
+
+            return params;
+        },
+        exportExcel: function () {
+            var _this = this;
+            _this.createForm(_this.getRequestParams());
+        },
+        createForm: function (params) {
+            // 创建Form
+            var form = $('<form></form>');
+            // 设置属性
+            form.attr('action', '/noc/invoiceMana/exportFpcxExcel');
+            form.attr('method', 'post');
+            for (var item in params) {
+                // 创建Input
+                var formInput = $('<input name="' + item + '" type="hidden" value="' + params[item] + '" />');
+                // 附加到Form
+                form.append(formInput);
+            }
+            $(document.body).append(form);
+            // 提交表单
+            form.submit();
+            form.remove();
+        }
+    }
+</script>
+</body>
+
+</html>

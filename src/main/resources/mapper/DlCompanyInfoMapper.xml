@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.htxx.mapper.DlCompanyInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.htxx.entity.DlCompanyInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="company_name" property="companyName" jdbcType="VARCHAR" />
+    <result column="company_tax_num" property="companyTaxNum" jdbcType="VARCHAR" />
+    <result column="company_addr" property="companyAddr" jdbcType="VARCHAR" />
+    <result column="company_bank_info" property="companyBankInfo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, company_name, company_tax_num, company_addr, company_bank_info, status
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.htxx.entity.DlCompanyInfoExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from dl_company_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from dl_company_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from dl_company_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.htxx.entity.DlCompanyInfoExample" >
+    delete from dl_company_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.htxx.entity.DlCompanyInfo" >
+    insert into dl_company_info (id, company_name, company_tax_num, 
+      company_addr, company_bank_info, status
+      )
+    values (#{id,jdbcType=BIGINT}, #{companyName,jdbcType=VARCHAR}, #{companyTaxNum,jdbcType=VARCHAR}, 
+      #{companyAddr,jdbcType=VARCHAR}, #{companyBankInfo,jdbcType=VARCHAR}, #{status,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.htxx.entity.DlCompanyInfo" >
+    insert into dl_company_info
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="companyName != null" >
+        company_name,
+      </if>
+      <if test="companyTaxNum != null" >
+        company_tax_num,
+      </if>
+      <if test="companyAddr != null" >
+        company_addr,
+      </if>
+      <if test="companyBankInfo != null" >
+        company_bank_info,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="companyName != null" >
+        #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyTaxNum != null" >
+        #{companyTaxNum,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddr != null" >
+        #{companyAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="companyBankInfo != null" >
+        #{companyBankInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.htxx.entity.DlCompanyInfoExample" resultType="java.lang.Integer" >
+    select count(*) from dl_company_info
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update dl_company_info
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.companyName != null" >
+        company_name = #{record.companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyTaxNum != null" >
+        company_tax_num = #{record.companyTaxNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyAddr != null" >
+        company_addr = #{record.companyAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.companyBankInfo != null" >
+        company_bank_info = #{record.companyBankInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update dl_company_info
+    set id = #{record.id,jdbcType=BIGINT},
+      company_name = #{record.companyName,jdbcType=VARCHAR},
+      company_tax_num = #{record.companyTaxNum,jdbcType=VARCHAR},
+      company_addr = #{record.companyAddr,jdbcType=VARCHAR},
+      company_bank_info = #{record.companyBankInfo,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=BIT}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.htxx.entity.DlCompanyInfo" >
+    update dl_company_info
+    <set >
+      <if test="companyName != null" >
+        company_name = #{companyName,jdbcType=VARCHAR},
+      </if>
+      <if test="companyTaxNum != null" >
+        company_tax_num = #{companyTaxNum,jdbcType=VARCHAR},
+      </if>
+      <if test="companyAddr != null" >
+        company_addr = #{companyAddr,jdbcType=VARCHAR},
+      </if>
+      <if test="companyBankInfo != null" >
+        company_bank_info = #{companyBankInfo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.htxx.entity.DlCompanyInfo" >
+    update dl_company_info
+    set company_name = #{companyName,jdbcType=VARCHAR},
+      company_tax_num = #{companyTaxNum,jdbcType=VARCHAR},
+      company_addr = #{companyAddr,jdbcType=VARCHAR},
+      company_bank_info = #{companyBankInfo,jdbcType=VARCHAR},
+      status = #{status,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
